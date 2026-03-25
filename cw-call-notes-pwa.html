@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Call Notes">
+<meta name="theme-color" content="#111111">
+<title>Call Notes — C&amp;W</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#111;--sb:#141414;--s1:#1a1a1a;--s2:#222;--s3:#2a2a2a;
+  --b1:#252525;--b2:#333;
+  --accent:#E8622A;--accent-dim:rgba(232,98,42,.13);
+  --green:#34a872;--green-dim:rgba(52,168,114,.12);
+  --blue:#4a90d9;--blue-dim:rgba(74,144,217,.1);
+  --red:#e05252;
+  --tx1:#f0ede8;--tx2:#c0bdb8;--tx3:#8a8780;--tx4:#555250;
+  --mono:'DM Mono',monospace;--disp:'Syne',sans-serif;--body:'DM Sans',sans-serif;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+  --sb-w:210px;--topbar-h:56px;--tabs-h:42px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(--tx1);font-family:var(--body);font-size:15px;-webkit-font-smoothing:antialiased}
+.sidebar{display:none;width:var(--sb-w);background:var(--sb);border-right:1px solid var(--b1);flex-direction:column;position:fixed;top:0;left:0;height:100%;z-index:20}
+.sb-hdr{padding:20px 16px 14px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:10px}
+.sb-pill{width:34px;height:34px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-brand{font-family:var(--disp);font-weight:700;font-size:15px;color:var(--tx1);letter-spacing:-.3px}
+.sb-brand-sub{font-family:var(--mono);font-size:9px;color:var(--tx4);letter-spacing:.07em;text-transform:uppercase;margin-top:2px}
+.sb-nav{padding:10px 8px;flex:1;display:flex;flex-direction:column;gap:2px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:8px;text-decoration:none;color:var(--tx3);transition:background .15s,color .15s;border:1px solid transparent}
+.sb-item:hover{background:var(--s1);color:var(--tx2)}
+.sb-item.active{background:var(--accent-dim);border-color:rgba(232,98,42,.2);color:var(--accent)}
+.sb-icon{width:16px;height:16px;flex-shrink:0}
+.sb-lbl{font-size:13px;font-weight:500;flex:1}
+.sb-badge{background:var(--accent);color:#fff;font-family:var(--mono);font-size:10px;border-radius:8px;padding:2px 7px}
+.sb-foot{padding:12px 16px;border-top:1px solid var(--b1)}
+.sb-date{font-family:var(--mono);font-size:11px;color:var(--tx4)}
+.mob-topbar{position:fixed;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:calc(var(--safe-top) + 10px) 18px 10px;background:var(--s1);border-bottom:1px solid var(--b1);min-height:calc(var(--safe-top) + var(--topbar-h))}
+.mob-logo{display:flex;align-items:center;gap:9px}
+.mob-pill{width:30px;height:30px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mob-title{font-family:var(--disp);font-weight:700;font-size:15px;color:var(--tx1)}
+.mob-sub{font-family:var(--mono);font-size:9px;color:var(--tx4);letter-spacing:.07em;text-transform:uppercase;margin-top:1px}
+.mob-right{display:flex;align-items:center;gap:8px}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--tx4);flex-shrink:0}
+.status-dot.recording{background:var(--red);box-shadow:0 0 8px var(--red);animation:blink 1s ease-in-out infinite}
+.status-dot.processing{background:var(--accent);box-shadow:0 0 8px var(--accent);animation:blink .7s ease-in-out infinite}
+.status-dot.done{background:var(--green)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.status-lbl{font-family:var(--mono);font-size:10px;color:var(--tx3);letter-spacing:.06em;text-transform:uppercase}
+.home-link{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--tx4);background:var(--s2);border:1px solid var(--b1);border-radius:20px;padding:5px 10px;text-decoration:none}
+.step-nav{position:fixed;z-index:9;left:0;right:0;top:calc(var(--safe-top) + var(--topbar-h));display:flex;background:var(--s1);border-bottom:2px solid var(--b1)}
+.step-tab{flex:1;padding:11px 4px;text-align:center;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--tx3);border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .2s,border-color .2s;cursor:pointer;user-select:none}
+.step-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.step-tab.complete{color:var(--tx2)}
+.step-tab.locked{color:var(--tx4);opacity:.45;pointer-events:none}
+.screens-wrap{position:fixed;top:calc(var(--safe-top) + var(--topbar-h) + var(--tabs-h));left:0;right:0;bottom:0;overflow:hidden}
+.screen{display:none;position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;flex-direction:column}
+.screen.active{display:flex}
+.pad{padding:15px 18px;display:flex;flex-direction:column;gap:12px;padding-bottom:calc(var(--safe-bot)+16px)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx2)}
+.sec-title{font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx2)}
+.finput,.fselect{background:var(--s2);border:1px solid var(--b2);border-radius:10px;color:var(--tx1);font-family:var(--body);font-size:14px;padding:10px 12px;outline:none;width:100%;-webkit-appearance:none;appearance:none;transition:border-color .2s}
+.finput:focus,.fselect:focus{border-color:var(--accent)}
+.fselect{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.fselect option{background:#222}
+.contact-row{display:flex;gap:8px;align-items:flex-end}
+.contact-row .field{flex:1}
+.contacts-btn{height:42px;padding:0 12px;background:var(--s2);border:1px solid var(--b2);border-radius:10px;color:var(--tx2);font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;display:none;align-items:center;gap:5px;white-space:nowrap;flex-shrink:0}
+.contacts-btn.show{display:flex}
+.proj-wrap{position:relative}
+.proj-drop{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--s1);border:1px solid var(--b2);border-radius:10px;z-index:50;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.6)}
+.proj-drop.open{display:block}
+.proj-opt{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;border-bottom:1px solid var(--b1);cursor:pointer}
+.proj-opt:last-child{border-bottom:none}
+.proj-opt:active{background:var(--s2)}
+.proj-opt-name{font-size:14px;color:var(--tx1)}
+.proj-del{background:none;border:none;color:var(--tx3);font-size:17px;cursor:pointer;padding:0 3px;line-height:1}
+.speaker-indicator{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:2px}
+.speaker-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px 5px 8px;border-radius:20px;background:var(--s2);border:1px solid var(--b1);cursor:pointer;user-select:none;transition:all .2s}
+.speaker-chip.on,.speaker-chip.auto{background:var(--blue-dim);border-color:rgba(74,144,217,.5)}
+.spk-dot{width:7px;height:7px;border-radius:50%;background:var(--tx4);flex-shrink:0;transition:background .2s}
+.speaker-chip.on .spk-dot,.speaker-chip.auto .spk-dot{background:var(--blue);box-shadow:0 0 6px rgba(74,144,217,.7)}
+.spk-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--tx3);transition:color .2s}
+.speaker-chip.on .spk-lbl,.speaker-chip.auto .spk-lbl{color:var(--blue)}
+.spk-switch{font-family:var(--mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--tx3);background:transparent;border:1px solid var(--b1);border-radius:20px;padding:5px 10px;cursor:pointer;display:none}
+.spk-switch.visible{display:inline-block}
+.mic-section{display:flex;flex-direction:column;align-items:center;gap:8px;padding:4px 0}
+.mic-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.mic-rings{position:absolute;width:88px;height:88px;border-radius:50%;pointer-events:none}
+.mic-rings::before,.mic-rings::after{content:'';position:absolute;border-radius:50%;border:1.5px solid var(--red);opacity:0}
+.mic-rings::before{inset:-10px}
+.mic-rings::after{inset:-22px}
+.mic-rings.active::before{animation:ring 1.5s ease-out infinite}
+.mic-rings.active::after{animation:ring 1.5s ease-out infinite .4s}
+@keyframes ring{0%{opacity:.6;transform:scale(.9)}100%{opacity:0;transform:scale(1)}}
+.mic-btn{width:84px;height:84px;border-radius:50%;border:2px solid var(--b2);background:var(--s2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s,border-color .2s,transform .1s;position:relative;z-index:1;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.mic-btn:active{transform:scale(.95)}
+.mic-btn.recording{background:rgba(224,82,82,.15);border-color:var(--red)}
+.mic-lbl{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--tx3);transition:color .3s;text-align:center}
+.mic-lbl.recording{color:var(--red)}
+.waveform{display:flex;align-items:center;gap:3px;height:16px;opacity:0;transition:opacity .3s}
+.waveform.active{opacity:1}
+.wave-bar{width:3px;border-radius:2px;background:var(--red);height:4px}
+.waveform.active .wave-bar:nth-child(1){animation:wave .8s ease-in-out infinite 0s}
+.waveform.active .wave-bar:nth-child(2){animation:wave .8s ease-in-out infinite .1s}
+.waveform.active .wave-bar:nth-child(3){animation:wave .8s ease-in-out infinite .2s}
+.waveform.active .wave-bar:nth-child(4){animation:wave .8s ease-in-out infinite .05s}
+.waveform.active .wave-bar:nth-child(5){animation:wave .8s ease-in-out infinite .15s}
+.waveform.active .wave-bar:nth-child(6){animation:wave .8s ease-in-out infinite .25s}
+.waveform.active .wave-bar:nth-child(7){animation:wave .8s ease-in-out infinite .08s}
+@keyframes wave{0%,100%{height:3px}50%{height:14px}}
+.tx-wrap{flex:1;display:flex;flex-direction:column;gap:6px;min-height:90px}
+.tx-label-row{display:flex;align-items:center;justify-content:space-between}
+.tx-lbl{font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx2)}
+.char-ct{font-family:var(--mono);font-size:10px;color:var(--tx3)}
+.tx-box{flex:1;min-height:80px;background:var(--s2);border:1px solid var(--b2);border-radius:12px;padding:11px 13px;font-size:14px;line-height:1.7;color:var(--tx1);outline:none;resize:none;-webkit-overflow-scrolling:touch;font-family:var(--body);transition:border-color .2s}
+.tx-box:focus{border-color:var(--b2)}
+.tx-box.interim{border-color:rgba(224,82,82,.35)}
+.btn-primary{width:100%;padding:14px;background:var(--accent);border:none;border-radius:13px;color:#fff;font-family:var(--disp);font-size:15px;font-weight:700;cursor:pointer;transition:opacity .2s,transform .1s;display:flex;align-items:center;justify-content:center;gap:7px;flex-shrink:0}
+.btn-primary:active{transform:scale(.98)}
+.btn-primary:disabled{opacity:.35;cursor:not-allowed}
+.btn-green{width:100%;padding:14px;background:var(--green-dim);border:1px solid rgba(52,168,114,.35);border-radius:13px;color:var(--green);font-family:var(--disp);font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px;flex-shrink:0}
+.btn-green:active{background:rgba(52,168,114,.2)}
+.btn-secondary{width:100%;padding:13px;background:transparent;border:1px solid var(--b2);border-radius:12px;color:var(--tx2);font-family:var(--body);font-size:14px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.btn-secondary:active{background:var(--s2)}
+.btn-copy{background:transparent;border:1px solid var(--b1);border-radius:8px;color:var(--tx3);font-family:var(--mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;padding:6px 11px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.btn-copy.copied{border-color:var(--green);color:var(--green)}
+.review-screen{padding:16px 18px;gap:14px;padding-bottom:calc(var(--safe-bot)+24px)}
+.info-banner{background:var(--blue-dim);border:1px solid rgba(74,144,217,.25);border-radius:12px;padding:11px 13px}
+.info-banner-title{font-family:var(--disp);font-size:13px;font-weight:700;color:var(--blue);margin-bottom:2px}
+.info-banner-sub{font-size:12px;color:var(--tx3);line-height:1.5}
+.rv-fields{background:var(--s1);border:1px solid var(--b1);border-radius:12px;overflow:hidden}
+.rv-row{display:flex;align-items:center;padding:11px 13px;border-bottom:1px solid var(--b1);gap:10px}
+.rv-row:last-child{border-bottom:none}
+.rv-lbl{font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx2);min-width:65px;flex-shrink:0}
+.rv-input{flex:1;background:transparent;border:none;color:var(--tx1);font-family:var(--body);font-size:14px;outline:none;-webkit-appearance:none;min-width:0}
+.rv-input.auto{color:var(--blue)}
+.rv-select{flex:1;background:transparent;border:none;color:var(--tx1);font-family:var(--body);font-size:14px;outline:none;-webkit-appearance:none;appearance:none;min-width:0}
+.rv-select.auto{color:var(--blue)}
+.auto-badge{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:10px;background:var(--blue-dim);color:var(--blue);border:1px solid rgba(74,144,217,.3);flex-shrink:0;text-transform:uppercase;display:none}
+.auto-badge.show{display:inline-flex}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.badge-orange{font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:20px;background:var(--accent-dim);color:var(--accent);border:1px solid rgba(232,98,42,.3)}
+.summary-card{background:var(--s2);border:1px solid var(--b1);border-radius:12px;padding:13px 14px;font-size:14px;line-height:1.7;color:var(--tx1)}
+.action-card{background:var(--s1);border:1px solid var(--b1);border-radius:12px;overflow:hidden}
+.action-item{display:flex;gap:10px;align-items:flex-start;padding:11px 13px;border-bottom:1px solid var(--b1)}
+.action-item:last-child{border-bottom:none}
+.action-num{font-family:var(--mono);font-size:11px;color:var(--accent);min-width:22px;padding-top:2px;flex-shrink:0}
+.action-text{font-size:14px;line-height:1.5;color:var(--tx1)}
+.action-meta{font-family:var(--mono);font-size:10px;color:var(--tx3);margin-top:3px}
+.email-screen{padding:16px 18px;gap:14px;padding-bottom:calc(var(--safe-bot)+24px)}
+.email-card{background:var(--s2);border:1px solid var(--b1);border-radius:12px;overflow:hidden}
+.email-subj{padding:11px 13px;border-bottom:1px solid var(--b1);font-size:13px;font-weight:500;color:var(--tx1);background:var(--s3)}
+.email-body{padding:12px 13px;font-family:var(--mono);font-size:12px;line-height:1.8;color:var(--tx3);white-space:pre-wrap;max-height:220px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(17,17,17,.92);z-index:100;flex-direction:column;align-items:center;justify-content:center;gap:14px;backdrop-filter:blur(4px)}
+.loading-overlay.show{display:flex}
+.spinner{width:32px;height:32px;border:2px solid var(--b2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-lbl{font-family:var(--mono);font-size:11px;color:var(--tx3);letter-spacing:.06em;text-transform:uppercase}
+.toast{position:fixed;bottom:calc(var(--safe-bot)+20px);left:50%;transform:translateX(-50%) translateY(14px);background:var(--s3);border:1px solid var(--b2);border-radius:20px;padding:9px 18px;font-family:var(--mono);font-size:12px;color:var(--tx1);letter-spacing:.04em;opacity:0;transition:all .25s;pointer-events:none;z-index:200;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.blue{background:var(--blue-dim);border-color:rgba(74,144,217,.4);color:var(--blue)}
+.toast.green{background:var(--green-dim);border-color:rgba(52,168,114,.4);color:var(--green)}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+@media(min-width:768px){
+  html,body{overflow:hidden}
+  .sidebar{display:flex}
+  .mob-topbar,.step-nav{display:none}
+  .screens-wrap{position:static;display:flex;flex-direction:row;height:100vh;margin-left:var(--sb-w)}
+  .screen{display:flex !important;position:static;overflow-y:auto;flex-direction:column}
+  #screen-record{width:380px;flex:none;border-right:1px solid var(--b1)}
+  .record-pad{height:100%;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;padding-bottom:18px}
+  #screen-review{flex:1;border-right:1px solid var(--b1)}
+  .review-screen{padding:18px;gap:14px;padding-bottom:18px}
+  #screen-email{width:300px;flex:none}
+  .email-screen{padding:18px;gap:14px;padding-bottom:18px}
+  .pane-hdr{display:flex !important;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--b1);margin-bottom:4px;flex-shrink:0}
+  .pane-title{font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx2)}
+  .info-banner{display:none}
+  .btn-primary,.btn-secondary,.btn-green{padding:12px}
+}
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <div class="sb-hdr">
+    <div class="sb-pill"><svg width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+    <div><div class="sb-brand">PM Tools</div><div class="sb-brand-sub">C&amp;W Contracting</div></div>
+  </div>
+  <div class="sb-nav">
+    <a class="sb-item" href="index.html"><svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="sb-lbl">Home</span></a>
+    <a class="sb-item active" href="cw-call-notes-pwa.html"><svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.89a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span class="sb-lbl">Call Notes</span></a>
+    <a class="sb-item" href="cw-oac-notes-pwa.html"><svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span class="sb-lbl">OAC Notes</span></a>
+    <a class="sb-item" href="cw-tasks-pwa.html"><svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="sb-lbl">Tasks</span><span class="sb-badge" id="sbBadge" style="display:none">0</span></a>
+  </div>
+  <div class="sb-foot"><div class="sb-date" id="sbDate"></div></div>
+</nav>
+<div class="mob-topbar">
+  <div class="mob-logo">
+    <div class="mob-pill"><svg width="12" height="12" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.89a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+    <div><div class="mob-title">Call Notes</div><div class="mob-sub">C&amp;W Contracting</div></div>
+  </div>
+  <div class="mob-right">
+    <div class="status-dot" id="statusDot"></div>
+    <span class="status-lbl" id="statusLbl">Ready</span>
+    <a class="home-link" href="index.html"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</a>
+  </div>
+</div>
+<div class="step-nav">
+  <div class="step-tab active" id="tab-record" data-tab="record">01 Record</div>
+  <div class="step-tab locked" id="tab-review" data-tab="review">02 Review</div>
+  <div class="step-tab locked" id="tab-email"  data-tab="email">03 Send</div>
+</div>
+<div class="screens-wrap">
+  <div class="screen active" id="screen-record">
+    <div class="record-pad pad">
+      <div class="pane-hdr" style="display:none">
+        <span class="pane-title">Record</span>
+        <div style="display:flex;align-items:center;gap:7px"><div class="status-dot" id="statusDotD"></div><span class="status-lbl" id="statusLblD">Ready</span></div>
+      </div>
+      <div class="contact-row">
+        <div class="field" style="flex:1"><label>Contact Name</label><input class="finput" type="text" id="contactName" placeholder="John Smith" autocomplete="name"></div>
+        <button class="contacts-btn" id="contactsBtn" type="button"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Contacts</button>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Company</label><input class="finput" type="text" id="company" placeholder="Apex MEP"></div>
+        <div class="field"><label>Project</label>
+          <div class="proj-wrap">
+            <input class="finput" type="text" id="project" placeholder="Midtown Reno" autocomplete="off">
+            <div class="proj-drop" id="projDrop"></div>
+          </div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Call Type</label>
+          <select class="fselect" id="callType">
+            <option>Owner call</option><option>Subcontractor call</option><option>Vendor / supplier call</option>
+            <option>Architect / engineer call</option><option>Internal team call</option>
+            <option>Estimating / bid call</option><option>Inspection / city call</option><option>General call</option>
+          </select>
+        </div>
+        <div class="field"><label>Date</label><input class="finput" type="date" id="callDate"></div>
+      </div>
+      <div class="mic-section">
+        <div class="mic-wrap">
+          <div class="mic-rings" id="micRings"></div>
+          <button class="mic-btn" id="micBtn" type="button" aria-label="Start or stop recording">
+            <svg id="micIcon" width="28" height="28" fill="none" stroke="var(--tx2)" stroke-width="1.8" viewBox="0 0 24 24">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          </button>
+        </div>
+        <div class="waveform" id="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div>
+        <div class="mic-lbl" id="micLbl">Tap to record</div>
+      </div>
+      <div class="tx-wrap">
+        <div class="tx-label-row"><span class="tx-lbl">Live Transcript / Notes</span><span class="char-ct" id="charCount">0 chars</span></div>
+        <textarea class="tx-box" id="transcript" placeholder="Speech appears here as you talk — or type freely.&#10;&#10;Leave fields blank and AI will detect contact, company, project and call type from the conversation."></textarea>
+      </div>
+      <button class="btn-primary" id="processBtn" type="button">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Process with AI
+      </button>
+    </div>
+  </div>
+  <div class="screen review-screen" id="screen-review">
+    <div class="pane-hdr" style="display:none">
+      <span class="pane-title">Review</span>
+      <span id="autoNote" style="font-family:var(--mono);font-size:9px;color:var(--blue);letter-spacing:.05em;text-transform:uppercase;font-weight:700"></span>
+    </div>
+    <div class="info-banner"><div class="info-banner-title">Review &amp; confirm</div><div class="info-banner-sub">AI filled in what it detected. Edit anything before sending.</div></div>
+    <div>
+      <div class="sec-head"><span class="sec-title">Call Details</span><span id="autoNoteM" style="font-family:var(--mono);font-size:9px;color:var(--blue);letter-spacing:.05em;text-transform:uppercase;font-weight:700"></span></div>
+      <div class="rv-fields">
+        <div class="rv-row"><span class="rv-lbl">Contact</span><input class="rv-input" id="rv-contact" type="text" placeholder="Unknown"><span class="auto-badge" id="ab-contact">Auto</span></div>
+        <div class="rv-row"><span class="rv-lbl">Company</span><input class="rv-input" id="rv-company" type="text" placeholder="--"><span class="auto-badge" id="ab-company">Auto</span></div>
+        <div class="rv-row"><span class="rv-lbl">Project</span><input class="rv-input" id="rv-project" type="text" placeholder="--"><span class="auto-badge" id="ab-project">Auto</span></div>
+        <div class="rv-row">
+          <span class="rv-lbl">Type</span>
+          <select class="rv-select" id="rv-callType">
+            <option>Owner call</option><option>Subcontractor call</option><option>Vendor / supplier call</option>
+            <option>Architect / engineer call</option><option>Internal team call</option>
+            <option>Estimating / bid call</option><option>Inspection / city call</option><option>General call</option>
+          </select>
+          <span class="auto-badge" id="ab-callType">Auto</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-head"><span class="sec-title">Summary</span><span class="badge-orange" id="rvTypeBadge"></span></div>
+      <div class="summary-card" id="rvSummary"></div>
+    </div>
+    <div>
+      <div class="sec-head"><span class="sec-title">Action Items</span><span id="rvActionCt" style="font-family:var(--mono);font-size:10px;color:var(--accent);font-weight:700"></span></div>
+      <div class="action-card" id="rvActions"></div>
+    </div>
+    <button class="btn-primary" id="confirmBtn" type="button">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      Confirm &amp; Build Email
+    </button>
+  </div>
+  <div class="screen email-screen" id="screen-email">
+    <div class="pane-hdr" style="display:none"><span class="pane-title">Email Draft</span></div>
+    <div>
+      <div class="sec-head"><span class="sec-title">Email Draft</span><button class="btn-copy" id="copyEmailBtn" type="button">Copy</button></div>
+      <div class="email-card"><div class="email-subj" id="emailSubj"></div><div class="email-body" id="emailBody"></div></div>
+    </div>
+    <div>
+      <div class="sec-head"><span class="sec-title">Action Items</span><button class="btn-copy" id="copyActionsBtn" type="button">Copy all</button></div>
+      <div class="action-card" id="emailActions"></div>
+    </div>
+    <button class="btn-green" id="sendBtn" type="button">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Send Email Draft
+    </button>
+    <button class="btn-secondary" id="viewTasksBtn" type="button">View Open Tasks</button>
+    <button class="btn-secondary" id="newCallBtn" type="button">+ New Call</button>
+  </div>
+</div>
+<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div><div class="loading-lbl" id="loadingLbl">Analyzing call...</div></div>
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+'use strict';
+function q(id){return document.getElementById(id);}
+var isDesktop=function(){return window.innerWidth>=768;};
+var toastTimer=null;
+function showToast(msg,style){
+  var t=q('toast');t.textContent=msg;
+  t.className='toast show'+(style?' '+style:'');
+  clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove('show');},3000);
+}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function setLoading(show,msg){q('loadingOverlay').classList.toggle('show',show);if(msg)q('loadingLbl').textContent=msg;}
+function setStatus(s){
+  [['statusDot','statusLbl'],['statusDotD','statusLblD']].forEach(function(pair){
+    var dot=q(pair[0]),lbl=q(pair[1]);if(!dot||!lbl)return;
+    dot.className='status-dot';
+    if(s==='recording'){dot.classList.add('recording');lbl.textContent='Recording';}
+    else if(s==='processing'){dot.classList.add('processing');lbl.textContent='Processing';}
+    else if(s==='done'){dot.classList.add('done');lbl.textContent='Done';}
+    else lbl.textContent='Ready';
+  });
+}
+var sbDate=q('sbDate');
+if(sbDate)sbDate.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+function updateSbBadge(){
+  try{var n=JSON.parse(localStorage.getItem('cw-tasks')||'[]').filter(function(t){return!t.done;}).length;var b=q('sbBadge');b.textContent=n;b.style.display=n>0?'inline-block':'none';}catch(e){}
+}
+updateSbBadge();
+try{
+  var m={name:'Call Notes',short_name:'Call Notes',start_url:'./',display:'standalone',background_color:'#111',theme_color:'#111',orientation:'portrait',icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%23E8622A'/%3E%3C/svg%3E",sizes:'192x192',type:'image/svg+xml'}]};
+  var mb=new Blob([JSON.stringify(m)],{type:'application/json'});
+  var ml=document.createElement('link');ml.rel='manifest';ml.href=URL.createObjectURL(mb);document.head.appendChild(ml);
+}catch(e){}
+function goTab(tab){
+  if(isDesktop())return;
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.querySelectorAll('.step-tab').forEach(function(t){t.classList.remove('active');});
+  q('screen-'+tab).classList.add('active');q('tab-'+tab).classList.add('active');
+}
+function unlockTab(tab){var el=q('tab-'+tab);if(el){el.classList.remove('locked');el.classList.add('complete');}}
+function lockTab(tab){var el=q('tab-'+tab);if(el){el.classList.add('locked');el.classList.remove('complete','active');}}
+document.querySelectorAll('.step-tab').forEach(function(tb){
+  tb.addEventListener('click',function(){if(!tb.classList.contains('locked'))goTab(tb.dataset.tab);});
+});
+function syncDesktop(){
+  var d=isDesktop();
+  document.querySelectorAll('.pane-hdr').forEach(function(h){h.style.display=d?'flex':'none';});
+  var ib=document.querySelector('.info-banner');if(ib)ib.style.display=d?'none':'block';
+}
+syncDesktop();window.addEventListener('resize',syncDesktop);
+
+var isRecording=false;
+var recognition=null;
+var finalTx='',interimTx='';
+var restartTimer=null;
+var resultData=null;
+
+q('callDate').valueAsDate=new Date();
+q('transcript').addEventListener('input',function(){q('charCount').textContent=q('transcript').value.length+' chars';});
+
+// Contacts API (Android only)
+if('contacts' in navigator&&'ContactsManager' in window)q('contactsBtn').classList.add('show');
+q('contactsBtn').addEventListener('click',function(){
+  navigator.contacts.select(['name','organization'],{multiple:false}).then(function(r){
+    if(r&&r[0]){
+      if(r[0].name&&r[0].name[0])q('contactName').value=r[0].name[0];
+      if(r[0].organization&&r[0].organization[0])q('company').value=r[0].organization[0];
+    }
+  }).catch(function(){});
+});
+
+// Saved projects — auto-save on blur, show dropdown on focus/type
+function getProjects(){try{return JSON.parse(localStorage.getItem('cw-projects')||'[]');}catch(e){return[];}}
+function saveProjects(a){try{localStorage.setItem('cw-projects',JSON.stringify(a));}catch(e){}}
+function addProject(n){
+  if(!n||!n.trim())return;
+  var a=getProjects();
+  if(a.indexOf(n.trim())===-1){a.unshift(n.trim());saveProjects(a);}
+}
+function renderProjDrop(){
+  var val=q('project').value.trim().toLowerCase();
+  var all=getProjects();
+  var matches=val?all.filter(function(p){return p.toLowerCase().indexOf(val)>-1;}):all;
+  var dd=q('projDrop');dd.innerHTML='';
+  if(!matches.length){dd.classList.remove('open');return;}
+  matches.forEach(function(p){
+    var row=document.createElement('div');row.className='proj-opt';
+    var nm=document.createElement('span');nm.className='proj-opt-name';nm.textContent=p;
+    var del=document.createElement('button');del.type='button';del.className='proj-del';del.textContent='x';
+    del.addEventListener('touchstart',function(e){
+      e.preventDefault();e.stopPropagation();
+      saveProjects(getProjects().filter(function(x){return x!==p;}));
+      renderProjDrop();
+    },{passive:false});
+    del.addEventListener('mousedown',function(e){
+      e.preventDefault();e.stopPropagation();
+      saveProjects(getProjects().filter(function(x){return x!==p;}));
+      renderProjDrop();
+    });
+    row.addEventListener('touchstart',function(e){e.preventDefault();q('project').value=p;closeProjDrop();},{passive:false});
+    row.addEventListener('mousedown',function(e){e.preventDefault();q('project').value=p;closeProjDrop();});
+    row.appendChild(nm);row.appendChild(del);dd.appendChild(row);
+  });
+  dd.classList.add('open');
+}
+function closeProjDrop(){
+  q('projDrop').classList.remove('open');
+  // Auto-save project on blur — no hint needed
+  var val=q('project').value.trim();
+  if(val)addProject(val);
+}
+q('project').addEventListener('focus',renderProjDrop);
+q('project').addEventListener('input',function(){renderProjDrop();});
+q('project').addEventListener('blur',function(){setTimeout(closeProjDrop,200);});
+
+// ─── RECORDING ───
+// iOS Safari rule: recognition.start() must be called synchronously in the
+// click handler. No getUserMedia before start() — that creates a mic conflict.
+// continuous=false + rec.start() in onend is the correct iOS loop pattern.
+
+q('micBtn').addEventListener('click',function(){
+  if(isRecording){stopRec();return;}
+  startRec();
+});
+
+function startRec(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){showToast('Speech recognition requires Safari on iPhone');return;}
+  isRecording=true;
+  setRecUI(true);
+  beginRecognition();
+}
+
+function buildRecognition(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  var rec=new SR();
+  rec.continuous=false;
+  rec.interimResults=true;
+  rec.lang='en-US';
+  rec.onresult=function(e){
+    interimTx='';
+    for(var i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal)finalTx+=e.results[i][0].transcript+' ';
+      else interimTx+=e.results[i][0].transcript;
+    }
+    var box=q('transcript');
+    box.value=finalTx+interimTx;
+    box.classList.toggle('interim',!!interimTx);
+    box.scrollTop=box.scrollHeight;
+    q('charCount').textContent=box.value.length+' chars';
+  };
+  rec.onerror=function(e){
+    if(e.error==='no-speech'||e.error==='aborted')return;
+    if(e.error==='not-allowed'){
+      showToast('Mic blocked — allow in Settings > Safari > Microphone');
+      isRecording=false;setRecUI(false);return;
+    }
+    if(isRecording){clearTimeout(restartTimer);restartTimer=setTimeout(beginRecognition,300);}
+  };
+  rec.onend=function(){
+    if(!isRecording)return;
+    try{rec.start();}
+    catch(e){clearTimeout(restartTimer);restartTimer=setTimeout(beginRecognition,150);}
+  };
+  return rec;
+}
+
+function beginRecognition(){
+  if(!isRecording)return;
+  if(recognition){try{recognition.abort();}catch(e){}}
+  recognition=buildRecognition();
+  try{recognition.start();}
+  catch(e){if(isRecording){clearTimeout(restartTimer);restartTimer=setTimeout(beginRecognition,200);}}
+}
+
+function stopRec(){
+  isRecording=false;
+  clearTimeout(restartTimer);
+  if(recognition){try{recognition.abort();}catch(e){}recognition=null;}
+  interimTx='';
+  setRecUI(false);
+  q('charCount').textContent=q('transcript').value.length+' chars';
+}
+
+function setRecUI(on){
+  q('micBtn').classList.toggle('recording',on);
+  q('micRings').classList.toggle('active',on);
+  q('waveform').classList.toggle('active',on);
+  q('micLbl').textContent=on?'Recording — tap to stop':'Tap to record';
+  q('micLbl').classList.toggle('recording',on);
+  q('micIcon').setAttribute('stroke',on?'var(--red)':'var(--tx2)');
+  if(!on)q('transcript').classList.remove('interim');
+  setStatus(on?'recording':'');
+}
+
+document.addEventListener('visibilitychange',function(){
+  if(!isRecording||document.hidden)return;
+  showToast('Recording resumed','blue');
+  clearTimeout(restartTimer);
+  restartTimer=setTimeout(beginRecognition,500);
+});
+
+// ─── AI PROCESS ───
+q('processBtn').addEventListener('click',processCall);
+function processCall(){
+  var notes=q('transcript').value.trim();
+  if(!notes){
+    // Make it impossible to miss — flash the textarea border red
+    var box=q('transcript');
+    box.style.borderColor='var(--red)';
+    box.style.borderWidth='2px';
+    setTimeout(function(){box.style.borderColor='';box.style.borderWidth='';},2000);
+    showToast('Transcript is empty — record or type notes first');
+    return;
+  }
+  if(isRecording)stopRec();
+  var hC=q('contactName').value.trim();
+  var hCo=q('company').value.trim();
+  var hP=q('project').value.trim();
+  var callDate=q('callDate').value;
+  var dateStr=callDate
+    ?new Date(callDate+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'})
+    :new Date().toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'});
+
+  // Immediately update button so user knows tap registered
+  var btn=q('processBtn');
+  btn.disabled=true;
+  btn.textContent='Processing...';
+  setLoading(true,'Analyzing call...');
+  setStatus('processing');
+
+  function cleanup(){
+    btn.disabled=false;
+    btn.innerHTML='<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Process with AI';
+    setLoading(false);
+  }
+
+  var hints=[
+    hC?'Contact: "'+hC+'"':'',
+    hCo?'Company: "'+hCo+'"':'',
+    hP?'Project: "'+hP+'"':''
+  ].filter(Boolean).join(' | ');
+
+  var prompt='You are an expert construction PM assistant for C&W Contracting Services, Atlanta GA. Will Lusk is the lead PM.\n'
+    +'IMPORTANT: The transcript below was captured by voice recognition and may contain phonetic errors. Use your knowledge of construction terminology to auto-correct mishearing before processing. Common substitutions: "change order" not "chain border/order", "submittal" not "submit all/a", "RFI" not "are if I", "punch list" not "punch list/punched list", "substantial completion" not "substantial competition", "certificate of occupancy" not "certificate of occupancy/CO", "lien waiver" not "lean waiver", "pay application" not "pay app lication", "closeout" not "close out/clothes out", "as-builts" not "as built/has built".\n'
+    +'CONSTRUCTION TERMINOLOGY REFERENCE — use this to interpret and correct the transcript:\n'
+    +'Contracts & Documents: AIA contract, GMP (guaranteed maximum price), lump sum, cost-plus, unit price, bid bond, performance bond, payment bond, surety, notice to proceed (NTP), notice of commencement, substantial completion, final completion, certificate of occupancy (CO), temporary certificate of occupancy (TCO), certificate of substantial completion, punch list, closeout documents, as-builts, record drawings, O&M manuals, attic stock, warranty, liquidated damages (LD), retainage, schedule of values (SOV), pay application (pay app), continuation sheet, lien waiver, unconditional lien waiver, conditional lien waiver, sworn statement, change order (CO), change order request (COR), request for information (RFI), architect supplemental instruction (ASI), construction change directive (CCD), proposal request (PR), submittal, shop drawing, product data, sample, substitution request, value engineering (VE).\n'
+    +'Project Roles: general contractor (GC), owner, architect, engineer, owner\'s rep, construction manager (CM), construction manager at risk (CMAR), design-build, subcontractor (sub), specialty contractor, trade contractor, supplier, vendor, material supplier, testing agency, special inspector, authority having jurisdiction (AHJ), building official, plan checker, project manager (PM), project engineer (PE), superintendent (super), foreman, estimator, scheduler, safety officer, BIM coordinator.\n'
+    +'Trades & Systems: concrete, masonry, structural steel, rough carpentry, finish carpentry, millwork, casework, thermal insulation, roofing, waterproofing, dampproofing, air barrier, vapor barrier, storefront, curtain wall, glazing, doors frames hardware (DFH), drywall, gypsum board, ACT (acoustical ceiling tile), flooring, tile, terrazzo, painting, coatings, MEP (mechanical electrical plumbing), HVAC, ductwork, VAV, AHU (air handling unit), RTU (rooftop unit), chiller, boiler, hydronic, plumbing, fire protection, sprinkler, standpipe, fire alarm, electrical, switchgear, panelboard, conduit, wire, lighting, low voltage, data, security, elevator, escalator, earthwork, grading, utilities, civil, sitework, paving, landscaping, irrigation.\n'
+    +'Project Management: schedule, CPM schedule, baseline schedule, look-ahead schedule, two-week lookahead, float, critical path, milestone, substantial completion date, project closeout, meeting minutes, OAC meeting (owner architect contractor), progress meeting, coordination meeting, kickoff meeting, preconstruction meeting, pre-bid meeting, site visit, site walk, mock-up, inspection, testing and commissioning (T&C), commissioning, systems commissioning, QA/QC (quality assurance quality control), daily report, red lines, markups, Bluebeam, Procore, Autodesk, Revit, BIM (building information modeling), RFI log, submittal log, change order log, transmittal, hot list, expediting, long lead items, lead time, procurement, buyout, subcontract, purchase order (PO), material release, delivery, staging, laydown area, hoisting, crane, logistics plan, phasing, sequencing.\n'
+    +'Financial: budget, cost report, cost forecast, projected final cost, contingency, owner contingency, contractor contingency, allowance, unit cost, general conditions, general requirements, overhead, profit, markup, escalation, hard bid, soft costs, hard costs, construction cost, preconstruction, design phase, bid phase, construction phase, closeout phase, draw, funding, AIA G702, AIA G703, sworn statement, schedule of values, stored materials, work in place, percent complete, over-billed, under-billed, joint check, default, termination for convenience, termination for cause.\n'
+    +'Field & Safety: OSHA, safety plan, JHA (job hazard analysis), toolbox talk, incident report, near miss, PPE (personal protective equipment), hard hat, fall protection, scaffolding, shoring, formwork, concrete pour, curing, rebar, post-tension, precast, tilt-up, steel erection, welding, bolting, torch, hot work permit, confined space, excavation, trench, shoring, dewatering, soil compaction, geotechnical, boring, environmental, LEED, green building, commissioning, energy model, waste management, SWPPP (stormwater pollution prevention plan), NOI (notice of intent).\n'
+    +'C&W Specific Context: C&W Contracting Services, commercial renovation, Atlanta GA, interior build-out, tenant improvement (TI), base building, landlord work, tenant work, shell space, warm shell, cold shell, white box.\n'
+    +'This is a two-way business call. First auto-correct any speech recognition errors using the terminology above, then extract action items for BOTH parties. Attribute ownership clearly.\n'
+    +(hints?'Hints: '+hints:'No pre-filled hints — infer all from transcript.')+'\n'
+    +'Date: '+dateStr+'\n'
+    +'Transcript: '+notes+'\n'
+    +'Return ONLY valid JSON with no markdown fences:\n'
+    +'{"inferredContact":"","inferredContactSource":"transcript or hint or unknown",'
+    +'"inferredCompany":"","inferredCompanySource":"transcript or hint or unknown",'
+    +'"inferredProject":"","inferredProjectSource":"transcript or hint or unknown",'
+    +'"inferredCallType":"Owner call or Subcontractor call or Vendor / supplier call or Architect / engineer call or Internal team call or Estimating / bid call or Inspection / city call or General call",'
+    +'"inferredCallTypeSource":"transcript or hint",'
+    +'"summary":"2-3 sentence professional summary using correct construction terminology",'
+    +'"actionItems":[{"action":"specific task using correct terminology","owner":"Will or contact name","deadline":"date or TBD"}],'
+    +'"emailSubject":"Call Notes: [project] - [contact] - '+dateStr+'",'
+    +'"emailBody":"Professional PM note for Will Lusk. 1-2 sentence recap. Numbered action items with owners and deadlines. Sign off: PM Notes - C&W Contracting"}';
+
+  // 45-second timeout — fetch can hang silently on mobile
+  var controller=typeof AbortController!=='undefined'?new AbortController():null;
+  var timeoutId=controller?setTimeout(function(){controller.abort();},45000):null;
+
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-calls':'true'
+    },
+    body:JSON.stringify({
+      model:'claude-sonnet-4-6',
+      max_tokens:1200,
+      messages:[{role:'user',content:prompt}]
+    }),
+    signal:controller?controller.signal:undefined
+  })
+  .then(function(res){
+    if(timeoutId)clearTimeout(timeoutId);
+    if(!res.ok)throw new Error('Server returned '+res.status+' — check API key / connection');
+    return res.json();
+  })
+  .then(function(data){
+    var raw=(data.content||[]).map(function(b){return b.text||'';}).join('').replace(/```json|```/g,'').trim();
+    if(!raw)throw new Error('Empty response from AI');
+    resultData=JSON.parse(raw);
+    resultData._date=dateStr;
+    populateReview(resultData);
+    setStatus('done');
+    unlockTab('review');
+    if(!isDesktop())goTab('review');
+    updateSbBadge();
+    cleanup();
+  })
+  .catch(function(err){
+    if(timeoutId)clearTimeout(timeoutId);
+    var msg=err.name==='AbortError'?'Request timed out — check your internet connection':(err.message||'Unknown error');
+    // Show error in loading label before closing so it's unmissable
+    q('loadingLbl').textContent='Error: '+msg;
+    setTimeout(function(){setLoading(false);showToast('Failed: '+msg);},2000);
+    setStatus('');
+    btn.disabled=false;
+    btn.innerHTML='<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Process with AI';
+  });
+}
+
+function setRvField(f,val,src){
+  var inp=q('rv-'+f),badge=q('ab-'+f);
+  if(inp)inp.value=val||'';
+  var auto=src==='transcript'&&!!val;
+  if(inp)inp.classList.toggle('auto',auto);
+  if(badge)badge.classList.toggle('show',auto);
+}
+function setRvSelect(val,src){
+  var sel=q('rv-callType'),badge=q('ab-callType');
+  if(sel){for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===val){sel.selectedIndex=i;break;}}}
+  var auto=src==='transcript';
+  if(sel)sel.classList.toggle('auto',auto);
+  if(badge)badge.classList.toggle('show',auto);
+}
+function populateReview(d){
+  setRvField('contact',d.inferredContact,d.inferredContactSource);
+  setRvField('company',d.inferredCompany,d.inferredCompanySource);
+  setRvField('project',d.inferredProject,d.inferredProjectSource);
+  setRvSelect(d.inferredCallType,d.inferredCallTypeSource);
+  var ct=['inferredContactSource','inferredCompanySource','inferredProjectSource','inferredCallTypeSource']
+    .filter(function(k){return d[k]==='transcript';}).length;
+  ['autoNote','autoNoteM'].forEach(function(id){
+    var el=q(id);if(el)el.textContent=ct>0?ct+' auto-detected':'';
+  });
+  q('rvSummary').textContent=d.summary||'--';
+  q('rvTypeBadge').textContent=d.inferredCallType||'General call';
+  q('rvActionCt').textContent=(d.actionItems||[]).length;
+  var c=q('rvActions');c.innerHTML='';
+  (d.actionItems||[]).forEach(function(it,i){
+    var div=document.createElement('div');div.className='action-item';
+    div.innerHTML='<div class="action-num">'+String(i+1).padStart(2,'0')+'</div>'
+      +'<div><div class="action-text">'+esc(it.action)+'</div>'
+      +'<div class="action-meta">Owner: '+esc(it.owner)+' &middot; Due: '+esc(it.deadline)+'</div></div>';
+    c.appendChild(div);
+  });
+}
+
+q('confirmBtn').addEventListener('click',function(){
+  if(!resultData)return;
+  var contact=q('rv-contact').value||'Unknown';
+  var company=q('rv-company').value||'';
+  var project=q('rv-project').value||'';
+  var callType=q('rv-callType').value;
+  var subject='Call Notes: '+(project||callType)+' - '+contact+' - '+(resultData._date||'');
+  resultData._contact=contact;
+  resultData._company=company;
+  resultData._project=project;
+  resultData._callType=callType;
+  resultData._subject=subject;
+  if(project)addProject(project);
+  pushTasks(resultData.actionItems,project,contact,resultData._date||'');
+  q('emailSubj').textContent=subject;
+  q('emailBody').textContent=resultData.emailBody||'';
+  var ec=q('emailActions');ec.innerHTML='';
+  (resultData.actionItems||[]).forEach(function(it,i){
+    var div=document.createElement('div');div.className='action-item';
+    div.innerHTML='<div class="action-num">'+String(i+1).padStart(2,'0')+'</div>'
+      +'<div><div class="action-text">'+esc(it.action)+'</div>'
+      +'<div class="action-meta">Owner: '+esc(it.owner)+' &middot; Due: '+esc(it.deadline)+'</div></div>';
+    ec.appendChild(div);
+  });
+  var open=JSON.parse(localStorage.getItem('cw-tasks')||'[]').filter(function(t){return!t.done;}).length;
+  q('viewTasksBtn').textContent=open>0?'View Open Tasks ('+open+')':'View Tasks';
+  unlockTab('email');
+  if(!isDesktop())goTab('email');
+  updateSbBadge();
+});
+
+function pushTasks(items,project,contact,dateStr){
+  if(!items||!items.length)return;
+  try{
+    var ex=JSON.parse(localStorage.getItem('cw-tasks')||'[]');
+    var nt=items.map(function(it){
+      return{
+        id:Date.now().toString(36)+Math.random().toString(36).slice(2),
+        action:it.action||'',owner:it.owner||'Unknown',deadline:it.deadline||'TBD',
+        project:project||'',contact:contact||'',callDate:dateStr||'',
+        done:false,addedAt:Date.now(),source:'call'
+      };
+    });
+    localStorage.setItem('cw-tasks',JSON.stringify(nt.concat(ex)));
+  }catch(e){}
+}
+
+// Send email — address stored only in JS, never in HTML (prevents Cloudflare obfuscation)
+var SEND_TO='wlusk'+'@'+'cwcontracting.com';
+q('sendBtn').addEventListener('click',function(){
+  if(!resultData)return;
+  window.location.href='mailto:'+SEND_TO+'?subject='+encodeURIComponent(resultData._subject||'Call Notes')+'&body='+encodeURIComponent(resultData.emailBody||'');
+});
+
+q('viewTasksBtn').addEventListener('click',function(){
+  window.location.href='cw-tasks-pwa.html';
+});
+
+function copyText(text,btnId,onLbl,offLbl){
+  function flash(){
+    var b=q(btnId);if(!b)return;
+    b.textContent=onLbl;b.classList.add('copied');
+    setTimeout(function(){b.textContent=offLbl;b.classList.remove('copied');},2000);
+  }
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(flash).catch(function(){fallbackCopy(text,flash);});
+  }else{fallbackCopy(text,flash);}
+}
+function fallbackCopy(text,cb){
+  try{
+    var ta=document.createElement('textarea');
+    ta.value=text;ta.style.cssText='position:fixed;opacity:0;top:0;left:0';
+    document.body.appendChild(ta);ta.focus();ta.select();
+    var ok=document.execCommand('copy');
+    document.body.removeChild(ta);
+    if(ok&&cb)cb();else showToast('Long-press to copy');
+  }catch(e){showToast('Long-press to copy');}
+}
+q('copyEmailBtn').addEventListener('click',function(){
+  if(!resultData)return;
+  copyText('Subject: '+resultData._subject+'\n\n'+resultData.emailBody,'copyEmailBtn','Copied!','Copy');
+});
+q('copyActionsBtn').addEventListener('click',function(){
+  if(!resultData)return;
+  var t=(resultData.actionItems||[]).map(function(a,i){
+    return(i+1)+'. '+a.action+'\n   Owner: '+a.owner+' - Due: '+a.deadline;
+  }).join('\n\n');
+  copyText(t,'copyActionsBtn','Copied!','Copy all');
+});
+
+q('newCallBtn').addEventListener('click',function(){
+  if(!confirm('Start a new call? Current results will be cleared.'))return;
+  resultData=null;finalTx='';interimTx='';
+  q('transcript').value='';q('contactName').value='';q('company').value='';q('project').value='';
+  q('callDate').valueAsDate=new Date();q('charCount').textContent='0 chars';
+  // Reset processBtn in case it was left mid-processing
+  var btn=q('processBtn');
+  btn.disabled=false;
+  btn.innerHTML='<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Process with AI';
+  setLoading(false);
+  setStatus('');lockTab('review');lockTab('email');
+  if(!isDesktop())goTab('record');
+});
+
+// Prevent double-tap zoom — exclude all interactive elements
+var lastTouch=0;
+document.addEventListener('touchend',function(e){
+  var tag=e.target.tagName;
+  if(tag==='BUTTON'||tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA'||tag==='A')return;
+  if(e.target.closest('.mic-btn,.proj-opt,.speaker-chip,.spk-switch,.btn-copy'))return;
+  var n=Date.now();if(n-lastTouch<300)e.preventDefault();lastTouch=n;
+},{passive:false});
+
+})();
+</script>
+</body>
+</html>

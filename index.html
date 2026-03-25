@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="C&W Tools">
+<meta name="theme-color" content="#111111">
+<title>C&W PM Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#111;--sb:#141414;--s1:#1a1a1a;--s2:#222;--s3:#2a2a2a;
+  --b1:#252525;--b2:#333;--b3:#444;
+  --accent:#E8622A;--accent-dim:rgba(232,98,42,.13);
+  --green:#34a872;--green-dim:rgba(52,168,114,.12);
+  --blue:#4a90d9;--blue-dim:rgba(74,144,217,.1);
+  --red:#e05252;
+  --tx1:#f0ede8;--tx2:#c0bdb8;--tx3:#8a8780;--tx4:#555250;
+  --mono:'DM Mono',monospace;--disp:'Syne',sans-serif;--body:'DM Sans',sans-serif;
+  --safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px);
+  --sb-w:210px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%}
+body{min-height:100%;background:var(--bg);color:var(--tx1);font-family:var(--body);-webkit-font-smoothing:antialiased;font-size:15px}
+.sidebar{display:none;width:var(--sb-w);background:var(--sb);border-right:1px solid var(--b1);flex-direction:column;position:fixed;top:0;left:0;height:100%;z-index:10;overflow-y:auto}
+.sb-header{padding:20px 16px 14px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sb-pill{width:34px;height:34px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-brand{font-family:var(--disp);font-weight:700;font-size:15px;color:var(--tx1);letter-spacing:-.3px;line-height:1.1}
+.sb-sub{font-family:var(--mono);font-size:9px;color:var(--tx4);letter-spacing:.07em;text-transform:uppercase;margin-top:2px}
+.sb-nav{padding:10px 8px;flex:1;display:flex;flex-direction:column;gap:2px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:8px;text-decoration:none;color:var(--tx3);transition:background .15s,color .15s;border:1px solid transparent}
+.sb-item:hover{background:var(--s1);color:var(--tx2)}
+.sb-item.active{background:rgba(232,98,42,.1);border-color:rgba(232,98,42,.2);color:var(--accent)}
+.sb-icon{width:16px;height:16px;flex-shrink:0}
+.sb-lbl{font-size:13px;font-weight:500;flex:1}
+.sb-badge{background:var(--accent);color:#fff;font-family:var(--mono);font-size:10px;border-radius:8px;padding:2px 7px;flex-shrink:0}
+.sb-footer{padding:12px 16px;border-top:1px solid var(--b1);flex-shrink:0}
+.sb-date{font-family:var(--mono);font-size:11px;color:var(--tx4);line-height:1.4}
+.mobile-topbar{display:flex;align-items:center;padding:calc(var(--safe-top) + 12px) 18px 12px;background:var(--s1);border-bottom:1px solid var(--b1);gap:10px}
+.mob-pill{width:30px;height:30px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mob-title{font-family:var(--disp);font-weight:700;font-size:15px;color:var(--tx1)}
+.mob-sub{font-family:var(--mono);font-size:9px;color:var(--tx4);letter-spacing:.07em;text-transform:uppercase;margin-top:1px}
+.page-wrap{padding-bottom:calc(var(--safe-bot) + 24px)}
+.page-inner{max-width:980px;margin:0 auto;padding:22px 18px;display:flex;flex-direction:column;gap:22px}
+.page-header{display:flex;flex-direction:column;gap:3px}
+.page-title{font-family:var(--disp);font-size:22px;font-weight:800;color:var(--tx1);letter-spacing:-.4px}
+.page-sub{font-size:14px;color:var(--tx3)}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat-card{background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:14px 16px;text-align:center;transition:border-color .2s}
+.stat-card:hover{border-color:var(--b2)}
+.stat-num{font-family:var(--disp);font-size:28px;font-weight:700;color:var(--tx1);line-height:1}
+.stat-lbl{font-family:var(--mono);font-size:10px;color:var(--tx4);text-transform:uppercase;letter-spacing:.06em;margin-top:5px}
+.stat-card.hi .stat-num{color:var(--accent)}
+.section-lbl{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--tx4);margin-bottom:8px}
+.apps-grid{display:flex;flex-direction:column;gap:10px}
+.app-card{display:flex;align-items:center;gap:14px;background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:16px 15px;text-decoration:none;color:inherit;transition:background .15s,border-color .15s}
+.app-card:hover{background:var(--s2);border-color:var(--b2)}
+.app-card:active{background:var(--s3)}
+.ac-icon{width:48px;height:48px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ac-icon.orange{background:var(--accent)}
+.ac-icon.blue{background:var(--blue)}
+.ac-icon.green{background:var(--green)}
+.ac-body{flex:1;min-width:0}
+.ac-title{font-family:var(--disp);font-size:16px;font-weight:700;color:var(--tx1);line-height:1.2}
+.ac-desc{font-size:13px;color:var(--tx3);margin-top:3px;line-height:1.4}
+.ac-tags{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
+.ac-tag{font-family:var(--mono);font-size:9px;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:14px;border:1px solid var(--b2);color:var(--tx4)}
+.ac-badge{background:var(--accent);color:#fff;font-family:var(--mono);font-size:10px;border-radius:9px;padding:2px 8px;flex-shrink:0;align-self:center}
+.ac-arrow{color:var(--b3);font-size:22px;flex-shrink:0;margin-left:2px}
+.divider{height:1px;background:var(--b1)}
+.footer-note{font-family:var(--mono);font-size:11px;color:var(--tx4);line-height:1.6;text-align:center}
+.ios-hint{background:var(--s2);border:1px solid var(--b1);border-radius:12px;padding:12px 14px;display:none;position:relative;margin:0 18px}
+.ios-hint.show{display:block}
+.ios-hint p{font-size:13px;line-height:1.7;color:var(--tx3)}
+.ios-hint strong{color:var(--tx2);font-weight:500}
+.ios-close{position:absolute;top:8px;right:12px;background:none;border:none;color:var(--tx4);font-size:18px;cursor:pointer;padding:0}
+.toast{position:fixed;bottom:calc(var(--safe-bot)+20px);left:50%;transform:translateX(-50%) translateY(14px);background:var(--s3);border:1px solid var(--b2);border-radius:20px;padding:9px 18px;font-family:var(--mono);font-size:12px;color:var(--tx1);opacity:0;transition:all .25s;pointer-events:none;z-index:200;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+@media(min-width:768px){
+  html,body{height:100%;overflow:hidden}
+  .sidebar{display:flex}
+  .mobile-topbar{display:none}
+  .ios-hint{margin:0}
+  .page-wrap{margin-left:var(--sb-w);height:100vh;overflow-y:auto;padding-bottom:40px}
+  .page-inner{padding:32px 36px;max-width:900px}
+  .page-title{font-size:26px}
+  .apps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .app-card{flex-direction:column;align-items:flex-start;padding:20px 18px;gap:0}
+  .ac-icon{margin-bottom:14px}
+  .ac-arrow{display:none}
+  .ac-badge{align-self:flex-start;margin-top:8px}
+  .stats-row{gap:14px}
+  .stat-card{padding:18px 20px}
+  .stat-num{font-size:34px}
+}
+</style>
+</head>
+<body>
+
+<nav class="sidebar" id="sidebar">
+  <div class="sb-header">
+    <div class="sb-pill"><svg width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+    <div><div class="sb-brand">PM Tools</div><div class="sb-sub">C&W Contracting</div></div>
+  </div>
+  <div class="sb-nav">
+    <a class="sb-item active" href="index.html">
+      <svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="sb-lbl">Home</span>
+    </a>
+    <a class="sb-item" href="cw-call-notes-pwa.html">
+      <svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.89a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <span class="sb-lbl">Call Notes</span>
+    </a>
+    <a class="sb-item" href="cw-oac-notes-pwa.html">
+      <svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span class="sb-lbl">OAC Notes</span>
+    </a>
+    <a class="sb-item" href="cw-tasks-pwa.html">
+      <svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span class="sb-lbl">Tasks</span>
+      <span class="sb-badge" id="sbBadge" style="display:none">0</span>
+    </a>
+  </div>
+  <div class="sb-footer"><div class="sb-date" id="sbDate"></div></div>
+</nav>
+
+<div class="mobile-topbar">
+  <div class="mob-pill"><svg width="12" height="12" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+  <div><div class="mob-title">PM Tools</div><div class="mob-sub">C&W Contracting</div></div>
+</div>
+
+<div style="height:10px"></div>
+<div class="ios-hint" id="iosHint">
+  <button class="ios-close" id="iosClose">×</button>
+  <p>Install as an app: tap <strong>Share ↑</strong> in Safari → <strong>"Add to Home Screen"</strong></p>
+</div>
+
+<div class="page-wrap">
+  <div class="page-inner">
+
+    <div class="page-header">
+      <div class="page-title">Good to see you, Will.</div>
+      <div class="page-sub">C&W Contracting Services — PM Suite</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card hi"><div class="stat-num" id="statOpen">0</div><div class="stat-lbl">Open tasks</div></div>
+      <div class="stat-card"><div class="stat-num" id="statMine">0</div><div class="stat-lbl">My tasks</div></div>
+      <div class="stat-card"><div class="stat-num" id="statDone">0</div><div class="stat-lbl">Completed</div></div>
+    </div>
+
+    <div>
+      <div class="section-lbl">Your apps</div>
+      <div class="apps-grid">
+
+        <a class="app-card" href="cw-call-notes-pwa.html">
+          <div class="ac-icon orange"><svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.89a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+          <div class="ac-body">
+            <div class="ac-title">Call Notes</div>
+            <div class="ac-desc">Record calls, AI extracts action items, auto email draft</div>
+            <div class="ac-tags"><span class="ac-tag">Live transcript</span><span class="ac-tag">AI processing</span><span class="ac-tag">Auto email</span></div>
+          </div>
+          <div class="ac-arrow">›</div>
+        </a>
+
+        <a class="app-card" href="cw-oac-notes-pwa.html">
+          <div class="ac-icon blue"><svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+          <div class="ac-body">
+            <div class="ac-title">OAC Notes</div>
+            <div class="ac-desc">Meeting minutes from agenda upload, Word doc export</div>
+            <div class="ac-tags"><span class="ac-tag">Agenda upload</span><span class="ac-tag">Meeting minutes</span><span class="ac-tag">Word export</span></div>
+          </div>
+          <div class="ac-arrow">›</div>
+        </a>
+
+        <a class="app-card" href="cw-tasks-pwa.html">
+          <div class="ac-icon green"><svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+          <div class="ac-body">
+            <div class="ac-title">Tasks</div>
+            <div class="ac-desc">All action items from calls and meetings in one place</div>
+            <div class="ac-tags"><span class="ac-tag">By project</span><span class="ac-tag">By owner</span><span class="ac-tag">Check off</span></div>
+          </div>
+          <span class="ac-badge" id="taskBadge" style="display:none">0</span>
+          <div class="ac-arrow">›</div>
+        </a>
+
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="footer-note">Action items from Call Notes and OAC meetings sync to Tasks automatically.</div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+function q(id){return document.getElementById(id);}
+function isMyTask(o){const s=(o||'').toLowerCase();return s==='will'||s.includes('will lusk')||s==='me'||s==='pm';}
+function refresh(){
+  try{
+    const tasks=JSON.parse(localStorage.getItem('cw-tasks')||'[]');
+    const open=tasks.filter(t=>!t.done).length;
+    const mine=tasks.filter(t=>!t.done&&isMyTask(t.owner)).length;
+    const done=tasks.filter(t=>t.done).length;
+    q('statOpen').textContent=open;
+    q('statMine').textContent=mine;
+    q('statDone').textContent=done;
+    const show=open>0;
+    const tb=q('taskBadge');tb.textContent=open;tb.style.display=show?'inline-block':'none';
+    const sb=q('sbBadge');sb.textContent=open;sb.style.display=show?'inline-block':'none';
+  }catch(e){}
+}
+const now=new Date();
+const d=q('sbDate');
+if(d)d.textContent=now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!navigator.standalone&&!localStorage.getItem('hub-ios')){
+  setTimeout(()=>q('iosHint').classList.add('show'),1400);
+}
+q('iosClose').addEventListener('click',()=>{q('iosHint').classList.remove('show');localStorage.setItem('hub-ios','1');});
+try{
+  const m={name:'C&W PM Tools',short_name:'C&W Tools',start_url:'./',display:'standalone',background_color:'#111',theme_color:'#111',orientation:'portrait',icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%23E8622A'/%3E%3Ctext x='96' y='120' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='68' fill='white'%3EC%26W%3C/text%3E%3C/svg%3E",sizes:'192x192',type:'image/svg+xml'}]};
+  const mb=new Blob([JSON.stringify(m)],{type:'application/json'});
+  const ml=document.createElement('link');ml.rel='manifest';ml.href=URL.createObjectURL(mb);document.head.appendChild(ml);
+  const al=document.createElement('link');al.rel='apple-touch-icon';al.href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='30' fill='%23E8622A'/%3E%3Ctext x='90' y='112' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='65' fill='white'%3EC%26W%3C/text%3E%3C/svg%3E";document.head.appendChild(al);
+}catch(e){}
+refresh();
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh();});
+let lt=0;document.addEventListener('touchend',function(e){
+  const tag=e.target.tagName;
+  if(tag==='A'||tag==='BUTTON'||tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  if(e.target.closest('a,button,.app-card,.ios-hint'))return;
+  const n=Date.now();if(n-lt<300)e.preventDefault();lt=n;
+},{passive:false});
+})();
+</script>
+</body>
+</html>

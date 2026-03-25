@@ -162,6 +162,23 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 .toast.blue{background:var(--blue-dim);border-color:rgba(74,144,217,.4);color:var(--blue)}
 
 ::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+.sync-dot{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--tx4);padding:4px 8px;border-radius:12px;background:var(--s2);border:1px solid var(--b1);cursor:pointer;transition:all .2s;user-select:none;flex-shrink:0}
+.sync-dot:active{background:var(--s3)}
+.sync-dot .sd{width:6px;height:6px;border-radius:50%;background:var(--tx4);flex-shrink:0;transition:background .3s}
+.sync-dot.syncing .sd{background:var(--accent);animation:sdpulse .8s infinite}
+.sync-dot.ok .sd{background:var(--green)}
+.sync-dot.err .sd{background:var(--red)}
+.sync-dot.off .sd{background:var(--tx4)}
+@keyframes sdpulse{0%,100%{opacity:1}50%{opacity:.3}}
+.token-modal-back{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px)}
+.token-modal-back.show{display:flex}
+.token-modal{background:var(--s1);border:1px solid var(--b1);border-radius:20px 20px 0 0;padding:20px 18px calc(var(--safe-bot)+22px);width:100%;max-width:480px;display:flex;flex-direction:column;gap:14px}
+.tm-title{font-family:var(--disp);font-size:17px;font-weight:700;color:var(--tx1)}
+.tm-sub{font-size:13px;color:var(--tx3);line-height:1.6}
+.tm-status{font-family:var(--mono);font-size:11px;padding:8px 11px;border-radius:8px;line-height:1.5}
+.tm-status.connected{background:var(--green-dim);color:var(--green);border:1px solid rgba(52,168,114,.25)}
+.tm-status.disconnected{background:var(--s2);color:var(--tx3);border:1px solid var(--b1)}
+@media(min-width:768px){.token-modal{border-radius:16px;max-width:420px;margin:auto}.token-modal-back{align-items:center}.sb-foot{display:flex;flex-direction:column;gap:8px}}
 
 /* ── DESKTOP ── */
 @media(min-width:768px){
@@ -249,8 +266,12 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
     <a class="sb-item" href="cw-call-notes-pwa.html"><svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.89a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span class="sb-lbl">Call Notes</span></a>
     <a class="sb-item" href="cw-oac-notes-pwa.html"><svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span class="sb-lbl">OAC Notes</span></a>
     <a class="sb-item active" href="cw-tasks-pwa.html"><svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="sb-lbl">Tasks</span><span class="sb-badge" id="sbBadge" style="display:none">0</span></a>
+    <a class="sb-item" href="cw-submittal-review-pwa.html"><svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="sb-lbl">Submittal Review</span></a>
   </div>
-  <div class="sb-foot"><div class="sb-date" id="sbDate"></div></div>
+  <div class="sb-foot">
+    <div class="sb-date" id="sbDate"></div>
+    <div class="sync-dot off" id="syncDotSb" title="GitHub Sync"><div class="sd"></div><span id="syncLblSb">Not connected</span></div>
+  </div>
 </nav>
 
 <!-- MOBILE TOPBAR (fixed) -->
@@ -260,6 +281,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
     <div><div class="mob-title">Tasks</div><div class="mob-sub">C&W Contracting</div></div>
   </div>
   <a class="home-link" href="index.html"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</a>
+  <div class="sync-dot off" id="syncDotMob" title="Sync"><div class="sd"></div><span id="syncLblMob">—</span></div>
 </div>
 
 <!-- MOBILE CONTENT (fixed below topbar) -->
@@ -408,7 +430,10 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 
 /* ── STORAGE ── */
 function getTasks(){try{return JSON.parse(localStorage.getItem('cw-tasks')||'[]');}catch(e){return[];}}
-function saveTasks(a){try{localStorage.setItem('cw-tasks',JSON.stringify(a));}catch(e){}}
+function saveTasks(a,skipPush){
+  try{localStorage.setItem('cw-tasks',JSON.stringify(a));}catch(e){}
+  if(!skipPush)schedulePush();
+}
 function isMyTask(o){const s=(o||'').toLowerCase();return s==='will'||s.includes('will lusk')||s==='me'||s==='pm';}
 
 /* ── SIDEBAR / DATE ── */
@@ -718,6 +743,7 @@ q('editSave').addEventListener('click',()=>{
   t.owner=q('eOwner').value.trim()||'Will';
   t.deadline=q('eDue').value.trim()||'TBD';
   t.project=q('eProj').value.trim();
+  t.updatedAt=Date.now();
   saveTasks(tasks);closeEditModal();render();showToast('Task saved','green');
 });
 
@@ -727,6 +753,7 @@ q('ddSave').addEventListener('click',()=>{
   const tasks=getTasks();const t=tasks.find(x=>x.id===selectedId);if(!t)return;
   t.action=q('ddTitleInp').value.trim()||t.action;t.owner=q('ddOwnerInp').value.trim()||t.owner;
   t.deadline=q('ddDueInp').value.trim()||t.deadline;t.project=q('ddProjInp').value.trim();
+  t.updatedAt=Date.now();
   saveTasks(tasks);render();showToast('Task saved','green');
 });
 q('ddCalBtn').addEventListener('click',()=>{
@@ -745,9 +772,112 @@ q('ddDel').addEventListener('click',()=>{
   saveTasks(getTasks().filter(t=>t.id!==selectedId));selectedId=null;renderDesktop();
 });
 
+/* ── GITHUB SYNC ── */
+var GH_API='https://api.github.com/repos/williamlusk9-jpg/cw-pm-tools/contents/tasks.json';
+function getToken(){try{return localStorage.getItem('cw-gh-token')||'';}catch(e){return '';}}
+function setToken(t){try{localStorage.setItem('cw-gh-token',t);}catch(e){}}
+function getGhSha(){try{return localStorage.getItem('cw-gh-sha')||'';}catch(e){return '';}}
+function setGhSha(s){try{localStorage.setItem('cw-gh-sha',s);}catch(e){}}
+
+function setSyncState(state){
+  var dots=[q('syncDotMob'),q('syncDotSb')];
+  var lbls=[q('syncLblMob'),q('syncLblSb')];
+  var map={syncing:'Syncing...',ok:'Synced',err:'Sync error',off:'Not connected'};
+  dots.forEach(function(d){if(d)d.className='sync-dot '+state;});
+  lbls.forEach(function(l){if(l)l.textContent=map[state]||state;});
+}
+
+function mergeTasks(local,remote){
+  var map={};
+  local.forEach(function(t){map[t.id]=t;});
+  remote.forEach(function(t){
+    if(!map[t.id]){map[t.id]=t;}
+    else{
+      var lu=map[t.id].updatedAt||map[t.id].addedAt||0;
+      var ru=t.updatedAt||t.addedAt||0;
+      if(ru>lu)map[t.id]=t;
+    }
+  });
+  return Object.values(map).sort(function(a,b){return(b.addedAt||0)-(a.addedAt||0);});
+}
+
+var pushDebounce=null;
+function schedulePush(){clearTimeout(pushDebounce);pushDebounce=setTimeout(function(){pushToGitHub(getTasks(),0);},1500);}
+
+function pushToGitHub(tasks,retry){
+  var token=getToken();if(!token){setSyncState('off');return;}
+  setSyncState('syncing');
+  var content=btoa(unescape(encodeURIComponent(JSON.stringify(tasks,null,2))));
+  var body={message:'sync '+new Date().toISOString(),content:content};
+  var sha=getGhSha();if(sha)body.sha=sha;
+  fetch(GH_API,{method:'PUT',headers:{'Authorization':'token '+token,'Content-Type':'application/json'},body:JSON.stringify(body)})
+  .then(function(res){
+    if(res.status===409&&retry<1){return fetchFromGitHub(true).then(function(){pushToGitHub(tasks,1);});}
+    if(!res.ok)throw new Error(res.status);
+    return res.json();
+  })
+  .then(function(data){
+    if(data&&data.content&&data.content.sha)setGhSha(data.content.sha);
+    setSyncState('ok');
+  })
+  .catch(function(){setSyncState('err');showToast('Sync error — check connection');});
+}
+
+function fetchFromGitHub(shaOnly){
+  var token=getToken();if(!token){setSyncState('off');return Promise.resolve(null);}
+  return fetch(GH_API,{headers:{'Authorization':'token '+token}})
+  .then(function(res){if(res.status===404)return null;if(!res.ok)throw new Error(res.status);return res.json();})
+  .then(function(data){
+    if(!data)return null;
+    setGhSha(data.sha);
+    if(shaOnly)return null;
+    return JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g,'')))));
+  })
+  .catch(function(e){console.error('GH fetch:',e);return null;});
+}
+
+function syncOnLoad(){
+  var token=getToken();if(!token){setSyncState('off');return;}
+  setSyncState('syncing');
+  fetchFromGitHub(false).then(function(remote){
+    if(!remote){pushToGitHub(getTasks(),0);return;}
+    var merged=mergeTasks(getTasks(),remote);
+    saveTasks(merged,true);
+    render();updateSbBadge(merged);
+    setSyncState('ok');
+    pushToGitHub(merged,0);
+  }).catch(function(){setSyncState('err');});
+}
+
+/* ── TOKEN MODAL ── */
+function openTokenModal(){
+  var has=!!getToken();
+  q('tmStatus').textContent=has?'Connected to github.com/williamlusk9-jpg/cw-pm-tools':'Not connected — tasks only on this device';
+  q('tmStatus').className='tm-status '+(has?'connected':'disconnected');
+  q('tokenInput').value='';
+  q('disconnectBtn').style.display=has?'block':'none';
+  q('tokenModalBack').classList.add('show');
+}
+function closeTokenModal(){q('tokenModalBack').classList.remove('show');}
+q('syncDotMob').addEventListener('click',openTokenModal);
+q('syncDotSb').addEventListener('click',openTokenModal);
+q('closeTokenBtn').addEventListener('click',closeTokenModal);
+q('tokenModalBack').addEventListener('click',function(e){if(e.target===this)closeTokenModal();});
+q('disconnectBtn').addEventListener('click',function(){
+  if(!confirm('Disconnect GitHub sync? Your tasks stay on this device.'))return;
+  setToken('');setGhSha('');setSyncState('off');closeTokenModal();showToast('Disconnected');
+});
+q('saveTokenBtn').addEventListener('click',function(){
+  var t=q('tokenInput').value.trim();
+  if(!t){showToast('Paste your token first');return;}
+  setToken(t);closeTokenModal();showToast('Connecting...');
+  syncOnLoad();
+});
+
 /* ── INIT ── */
 render();
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')render();});
+syncOnLoad();
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){render();syncOnLoad();}});
 let lt=0;document.addEventListener('touchend',function(e){
   // Never interfere with buttons, inputs, checkboxes, selects, or modals
   const tag=e.target.tagName;
@@ -758,5 +888,21 @@ let lt=0;document.addEventListener('touchend',function(e){
 
 })();
 </script>
-</body>
+<!-- GITHUB SYNC TOKEN MODAL -->
+<div class="token-modal-back" id="tokenModalBack">
+  <div class="token-modal">
+    <div class="tm-title">GitHub Sync</div>
+    <div class="tm-sub">Paste your GitHub personal access token to sync tasks between iPhone and desktop. It's stored only on this device — never in the app file.</div>
+    <div class="tm-status disconnected" id="tmStatus">Not connected</div>
+    <div class="field" style="display:flex;flex-direction:column;gap:6px">
+      <label style="font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx2)">Personal Access Token</label>
+      <input class="finput" type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    </div>
+    <button class="btn-primary" id="saveTokenBtn" type="button">Connect &amp; Sync</button>
+    <button class="btn-secondary" id="disconnectBtn" type="button" style="display:none">Disconnect</button>
+    <button class="btn-secondary" id="closeTokenBtn" type="button">Cancel</button>
+  </div>
+</div>
+
+
 </html>

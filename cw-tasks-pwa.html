@@ -90,6 +90,36 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 .proj-tabs::-webkit-scrollbar{display:none}
 .proj-tab{font-family:var(--mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;padding:6px 13px;border-radius:20px;border:1px solid var(--b1);background:transparent;color:var(--tx4);cursor:pointer;transition:all .18s;white-space:nowrap;flex-shrink:0}
 .proj-tab.active{background:var(--s2);border-color:var(--b2);color:var(--tx1);font-weight:500}
+.sort-bar{display:flex;align-items:center;gap:6px;flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:1px}
+.sort-bar::-webkit-scrollbar{display:none}
+.sort-lbl{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--tx4);flex-shrink:0}
+.sort-chip{font-family:var(--mono);font-size:10px;letter-spacing:.04em;padding:5px 11px;border-radius:20px;border:1px solid var(--b1);background:transparent;color:var(--tx4);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;-webkit-appearance:none}
+.sort-chip.active{background:var(--s2);border-color:var(--b2);color:var(--tx1)}
+.added-on{font-family:var(--mono);font-size:9px;color:var(--tx4);opacity:.5}
+/* SUBTASKS */
+.sub-progress{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:8px;background:var(--blue-dim);color:var(--blue);border:1px solid rgba(74,144,217,.3);flex-shrink:0}
+.sub-progress.done{background:var(--green-dim);color:var(--green);border-color:rgba(52,168,114,.3)}
+.dd-sub-sec{padding:11px 16px;border-bottom:1px solid var(--b1)}
+.dd-sub-lbl{font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.sub-list{display:flex;flex-direction:column;gap:5px;margin-bottom:8px}
+.sub-row{display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--s2);border:1px solid var(--b1);border-radius:8px}
+.sub-check{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--b2);background:transparent;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.sub-check.checked{background:var(--green);border-color:var(--green)}
+.sub-check svg{opacity:0;transition:opacity .15s}
+.sub-check.checked svg{opacity:1}
+.sub-text{flex:1;font-size:13px;color:var(--tx1);line-height:1.4}
+.sub-text.done-sub{text-decoration:line-through;color:var(--tx4)}
+.sub-del{background:none;border:none;color:var(--tx4);font-size:15px;cursor:pointer;padding:0 2px;line-height:1;flex-shrink:0;opacity:.5;transition:opacity .15s}
+.sub-del:hover{opacity:1}
+.sub-add-row{display:flex;gap:6px}
+.sub-add-inp{flex:1;background:var(--s2);border:1px solid var(--b2);border-radius:8px;color:var(--tx1);font-family:var(--body);font-size:13px;padding:7px 10px;outline:none;transition:border-color .2s}
+.sub-add-inp:focus{border-color:var(--accent)}
+.sub-add-btn{background:var(--accent);border:none;border-radius:8px;color:#fff;font-family:var(--mono);font-size:11px;font-weight:700;padding:7px 12px;cursor:pointer;flex-shrink:0;transition:opacity .2s}
+.sub-add-btn:active{opacity:.8}
+/* mobile subtask section in edit modal */
+.m-sub-sec{padding:10px 0 2px}
+.m-sub-lbl{font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);margin-bottom:7px}
+.m-sub-list{display:flex;flex-direction:column;gap:5px;margin-bottom:8px}
 
 /* TASK LIST */
 .task-group{flex-shrink:0}
@@ -298,6 +328,11 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
     <button class="chip" data-f="done" type="button">Completed</button>
   </div>
   <div class="proj-tabs" id="mProjTabs"></div>
+  <div class="sort-bar" id="mSortBar">
+    <span class="sort-lbl">Sort:</span>
+    <button class="sort-chip active" data-s="project" type="button">By project</button>
+    <button class="sort-chip" data-s="due" type="button">By due date</button>
+  </div>
   <div id="mList" style="display:flex;flex-direction:column;gap:12px;flex:1"></div>
   <button class="clear-btn" id="mClear" type="button">Clear completed tasks</button>
 </div>
@@ -333,6 +368,11 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
         <button class="dl-chip" data-f="theirs" type="button">Theirs</button>
         <button class="dl-chip" data-f="done" type="button">Done</button>
       </div>
+      <div class="sort-bar" id="dlSortBar" style="padding:0 8px 8px">
+        <span class="sort-lbl">Sort:</span>
+        <button class="sort-chip active" data-s="project" type="button">By project</button>
+        <button class="sort-chip" data-s="due" type="button">By due date</button>
+      </div>
       <div class="dl-body" id="dlBody"></div>
     </div>
 
@@ -353,6 +393,17 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
         </div>
         <div class="dd-sec"><div class="dd-lbl">Project</div><input class="dd-inp" id="ddProjInp" type="text" list="ddProjDl"><datalist id="ddProjDl"></datalist></div>
         <div class="dd-sec"><div class="dd-lbl">Source</div><div class="dd-src" id="ddSrc"></div></div>
+        <div class="dd-sub-sec" id="ddSubSec">
+          <div class="dd-sub-lbl">
+            <span>Subtasks</span>
+            <span id="ddSubProgress" style="display:none"></span>
+          </div>
+          <div class="sub-list" id="ddSubList"></div>
+          <div class="sub-add-row">
+            <input class="sub-add-inp" id="ddSubInp" type="text" placeholder="Add a subtask..." autocomplete="off">
+            <button class="sub-add-btn" id="ddSubAdd" type="button">+ Add</button>
+          </div>
+        </div>
         <button class="dd-save" id="ddSave" type="button">Save changes</button>
         <button class="dd-done" id="ddDone" type="button"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span id="ddDoneLbl">Mark complete</span></button>
         <button class="dd-del" id="ddDel" type="button">Delete task</button>
@@ -404,6 +455,14 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
       </div>
     </div>
     <div class="m-field"><div class="m-lbl">Project</div><input class="m-input" id="eProj" type="text" list="eProjDl"><datalist id="eProjDl"></datalist></div>
+    <div class="m-sub-sec">
+      <div class="m-sub-lbl">Subtasks</div>
+      <div class="m-sub-list" id="eSubList"></div>
+      <div class="sub-add-row">
+        <input class="sub-add-inp" id="eSubInp" type="text" placeholder="Add a subtask..." autocomplete="off">
+        <button class="sub-add-btn" id="eSubAdd" type="button">+ Add</button>
+      </div>
+    </div>
     <div class="m-btns">
       <button class="m-cancel" id="editCancel" type="button">Cancel</button>
       <button class="m-save" id="editSave" type="button">Save Changes</button>
@@ -480,8 +539,55 @@ window.addEventListener('resize',()=>{applyLayout();render();});
 /* ── STATE ── */
 let ownerFilter='all';
 let projFilter='';
+let sortMode='project'; // 'project' | 'due'
 let selectedId=null;
 let editingId=null;
+
+/* ── DATE HELPERS ── */
+function parseDue(str){
+  if(!str||str.trim().toLowerCase()==='tbd'||!str.trim())return null;
+  var s=str.trim();
+  // Already a full parseable date
+  var d=new Date(s);
+  if(!isNaN(d.getTime())&&s.length>4)return d;
+  // M/D or M-D or Month D — assume current or next year (Excel logic)
+  var now=new Date();
+  var tried=new Date(s+' '+now.getFullYear());
+  if(!isNaN(tried.getTime())){
+    // If that date has already passed, roll to next year
+    if(tried<now)tried=new Date(s+' '+(now.getFullYear()+1));
+    return tried;
+  }
+  return null;
+}
+
+function smartDeadline(raw){
+  // Parse a user-typed due date and return a normalised display string
+  if(!raw||!raw.trim())return'TBD';
+  var d=parseDue(raw);
+  if(!d)return raw.trim();
+  return d.toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'});
+}
+
+/* ── PROJECT SORT ── */
+// General always first, then alphabetical
+function projSortKey(name){
+  if(!name||name.toLowerCase()==='no project')return'~no project';
+  if(name.toLowerCase()==='general')return' general';
+  return name.toLowerCase();
+}
+
+function sortTasksInGroup(tasks){
+  // Within a group: earliest due date first, no-due-date last
+  return tasks.slice().sort(function(a,b){
+    var da=parseDue(a.deadline);
+    var db=parseDue(b.deadline);
+    if(da&&db)return da-db;
+    if(da)return-1;
+    if(db)return 1;
+    return 0;
+  });
+}
 
 /* ── FILTER HELPERS ── */
 function filterTasks(all){
@@ -500,7 +606,11 @@ function emptyLabel(){
   if(ownerFilter==='theirs')return'No tasks for other parties';
   return'No open tasks';
 }
-function allProjects(all){return[...new Set(all.map(t=>t.project).filter(Boolean))].sort();}
+function allProjects(all){
+  return[...new Set(all.map(t=>t.project).filter(Boolean))].sort(function(a,b){
+    return projSortKey(a).localeCompare(projSortKey(b));
+  });
+}
 
 /* ── RENDER ── */
 function render(){if(isDesktop())renderDesktop();else renderMobile();}
@@ -574,6 +684,73 @@ function buildDeskList(all){
     filtered.forEach(t=>card.appendChild(buildRow(t,true)));wrap.appendChild(card);body.appendChild(wrap);
   }
 }
+/* ── SUBTASK HELPERS ── */
+function getSubtasks(task){return Array.isArray(task.subtasks)?task.subtasks:[];}
+
+function renderSubList(containerId,progressId,task,desktop){
+  var subs=getSubtasks(task);
+  var list=q(containerId);if(!list)return;
+  list.innerHTML='';
+  var done=subs.filter(function(s){return s.done;}).length;
+  var prog=progressId?q(progressId):null;
+  if(prog){
+    if(subs.length){
+      prog.style.display='inline-block';
+      prog.textContent=done+'/'+subs.length;
+      prog.className='sub-progress'+(done===subs.length&&subs.length?' done':'');
+    } else {
+      prog.style.display='none';
+    }
+  }
+  subs.forEach(function(sub,idx){
+    var row=document.createElement('div');row.className='sub-row';
+    var chk=document.createElement('div');chk.className='sub-check'+(sub.done?' checked':'');
+    chk.innerHTML='<svg width="9" height="9" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+    chk.addEventListener('click',function(){
+      var tasks=getTasks();var t=tasks.find(function(x){return x.id===task.id;});
+      if(!t)return;
+      if(!Array.isArray(t.subtasks))t.subtasks=[];
+      t.subtasks[idx].done=!t.subtasks[idx].done;
+      t.updatedAt=Date.now();
+      // Auto-complete parent if all subtasks done
+      if(t.subtasks.length&&t.subtasks.every(function(s){return s.done;}))t.done=true;
+      else if(t.done&&t.subtasks.some(function(s){return!s.done;}))t.done=false;
+      saveTasks(tasks);
+      render();
+      if(desktop)buildDeskDetail();
+      else renderSubList(containerId,progressId,t,desktop);
+    });
+    var txt=document.createElement('span');txt.className='sub-text'+(sub.done?' done-sub':'');txt.textContent=sub.text;
+    var del=document.createElement('button');del.className='sub-del';del.type='button';del.textContent='×';
+    del.addEventListener('click',function(){
+      var tasks=getTasks();var t=tasks.find(function(x){return x.id===task.id;});
+      if(!t)return;
+      if(!Array.isArray(t.subtasks))return;
+      t.subtasks.splice(idx,1);
+      t.updatedAt=Date.now();
+      saveTasks(tasks);
+      render();
+      if(desktop)buildDeskDetail();
+      else renderSubList(containerId,progressId,getTasks().find(function(x){return x.id===task.id;})||task,desktop);
+    });
+    row.appendChild(chk);row.appendChild(txt);row.appendChild(del);
+    list.appendChild(row);
+  });
+}
+
+function addSubtask(taskId,text,containerId,progressId,desktop){
+  if(!text.trim())return;
+  var tasks=getTasks();var t=tasks.find(function(x){return x.id===taskId;});
+  if(!t)return;
+  if(!Array.isArray(t.subtasks))t.subtasks=[];
+  t.subtasks.push({id:Date.now().toString(36),text:text.trim(),done:false,addedAt:Date.now()});
+  t.updatedAt=Date.now();
+  saveTasks(tasks);
+  render();
+  if(desktop)buildDeskDetail();
+  else renderSubList(containerId,progressId,tasks.find(function(x){return x.id===taskId;})||t,false);
+}
+
 function buildDeskDetail(){
   if(!selectedId){q('ddEmpty').style.display='flex';q('ddBody').style.display='none';return;}
   const task=getTasks().find(t=>t.id===selectedId);
@@ -586,20 +763,35 @@ function buildDeskDetail(){
   q('ddSrc').textContent=(task.source==='call'?'Phone call':task.source==='oac'?'OAC meeting':'Manual')+(task.callDate?' · '+task.callDate:'');
   q('ddDoneLbl').textContent=task.done?'Mark open':'Mark complete';
   const dl=q('ddProjDl');if(dl){dl.innerHTML='';allProjects(getTasks()).forEach(p=>{const o=document.createElement('option');o.value=p;dl.appendChild(o);});}
+  // Render subtasks
+  renderSubList('ddSubList','ddSubProgress',task,true);
+  // Wire add input
+  var ddInp=q('ddSubInp');if(ddInp)ddInp.value='';
 }
 
 /* ── GROUPED LIST ── */
 function buildGrouped(tasks,container,desktop){
-  const groups={};
-  tasks.forEach(t=>{const k=t.project||'No project';if(!groups[k])groups[k]=[];groups[k].push(t);});
-  Object.entries(groups).sort(([a],[b])=>a.localeCompare(b)).forEach(([proj,items])=>{
-    const wrap=document.createElement('div');wrap.className='task-group';if(desktop)wrap.style.margin='0 8px 12px';
-    const lbl=document.createElement('div');lbl.className='tg-lbl';
-    const nl=document.createElement('span');nl.textContent=proj;
-    const cl=document.createElement('span');cl.className='tg-ct';cl.textContent=items.length+' task'+(items.length!==1?'s':'');
+  if(sortMode==='due'){
+    // Flat list sorted by due date, no-due last
+    var sorted=sortTasksInGroup(tasks);
+    var card=document.createElement('div');card.className='task-list-card';
+    if(desktop)card.style.margin='0 8px';
+    sorted.forEach(t=>card.appendChild(buildRow(t,desktop)));
+    container.appendChild(card);
+    return;
+  }
+  // By project: General first, then alpha, No project last
+  var groups={};
+  tasks.forEach(function(t){var k=t.project||'No project';if(!groups[k])groups[k]=[];groups[k].push(t);});
+  Object.entries(groups).sort(function([a],[b]){return projSortKey(a).localeCompare(projSortKey(b));}).forEach(function([proj,items]){
+    var sorted=sortTasksInGroup(items);
+    var wrap=document.createElement('div');wrap.className='task-group';if(desktop)wrap.style.margin='0 8px 12px';
+    var lbl=document.createElement('div');lbl.className='tg-lbl';
+    var nl=document.createElement('span');nl.textContent=proj;
+    var cl=document.createElement('span');cl.className='tg-ct';cl.textContent=sorted.length+' task'+(sorted.length!==1?'s':'');
     lbl.appendChild(nl);lbl.appendChild(cl);
-    const card=document.createElement('div');card.className='task-list-card';
-    items.forEach(t=>card.appendChild(buildRow(t,desktop)));
+    var card=document.createElement('div');card.className='task-list-card';
+    sorted.forEach(function(t){card.appendChild(buildRow(t,desktop));});
     wrap.appendChild(lbl);wrap.appendChild(card);container.appendChild(wrap);
   });
 }
@@ -617,7 +809,22 @@ function buildRow(task,desktop){
   const pill=document.createElement('span');pill.className='owner-pill '+(isMyTask(task.owner)?'mine':'theirs');pill.textContent=task.owner||'Unknown';
   const dl=document.createElement('span');dl.className='t-deadline';dl.textContent='· '+(task.deadline||'TBD');
   meta.appendChild(pill);meta.appendChild(dl);
-  if(task.source==='manual'){const src=document.createElement('span');src.className='t-source';src.textContent='· manual';meta.appendChild(src);}
+  // Subtask progress pill
+  var subs=getSubtasks(task);
+  if(subs.length){
+    var sdone=subs.filter(function(s){return s.done;}).length;
+    var spill=document.createElement('span');
+    spill.className='sub-progress'+(sdone===subs.length?' done':'');
+    spill.textContent='· '+sdone+'/'+subs.length+' subtasks';
+    meta.appendChild(spill);
+  }
+  // Added-on date
+  if(task.addedAt){
+    var added=document.createElement('span');added.className='added-on';
+    added.textContent='· added '+new Date(task.addedAt).toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'});
+    meta.appendChild(added);
+  }
+  if(task.source==='manual'){const src=document.createElement('span');src.className='t-source';src.textContent='';meta.appendChild(src);}
   body.appendChild(txt);body.appendChild(meta);
   const del=document.createElement('button');del.className='t-del';del.type='button';del.textContent='×';
   del.addEventListener('click',e=>{e.stopPropagation();deleteTask(task.id);});
@@ -684,14 +891,31 @@ function addToCalendar(task){
 /* ── PROJ DATALIST ── */
 function updateProjDatalist(all){
   const projs=allProjects(all);
-  [['aProjDl','aProjDl'],['eProjDl','eProjDl'],['ddProjDl','ddProjDl']].forEach(([id])=>{
+  // Always include General as first suggestion
+  const suggestions=['General',...projs.filter(p=>p.toLowerCase()!=='general')];
+  [['aProjDl'],['eProjDl'],['ddProjDl']].forEach(([id])=>{
     const dl=q(id);if(!dl)return;dl.innerHTML='';
-    projs.forEach(p=>{const o=document.createElement('option');o.value=p;dl.appendChild(o);});
+    suggestions.forEach(p=>{const o=document.createElement('option');o.value=p;dl.appendChild(o);});
   });
 }
 
 /* ── OWNER FILTER EVENTS ── */
 q('mChips').addEventListener('click',e=>{const b=e.target.closest('button[data-f]');if(!b)return;ownerFilter=b.dataset.f;render();});
+// Sort chips
+function applySortChips(){
+  document.querySelectorAll('.sort-chip').forEach(function(c){
+    c.classList.toggle('active',c.dataset.s===sortMode);
+  });
+}
+q('mSortBar').addEventListener('click',function(e){
+  var b=e.target.closest('button[data-s]');if(!b)return;
+  sortMode=b.dataset.s;applySortChips();render();
+});
+var dlSortBarEl=q('dlSortBar');
+if(dlSortBarEl)dlSortBarEl.addEventListener('click',function(e){
+  var b=e.target.closest('button[data-s]');if(!b)return;
+  sortMode=b.dataset.s;applySortChips();renderDesktop();
+});
 const dlFiltersEl=q('dlFilters');
 if(dlFiltersEl)dlFiltersEl.addEventListener('click',e=>{const b=e.target.closest('button[data-f]');if(!b)return;ownerFilter=b.dataset.f;renderDesktop();});
 
@@ -727,7 +951,7 @@ q('aCalBtn').addEventListener('click',()=>{
 q('addSave').addEventListener('click',()=>{
   const action=q('aAction').value.trim();if(!action){showToast('Enter a task description');return;}
   const task={id:Date.now().toString(36)+Math.random().toString(36).slice(2),action,
-    owner:q('aOwner').value.trim()||'Will',deadline:q('aDue').value.trim()||'TBD',
+    owner:q('aOwner').value.trim()||'Will',deadline:smartDeadline(q('aDue').value),
     project:q('aProj').value.trim()||'',contact:'',callDate:'',
     done:false,addedAt:Date.now(),source:q('aSrc').value};
   saveTasks([task,...getTasks()]);closeAddModal();render();showToast('Task added','green');
@@ -740,6 +964,9 @@ function openEditModal(id){
   q('eAction').value=task.action||'';q('eOwner').value=task.owner||'';
   q('eDue').value=task.deadline||'';q('eProj').value=task.project||'';
   updateProjDatalist(getTasks());
+  // Render subtasks in mobile edit modal
+  renderSubList('eSubList',null,task,false);
+  q('eSubInp').value='';
   q('editBack').classList.add('show');
   setTimeout(()=>q('eAction').focus(),200);
 }
@@ -751,6 +978,23 @@ q('eCalBtn').addEventListener('click',()=>{
   const tasks=getTasks();const t=tasks.find(x=>x.id===editingId);if(!t)return;
   t.deadline=q('eDue').value.trim()||t.deadline;saveTasks(tasks);addToCalendar(t);
 });
+// Mobile subtask add
+q('eSubAdd').addEventListener('click',function(){
+  if(!editingId)return;
+  var inp=q('eSubInp');
+  var tasks=getTasks();var t=tasks.find(function(x){return x.id===editingId;});
+  if(!t)return;
+  if(!inp.value.trim()){return;}
+  if(!Array.isArray(t.subtasks))t.subtasks=[];
+  t.subtasks.push({id:Date.now().toString(36),text:inp.value.trim(),done:false,addedAt:Date.now()});
+  t.updatedAt=Date.now();
+  saveTasks(tasks);
+  inp.value='';
+  renderSubList('eSubList',null,getTasks().find(function(x){return x.id===editingId;})||t,false);
+});
+q('eSubInp').addEventListener('keydown',function(e){
+  if(e.key==='Enter'){e.preventDefault();q('eSubAdd').click();}
+});
 q('editSave').addEventListener('click',()=>{
   if(!editingId)return;
   const tasks=getTasks();const t=tasks.find(x=>x.id===editingId);if(!t)return;
@@ -758,7 +1002,7 @@ q('editSave').addEventListener('click',()=>{
   if(!newAction){showToast('Task description cannot be blank');return;}
   t.action=newAction;
   t.owner=q('eOwner').value.trim()||'Will';
-  t.deadline=q('eDue').value.trim()||'TBD';
+  t.deadline=smartDeadline(q('eDue').value);
   t.project=q('eProj').value.trim();
   t.updatedAt=Date.now();
   saveTasks(tasks);closeEditModal();render();showToast('Task saved','green');
@@ -769,7 +1013,7 @@ q('ddSave').addEventListener('click',()=>{
   if(!selectedId)return;
   const tasks=getTasks();const t=tasks.find(x=>x.id===selectedId);if(!t)return;
   t.action=q('ddTitleInp').value.trim()||t.action;t.owner=q('ddOwnerInp').value.trim()||t.owner;
-  t.deadline=q('ddDueInp').value.trim()||t.deadline;t.project=q('ddProjInp').value.trim();
+  var _newDl=q('ddDueInp').value.trim();t.deadline=_newDl?smartDeadline(_newDl):t.deadline;t.project=q('ddProjInp').value.trim();
   t.updatedAt=Date.now();
   saveTasks(tasks);render();showToast('Task saved','green');
 });
@@ -782,6 +1026,16 @@ q('ddDone').addEventListener('click',()=>{
   if(!selectedId)return;
   const tasks=getTasks();const t=tasks.find(x=>x.id===selectedId);if(!t)return;
   t.done=!t.done;saveTasks(tasks);buildDeskDetail();renderDesktop();
+});
+// Desktop subtask add
+q('ddSubAdd').addEventListener('click',function(){
+  if(!selectedId)return;
+  var inp=q('ddSubInp');
+  addSubtask(selectedId,inp.value,'ddSubList','ddSubProgress',true);
+  inp.value='';inp.focus();
+});
+q('ddSubInp').addEventListener('keydown',function(e){
+  if(e.key==='Enter'){e.preventDefault();q('ddSubAdd').click();}
 });
 q('ddDel').addEventListener('click',()=>{
   if(!selectedId)return;
@@ -976,62 +1230,28 @@ q('saveTokenBtn').addEventListener('click',function(){
     return;
   }
   var btn=q('saveTokenBtn');
-  btn.disabled=true;btn.textContent='Working...';btn.style.opacity='.6';
+  btn.disabled=true;btn.textContent='Syncing...';btn.style.opacity='.6';
   setToken(t);
-  st.textContent='Step 1: Reading tasks.json from GitHub...';
+  st.textContent='Connecting...';
   st.style.background='#222';st.style.color='#8a8780';st.style.borderColor='#333';
-
-  // Step 1: read the file and get SHA
-  fetch('https://api.github.com/repos/williamlusk9-jpg/cw-pm-tools/contents/tasks.json?ref=main',{
-    headers:{'Authorization':'token '+t,'Accept':'application/vnd.github.v3+json'}
-  })
-  .then(function(res){return res.json().then(function(j){return {status:res.status,body:j};});})
-  .then(function(r){
-    if(r.status===401||r.status===403){throw new Error('Token rejected: '+r.body.message);}
-    if(r.status!==200){throw new Error('Read failed '+r.status+': '+r.body.message);}
-    var sha=r.body.sha;
-    setGhSha(sha);
-    st.textContent='Step 2: Merging and writing tasks...';
-
-    // Step 2: merge local tasks with remote
-    var remote=[];
-    try{remote=JSON.parse(atob(r.body.content.split('\n').join('')));}catch(e){}
-    var merged=mergeTasks(getTasks(),remote);
-    saveTasks(merged,true);
-    render();updateSbBadge(merged);
-
-    // Step 3: write merged tasks back
-    var json=JSON.stringify(merged,null,2);
-    var content=btoa(unescape(encodeURIComponent(json)));
-    var body={message:'cw-tasks sync '+new Date().toISOString(),content:content,sha:sha,branch:'main'};
-    return fetch('https://api.github.com/repos/williamlusk9-jpg/cw-pm-tools/contents/tasks.json',{
-      method:'PUT',
-      headers:{'Authorization':'token '+t,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
-      body:JSON.stringify(body)
-    })
-    .then(function(res2){return res2.json().then(function(j2){return {status:res2.status,body:j2};});});
-  })
-  .then(function(r2){
-    if(!r2)return; // already handled
-    if(r2.status===200||r2.status===201){
-      if(r2.body&&r2.body.content&&r2.body.content.sha)setGhSha(r2.body.content.sha);
-      st.textContent='All synced! Tasks live on both devices.';
+  // Just sync — no pre-flight, test button already confirmed access
+  syncOnLoad();
+  setTimeout(function(){
+    var state=q('syncDotMob')?q('syncDotMob').className:'';
+    if(state.includes('ok')){
+      st.textContent='Synced successfully!';
       st.style.background='rgba(52,168,114,.12)';st.style.color='#34a872';st.style.borderColor='rgba(52,168,114,.3)';
       btn.textContent='Connected!';
-      setSyncState('ok');
-      setTimeout(function(){closeTokenModal();},1200);
+      setTimeout(function(){closeTokenModal();},1000);
+    } else if(state.includes('err')){
+      st.textContent='Sync failed — see error above';
+      st.style.background='rgba(224,82,82,.12)';st.style.color='#e05252';st.style.borderColor='rgba(224,82,82,.3)';
+      btn.disabled=false;btn.textContent='Connect & Sync';btn.style.opacity='1';
     } else {
-      throw new Error('Write failed '+r2.status+': '+JSON.stringify(r2.body).slice(0,120));
+      // Still syncing — close modal and let it finish in background
+      closeTokenModal();
     }
-  })
-  .catch(function(e){
-    setToken('');
-    st.textContent='Error: '+e.message;
-    st.style.background='rgba(224,82,82,.12)';st.style.color='#e05252';st.style.borderColor='rgba(224,82,82,.3)';
-    btn.disabled=false;btn.textContent='Connect & Sync';btn.style.opacity='1';
-    setSyncState('err');
-    console.error('Connect error:',e);
-  });
+  },3000);
 });
 
 /* ── INIT ── */

@@ -127,7 +127,16 @@
     "callDate": "",
     "done": false,
     "addedAt": 1774466191759,
-    "source": "manual"
+    "source": "manual",
+    "subtasks": [
+      {
+        "id": "mn6soucr",
+        "text": "Get pictures from Allen",
+        "done": false,
+        "addedAt": 1774488589227
+      }
+    ],
+    "updatedAt": 1774488589227
   },
   {
     "id": "mn656ohob42qtf8a58g",

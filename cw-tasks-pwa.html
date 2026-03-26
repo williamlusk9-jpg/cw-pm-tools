@@ -116,6 +116,27 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 .sub-add-inp:focus{border-color:var(--accent)}
 .sub-add-btn{background:var(--accent);border:none;border-radius:8px;color:#fff;font-family:var(--mono);font-size:11px;font-weight:700;padding:7px 12px;cursor:pointer;flex-shrink:0;transition:opacity .2s}
 .sub-add-btn:active{opacity:.8}
+/* INLINE SUBTASKS (in list) */
+.task-item-wrap{border-bottom:1px solid var(--b1)}
+.task-item-wrap:last-child{border-bottom:none}
+.task-item-wrap .task-row{border-bottom:none}
+.sub-inline{background:var(--bg);padding:0 13px 10px 41px;display:flex;flex-direction:column;gap:5px}
+.sub-inline-row{display:flex;align-items:center;gap:8px;padding:5px 8px;background:var(--s2);border:1px solid var(--b1);border-radius:8px}
+.sub-inline-check{width:15px;height:15px;border-radius:4px;border:1.5px solid var(--b2);background:transparent;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.sub-inline-check.checked{background:var(--green);border-color:var(--green)}
+.sub-inline-check svg{opacity:0;transition:opacity .12s}
+.sub-inline-check.checked svg{opacity:1}
+.sub-inline-text{flex:1;font-size:12px;color:var(--tx1);line-height:1.4}
+.sub-inline-text.done-sub{text-decoration:line-through;color:var(--tx4)}
+.sub-inline-del{background:none;border:none;color:var(--tx4);font-size:14px;cursor:pointer;padding:0 2px;line-height:1;flex-shrink:0;opacity:0;transition:opacity .15s}
+.sub-inline-row:hover .sub-inline-del{opacity:1}
+.sub-inline-add{display:flex;gap:6px;margin-top:3px}
+.sub-inline-inp{flex:1;background:var(--s2);border:1px solid var(--b2);border-radius:8px;color:var(--tx1);font-family:var(--body);font-size:12px;padding:6px 9px;outline:none;transition:border-color .2s}
+.sub-inline-inp:focus{border-color:var(--accent)}
+.sub-inline-add-btn{background:transparent;border:1px solid var(--b2);border-radius:8px;color:var(--tx3);font-family:var(--mono);font-size:10px;padding:6px 10px;cursor:pointer;flex-shrink:0;transition:all .15s;white-space:nowrap}
+.sub-inline-add-btn:active{background:var(--s3);color:var(--tx1)}
+.sub-expand-btn{background:none;border:none;color:var(--tx4);font-family:var(--mono);font-size:9px;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;padding:0 2px;flex-shrink:0;transition:color .15s}
+.sub-expand-btn:hover{color:var(--tx2)}
 /* mobile subtask section in edit modal */
 .m-sub-sec{padding:10px 0 2px}
 .m-sub-lbl{font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);margin-bottom:7px}
@@ -797,8 +818,68 @@ function buildGrouped(tasks,container,desktop){
 }
 
 /* ── BUILD ROW ── */
+function buildInlineSubtasks(task,wrap){
+  var subs=getSubtasks(task);
+  var panel=document.createElement('div');panel.className='sub-inline';
+  // Existing subtasks
+  function renderSubs(){
+    panel.innerHTML='';
+    var freshTask=getTasks().find(function(x){return x.id===task.id;})||task;
+    var freshSubs=getSubtasks(freshTask);
+    freshSubs.forEach(function(sub,idx){
+      var row=document.createElement('div');row.className='sub-inline-row';
+      var chk=document.createElement('div');chk.className='sub-inline-check'+(sub.done?' checked':'');
+      chk.innerHTML='<svg width="9" height="9" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+      chk.addEventListener('click',function(e){
+        e.stopPropagation();
+        var tasks=getTasks();var t=tasks.find(function(x){return x.id===task.id;});
+        if(!t||!t.subtasks)return;
+        t.subtasks[idx].done=!t.subtasks[idx].done;
+        t.updatedAt=Date.now();
+        if(t.subtasks.every(function(s){return s.done;}))t.done=true;
+        else if(t.done&&t.subtasks.some(function(s){return!s.done;}))t.done=false;
+        saveTasks(tasks);render();
+      });
+      var txt=document.createElement('span');txt.className='sub-inline-text'+(sub.done?' done-sub':'');txt.textContent=sub.text;
+      var del=document.createElement('button');del.className='sub-inline-del';del.type='button';del.textContent='×';
+      del.addEventListener('click',function(e){
+        e.stopPropagation();
+        var tasks=getTasks();var t=tasks.find(function(x){return x.id===task.id;});
+        if(!t||!t.subtasks)return;
+        t.subtasks.splice(idx,1);t.updatedAt=Date.now();
+        saveTasks(tasks);render();
+      });
+      row.appendChild(chk);row.appendChild(txt);row.appendChild(del);
+      panel.appendChild(row);
+    });
+    // Add subtask input
+    var addRow=document.createElement('div');addRow.className='sub-inline-add';
+    var inp=document.createElement('input');inp.className='sub-inline-inp';inp.type='text';
+    inp.placeholder='Add subtask...';inp.autocomplete='off';
+    var btn=document.createElement('button');btn.className='sub-inline-add-btn';btn.type='button';btn.textContent='+ Add';
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      if(!inp.value.trim())return;
+      var tasks=getTasks();var t=tasks.find(function(x){return x.id===task.id;});
+      if(!t)return;
+      if(!Array.isArray(t.subtasks))t.subtasks=[];
+      t.subtasks.push({id:Date.now().toString(36),text:inp.value.trim(),done:false,addedAt:Date.now()});
+      t.updatedAt=Date.now();
+      saveTasks(tasks);render();
+    });
+    inp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();btn.click();}});
+    inp.addEventListener('click',function(e){e.stopPropagation();});
+    addRow.appendChild(inp);addRow.appendChild(btn);
+    panel.appendChild(addRow);
+  }
+  renderSubs();
+  return panel;
+}
+
 function buildRow(task,desktop){
-  const row=document.createElement('div');
+  // Outer wrapper replaces direct card child
+  var wrap=document.createElement('div');wrap.className='task-item-wrap';
+  var row=document.createElement('div');
   row.className='task-row'+(task.done?' done-row':'')+(desktop&&task.id===selectedId?' sel-row':'');
   const chk=document.createElement('div');chk.className='t-check'+(task.done?' checked':'');
   chk.innerHTML='<svg width="10" height="10" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
@@ -809,34 +890,46 @@ function buildRow(task,desktop){
   const pill=document.createElement('span');pill.className='owner-pill '+(isMyTask(task.owner)?'mine':'theirs');pill.textContent=task.owner||'Unknown';
   const dl=document.createElement('span');dl.className='t-deadline';dl.textContent='· '+(task.deadline||'TBD');
   meta.appendChild(pill);meta.appendChild(dl);
-  // Subtask progress pill
-  var subs=getSubtasks(task);
-  if(subs.length){
-    var sdone=subs.filter(function(s){return s.done;}).length;
-    var spill=document.createElement('span');
-    spill.className='sub-progress'+(sdone===subs.length?' done':'');
-    spill.textContent='· '+sdone+'/'+subs.length+' subtasks';
-    meta.appendChild(spill);
-  }
   // Added-on date
   if(task.addedAt){
     var added=document.createElement('span');added.className='added-on';
     added.textContent='· added '+new Date(task.addedAt).toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'});
     meta.appendChild(added);
   }
-  if(task.source==='manual'){const src=document.createElement('span');src.className='t-source';src.textContent='';meta.appendChild(src);}
   body.appendChild(txt);body.appendChild(meta);
+  // Subtask expand toggle button
+  var subs=getSubtasks(task);
+  var expanded=subs.length>0; // auto-expand if has subtasks
+  var subPanel=buildInlineSubtasks(task,wrap);
+  subPanel.style.display=expanded?'flex':'none';
+  var expandBtn=document.createElement('button');
+  expandBtn.className='sub-expand-btn';expandBtn.type='button';
+  expandBtn.textContent=subs.length?subs.filter(function(s){return s.done;}).length+'/'+subs.length:'+ sub';
+  expandBtn.style.color=subs.length?'var(--blue)':'var(--tx4)';
+  expandBtn.addEventListener('click',function(e){
+    e.stopPropagation();
+    var shown=subPanel.style.display!=='none';
+    subPanel.style.display=shown?'none':'flex';
+    if(!shown){
+      var fresh=getTasks().find(function(x){return x.id===task.id;})||task;
+      var fs=getSubtasks(fresh);
+      expandBtn.textContent=fs.length?fs.filter(function(s){return s.done;}).length+'/'+fs.length:'+ sub';
+    }
+  });
   const del=document.createElement('button');del.className='t-del';del.type='button';del.textContent='×';
   del.addEventListener('click',e=>{e.stopPropagation();deleteTask(task.id);});
   row.appendChild(chk);row.appendChild(body);
+  row.appendChild(expandBtn);
   if(!desktop){
     const edit=document.createElement('button');edit.className='t-edit';edit.type='button';edit.textContent='Edit';
     edit.addEventListener('click',e=>{e.stopPropagation();openEditModal(task.id);});
     row.appendChild(edit);
   }
   row.appendChild(del);
-  if(desktop)row.addEventListener('click',()=>selectTask(task.id));
-  return row;
+  if(desktop)row.addEventListener('click',function(){selectTask(task.id);});
+  wrap.appendChild(row);
+  wrap.appendChild(subPanel);
+  return wrap;
 }
 
 /* ── TASK ACTIONS ── */

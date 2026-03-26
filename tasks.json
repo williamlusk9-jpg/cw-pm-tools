@@ -1,5 +1,17 @@
 [
   {
+    "id": "mn6rwlir4ng4vh0844v",
+    "action": "Order city of canton signage (IT room, electrical room, FACP, exits)",
+    "owner": "Will",
+    "deadline": "TBD",
+    "project": "WMG Riverstone",
+    "contact": "",
+    "callDate": "",
+    "done": false,
+    "addedAt": 1774487271411,
+    "source": "manual"
+  },
+  {
     "id": "mn6rvyu1icv12vym4aj",
     "action": "Talk w Curtis about crane for chiller delivery",
     "owner": "Will",

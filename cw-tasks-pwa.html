@@ -96,6 +96,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 .sort-chip{font-family:var(--mono);font-size:10px;letter-spacing:.04em;padding:5px 11px;border-radius:20px;border:1px solid var(--b1);background:transparent;color:var(--tx4);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;-webkit-appearance:none}
 .sort-chip.active{background:var(--s2);border-color:var(--b2);color:var(--tx1)}
 .added-on{font-family:var(--mono);font-size:9px;color:var(--tx4);opacity:.5}
+.proj-tag{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:8px;background:var(--accent-dim);color:var(--accent);border:1px solid rgba(232,98,42,.25);flex-shrink:0;white-space:nowrap}
 /* SUBTASKS */
 .sub-progress{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:8px;background:var(--blue-dim);color:var(--blue);border:1px solid rgba(74,144,217,.3);flex-shrink:0}
 .sub-progress.done{background:var(--green-dim);color:var(--green);border-color:rgba(52,168,114,.3)}
@@ -340,7 +341,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
   <div class="stats-row">
     <div class="stat-card hi"><div class="stat-num" id="mOpen">0</div><div class="stat-lbl">Open</div></div>
     <div class="stat-card"><div class="stat-num" id="mMine">0</div><div class="stat-lbl">Mine</div></div>
-    <div class="stat-card"><div class="stat-num" id="mDone">0</div><div class="stat-lbl">Done</div></div>
+    <div class="stat-card"><div class="stat-num" id="mTheirs">0</div><div class="stat-lbl">Theirs</div></div>
   </div>
   <div class="owner-chips" id="mChips">
     <button class="chip a-all" data-f="all" type="button">All open</button>
@@ -373,7 +374,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
       <div class="dp-stats">
         <div class="dp-stat"><div class="dp-sn accent" id="dOpen">0</div><div class="dp-sl">Open</div></div>
         <div class="dp-stat"><div class="dp-sn" id="dMine">0</div><div class="dp-sl">Mine</div></div>
-        <div class="dp-stat"><div class="dp-sn" id="dDone">0</div><div class="dp-sl">Done</div></div>
+        <div class="dp-stat"><div class="dp-sn" id="dTheirs">0</div><div class="dp-sl">Theirs</div></div>
       </div>
       <div class="dp-list" id="dpList"></div>
     </div>
@@ -593,8 +594,8 @@ function smartDeadline(raw){
 /* ── PROJECT SORT ── */
 // General always first, then alphabetical
 function projSortKey(name){
-  if(!name||name.toLowerCase()==='no project')return'~no project';
-  if(name.toLowerCase()==='general')return' general';
+  if(!name||name.toLowerCase()==='no project')return'ÿ no project'; // always last
+  if(name.toLowerCase()==='general')return'  general';              // always first
   return name.toLowerCase();
 }
 
@@ -641,7 +642,7 @@ function renderMobile(){
   const all=getTasks();
   q('mOpen').textContent=all.filter(t=>!t.done).length;
   q('mMine').textContent=all.filter(t=>!t.done&&isMyTask(t.owner)).length;
-  q('mDone').textContent=all.filter(t=>t.done).length;
+  q('mTheirs').textContent=all.filter(t=>!t.done&&!isMyTask(t.owner)).length;
   updateSbBadge(all);
   updateProjDatalist(all); // Always update datalist regardless of task count
   // Owner chips
@@ -669,7 +670,7 @@ function renderDesktop(){
   const all=getTasks();
   q('dOpen').textContent=all.filter(t=>!t.done).length;
   q('dMine').textContent=all.filter(t=>!t.done&&isMyTask(t.owner)).length;
-  q('dDone').textContent=all.filter(t=>t.done).length;
+  q('dTheirs').textContent=all.filter(t=>!t.done&&!isMyTask(t.owner)).length;
   updateSbBadge(all);
   buildDeskProjects(all);
   buildDeskList(all);
@@ -793,11 +794,24 @@ function buildDeskDetail(){
 /* ── GROUPED LIST ── */
 function buildGrouped(tasks,container,desktop){
   if(sortMode==='due'){
-    // Flat list sorted by due date, no-due last
+    // Flat list sorted by due date, no-due last — show project tag on each row
     var sorted=sortTasksInGroup(tasks);
     var card=document.createElement('div');card.className='task-list-card';
     if(desktop)card.style.margin='0 8px';
-    sorted.forEach(t=>card.appendChild(buildRow(t,desktop)));
+    sorted.forEach(function(t){
+      var itemWrap=buildRow(t,desktop);
+      // Inject project tag into the row's meta line
+      if(t.project){
+        var meta=itemWrap.querySelector('.t-meta');
+        if(meta){
+          var ptag=document.createElement('span');
+          ptag.className='proj-tag';
+          ptag.textContent=t.project;
+          meta.insertBefore(ptag,meta.firstChild);
+        }
+      }
+      card.appendChild(itemWrap);
+    });
     container.appendChild(card);
     return;
   }

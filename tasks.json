@@ -92,15 +92,15 @@
     "project": "WMG Riverstone",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774471385989,
     "source": "manual",
-    "updatedAt": 1774487846807,
+    "updatedAt": 1774488578283,
     "subtasks": [
       {
         "id": "mn6s8xhz",
         "text": "Get pictures from Allen",
-        "done": false,
+        "done": true,
         "addedAt": 1774487846807
       }
     ]

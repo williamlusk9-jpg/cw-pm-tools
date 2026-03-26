@@ -80,15 +80,8 @@
     "done": false,
     "addedAt": 1774487179923,
     "source": "manual",
-    "subtasks": [
-      {
-        "id": "mn6t9vj5",
-        "text": "Received from Brittany, send to Raquel",
-        "done": false,
-        "addedAt": 1774489570529
-      }
-    ],
-    "updatedAt": 1774489570529
+    "subtasks": [],
+    "updatedAt": 1774532488696
   },
   {
     "id": "mn6rrjj6kka9dfuh1mi",

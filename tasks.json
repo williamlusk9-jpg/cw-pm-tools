@@ -9,7 +9,17 @@
     "callDate": "",
     "done": false,
     "addedAt": 1774532840656,
-    "source": "manual"
+    "source": "manual",
+    "subtasks": [
+      {
+        "id": "mn7j1z9l",
+        "text": "Sent Jeff Pinska info to view site. Will send available dates for install",
+        "done": false,
+        "addedAt": 1774532872137,
+        "due": ""
+      }
+    ],
+    "updatedAt": 1774532872137
   },
   {
     "id": "mn7isvz8wkw77cjlhk",

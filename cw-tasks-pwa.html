@@ -820,7 +820,7 @@ function pushToGitHub(tasks,retry){
     if(data&&data.content&&data.content.sha)setGhSha(data.content.sha);
     setSyncState('ok');
   })
-  .catch(function(){setSyncState('err');showToast('Sync error — check connection');});
+  .catch(function(e){console.error('GH push error:',e);setSyncState('err');showToast('Sync error: '+(e.message||'check connection'));});
 }
 
 function fetchFromGitHub(shaOnly){
@@ -869,9 +869,38 @@ q('disconnectBtn').addEventListener('click',function(){
 });
 q('saveTokenBtn').addEventListener('click',function(){
   var t=q('tokenInput').value.trim();
-  if(!t){showToast('Paste your token first');return;}
-  setToken(t);closeTokenModal();showToast('Connecting...');
-  syncOnLoad();
+  if(!t){q('tmStatus').textContent='Paste your token first';q('tmStatus').className='tm-status disconnected';return;}
+  var btn=q('saveTokenBtn');
+  btn.disabled=true;btn.textContent='Connecting...';
+  q('tmStatus').textContent='Testing connection...';
+  q('tmStatus').className='tm-status disconnected';
+  setToken(t);
+  // Test connection first
+  fetch('https://api.github.com/repos/williamlusk9-jpg/cw-pm-tools/contents/tasks.json',{
+    headers:{'Authorization':'token '+t}
+  })
+  .then(function(res){
+    if(res.status===401||res.status===403){throw new Error('Token invalid or missing repo permission');}
+    if(res.status===404){
+      // File doesn't exist yet — create it
+      q('tmStatus').textContent='Creating tasks.json in repo...';
+      return res; // will be handled as null remote in syncOnLoad
+    }
+    if(!res.ok){throw new Error('GitHub error: '+res.status);}
+    return res;
+  })
+  .then(function(){
+    q('tmStatus').textContent='Connected! Syncing...';
+    q('tmStatus').className='tm-status connected';
+    setTimeout(function(){closeTokenModal();syncOnLoad();},800);
+  })
+  .catch(function(e){
+    setToken('');
+    q('tmStatus').textContent='Error: '+e.message;
+    q('tmStatus').className='tm-status disconnected';
+    btn.disabled=false;btn.textContent='Connect & Sync';
+    setSyncState('err');
+  });
 });
 
 /* ── INIT ── */

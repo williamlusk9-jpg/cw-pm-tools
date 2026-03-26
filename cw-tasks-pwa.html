@@ -95,7 +95,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 .sort-lbl{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--tx4);flex-shrink:0}
 .sort-chip{font-family:var(--mono);font-size:10px;letter-spacing:.04em;padding:5px 11px;border-radius:20px;border:1px solid var(--b1);background:transparent;color:var(--tx4);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;-webkit-appearance:none}
 .sort-chip.active{background:var(--s2);border-color:var(--b2);color:var(--tx1)}
-.added-on{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--tx3)}
+.added-on{font-family:var(--mono);font-size:10px;font-weight:600;color:var(--tx1);opacity:.75}
 .proj-tag{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:8px;background:var(--accent-dim);color:var(--accent);border:1px solid rgba(232,98,42,.25);flex-shrink:0;white-space:nowrap}
 /* SUBTASKS */
 .sub-progress{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:8px;background:var(--blue-dim);color:var(--blue);border:1px solid rgba(74,144,217,.3);flex-shrink:0}
@@ -136,8 +136,12 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 .sub-inline-inp:focus{border-color:var(--accent)}
 .sub-inline-add-btn{background:transparent;border:1px solid var(--b2);border-radius:8px;color:var(--tx3);font-family:var(--mono);font-size:10px;padding:6px 10px;cursor:pointer;flex-shrink:0;transition:all .15s;white-space:nowrap}
 .sub-inline-add-btn:active{background:var(--s3);color:var(--tx1)}
-.sub-expand-btn{background:var(--s2);border:1px solid var(--b1);border-radius:6px;color:var(--blue);font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;padding:4px 9px;flex-shrink:0;transition:all .15s;display:inline-flex;align-items:center;gap:4px;margin-top:5px;align-self:flex-start}
-.sub-expand-btn:hover{background:var(--s3);border-color:var(--blue);color:var(--blue)}
+.sub-inline-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:3px}
+.sub-inline-date{font-family:var(--mono);font-size:9px;font-weight:600;color:var(--tx1);opacity:.7;background:var(--s3);border:1px solid var(--b1);border-radius:5px;padding:2px 6px;cursor:pointer;transition:border-color .15s}
+.sub-inline-date:hover{border-color:var(--accent)}
+.sub-inline-date.has-val{opacity:.9;border-color:var(--b2)}
+.sub-expand-btn{background:var(--s2);border:1px solid var(--b1);border-radius:6px;color:var(--tx1);font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;padding:4px 9px;flex-shrink:0;transition:all .15s;display:inline-flex;align-items:center;gap:4px;margin-top:5px;align-self:flex-start}
+.sub-expand-btn:hover{background:var(--s3);border-color:var(--b2);color:var(--tx1)}
 .sub-expand-btn.has-subs{border-color:rgba(74,144,217,.35)}
 /* mobile subtask section in edit modal */
 .m-sub-sec{padding:10px 0 2px}
@@ -164,7 +168,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 .owner-pill{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:8px;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
 .owner-pill.mine{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(74,144,217,.3)}
 .owner-pill.theirs{background:var(--green-dim);color:var(--green);border:1px solid rgba(52,168,114,.3)}
-.t-deadline{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--tx2)}
+.t-deadline{font-family:var(--mono);font-size:10px;font-weight:600;color:var(--tx1);opacity:.85}
 .t-source{font-family:var(--mono);font-size:9px;color:var(--tx4);opacity:.6}
 .t-del{background:none;border:none;color:var(--tx4);font-size:17px;cursor:pointer;padding:0 2px;line-height:1;flex-shrink:0;align-self:center;opacity:0;transition:opacity .15s}
 .task-row:hover .t-del,.task-row:active .t-del{opacity:1}
@@ -859,7 +863,31 @@ function buildInlineSubtasks(task,wrap){
         else if(t.done&&t.subtasks.some(function(s){return!s.done;}))t.done=false;
         saveTasks(tasks);render();
       });
+      var subBody=document.createElement('div');subBody.style.cssText='flex:1;min-width:0';
       var txt=document.createElement('span');txt.className='sub-inline-text'+(sub.done?' done-sub':'');txt.textContent=sub.text;
+      var subMeta=document.createElement('div');subMeta.className='sub-inline-meta';
+      // ADDED date
+      if(sub.addedAt){
+        var sadd=document.createElement('span');sadd.className='sub-inline-date has-val';
+        sadd.textContent='ADDED '+new Date(sub.addedAt).toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'});
+        subMeta.appendChild(sadd);
+      }
+      // Due date — clickable to edit
+      var sdueSpan=document.createElement('span');
+      sdueSpan.className='sub-inline-date'+(sub.due?' has-val':'');
+      sdueSpan.textContent=sub.due?'DUE '+sub.due:'+ DUE DATE';
+      sdueSpan.addEventListener('click',function(e){
+        e.stopPropagation();
+        var newDue=prompt('Due date for subtask:',sub.due||'');
+        if(newDue===null)return;
+        var tasks2=getTasks();var t2=tasks2.find(function(x){return x.id===task.id;});
+        if(!t2||!t2.subtasks)return;
+        t2.subtasks[idx].due=newDue.trim()?smartDeadline(newDue):'';
+        t2.updatedAt=Date.now();
+        saveTasks(tasks2);render();
+      });
+      subMeta.appendChild(sdueSpan);
+      subBody.appendChild(txt);if(subMeta.children.length)subBody.appendChild(subMeta);
       var del=document.createElement('button');del.className='sub-inline-del';del.type='button';del.textContent='×';
       del.addEventListener('click',function(e){
         e.stopPropagation();
@@ -868,13 +896,16 @@ function buildInlineSubtasks(task,wrap){
         t.subtasks.splice(idx,1);t.updatedAt=Date.now();
         saveTasks(tasks);render();
       });
-      row.appendChild(chk);row.appendChild(txt);row.appendChild(del);
+      row.appendChild(chk);row.appendChild(subBody);row.appendChild(del);
       panel.appendChild(row);
     });
     // Add subtask input
-    var addRow=document.createElement('div');addRow.className='sub-inline-add';
+    var addRow=document.createElement('div');addRow.className='sub-inline-add';addRow.style.flexWrap='wrap';addRow.style.gap='6px';
     var inp=document.createElement('input');inp.className='sub-inline-inp';inp.type='text';
-    inp.placeholder='Add subtask...';inp.autocomplete='off';
+    inp.placeholder='Add subtask...';inp.autocomplete='off';inp.style.minWidth='120px';
+    var subDueInp=document.createElement('input');subDueInp.className='sub-inline-inp';subDueInp.type='text';
+    subDueInp.placeholder='Due date';subDueInp.autocomplete='off';subDueInp.style.cssText='width:90px;flex:none';
+    subDueInp.addEventListener('click',function(e){e.stopPropagation();});
     var btn=document.createElement('button');btn.className='sub-inline-add-btn';btn.type='button';btn.textContent='+ Add';
     btn.addEventListener('click',function(e){
       e.stopPropagation();
@@ -882,13 +913,13 @@ function buildInlineSubtasks(task,wrap){
       var tasks=getTasks();var t=tasks.find(function(x){return x.id===task.id;});
       if(!t)return;
       if(!Array.isArray(t.subtasks))t.subtasks=[];
-      t.subtasks.push({id:Date.now().toString(36),text:inp.value.trim(),done:false,addedAt:Date.now()});
+      var subDueVal=subDueInp?subDueInp.value.trim():''; t.subtasks.push({id:Date.now().toString(36),text:inp.value.trim(),done:false,addedAt:Date.now(),due:subDueVal?smartDeadline(subDueVal):''});
       t.updatedAt=Date.now();
       saveTasks(tasks);render();
     });
     inp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();btn.click();}});
     inp.addEventListener('click',function(e){e.stopPropagation();});
-    addRow.appendChild(inp);addRow.appendChild(btn);
+    addRow.appendChild(inp);addRow.appendChild(subDueInp);addRow.appendChild(btn);
     panel.appendChild(addRow);
   }
   renderSubs();
@@ -912,7 +943,7 @@ function buildRow(task,desktop){
   // Added-on date
   if(task.addedAt){
     var added=document.createElement('span');added.className='added-on';
-    added.textContent='· added '+new Date(task.addedAt).toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'});
+    added.textContent='· ADDED '+new Date(task.addedAt).toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'});
     meta.appendChild(added);
   }
   // Subtask expand toggle button — inside t-body, left-aligned under task text

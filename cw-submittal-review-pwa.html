@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Submittal Review">
+<meta name="theme-color" content="#111111">
+<title>Submittal Review — C&amp;W</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#111;--sb:#141414;--s1:#1a1a1a;--s2:#222;--s3:#2a2a2a;
+  --b1:#252525;--b2:#333;
+  --accent:#E8622A;--accent-dim:rgba(232,98,42,.13);
+  --green:#34a872;--green-dim:rgba(52,168,114,.12);
+  --blue:#4a90d9;--blue-dim:rgba(74,144,217,.1);
+  --red:#e05252;--red-dim:rgba(224,82,82,.12);
+  --yellow:#d4a017;--yellow-dim:rgba(212,160,23,.12);
+  --tx1:#f0ede8;--tx2:#c0bdb8;--tx3:#8a8780;--tx4:#555250;
+  --mono:'DM Mono',monospace;--disp:'Syne',sans-serif;--body:'DM Sans',sans-serif;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+  --sb-w:210px;--topbar-h:56px;--tabs-h:42px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(--tx1);font-family:var(--body);font-size:15px;-webkit-font-smoothing:antialiased}
+.sidebar{display:none;width:var(--sb-w);background:var(--sb);border-right:1px solid var(--b1);flex-direction:column;position:fixed;top:0;left:0;height:100%;z-index:20}
+.sb-hdr{padding:20px 16px 14px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:10px}
+.sb-pill{width:34px;height:34px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-brand{font-family:var(--disp);font-weight:700;font-size:15px;color:var(--tx1);letter-spacing:-.3px}
+.sb-brand-sub{font-family:var(--mono);font-size:9px;color:var(--tx4);letter-spacing:.07em;text-transform:uppercase;margin-top:2px}
+.sb-nav{padding:10px 8px;flex:1;display:flex;flex-direction:column;gap:2px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:8px;text-decoration:none;color:var(--tx3);transition:background .15s,color .15s;border:1px solid transparent}
+.sb-item:hover{background:var(--s1);color:var(--tx2)}
+.sb-item.active{background:var(--accent-dim);border-color:rgba(232,98,42,.2);color:var(--accent)}
+.sb-icon{width:16px;height:16px;flex-shrink:0}
+.sb-lbl{font-size:13px;font-weight:500;flex:1}
+.sb-badge{background:var(--accent);color:#fff;font-family:var(--mono);font-size:10px;border-radius:8px;padding:2px 7px}
+.sb-foot{padding:12px 16px;border-top:1px solid var(--b1)}
+.sb-date{font-family:var(--mono);font-size:11px;color:var(--tx4)}
+.mob-topbar{position:fixed;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:calc(var(--safe-top) + 10px) 18px 10px;background:var(--s1);border-bottom:1px solid var(--b1);min-height:calc(var(--safe-top) + var(--topbar-h))}
+.mob-logo{display:flex;align-items:center;gap:9px}
+.mob-pill{width:30px;height:30px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mob-title{font-family:var(--disp);font-weight:700;font-size:15px;color:var(--tx1)}
+.mob-sub{font-family:var(--mono);font-size:9px;color:var(--tx4);letter-spacing:.07em;text-transform:uppercase;margin-top:1px}
+.mob-right{display:flex;align-items:center;gap:8px}
+.home-link{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--tx4);background:var(--s2);border:1px solid var(--b1);border-radius:20px;padding:5px 10px;text-decoration:none}
+.step-nav{position:fixed;z-index:9;left:0;right:0;top:calc(var(--safe-top) + var(--topbar-h));display:flex;background:var(--s1);border-bottom:2px solid var(--b1)}
+.step-tab{flex:1;padding:11px 4px;text-align:center;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--tx3);border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .2s,border-color .2s;cursor:pointer;user-select:none}
+.step-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.step-tab.complete{color:var(--tx2)}
+.step-tab.locked{color:var(--tx4);opacity:.45;pointer-events:none}
+.screens-wrap{position:fixed;top:calc(var(--safe-top) + var(--topbar-h) + var(--tabs-h));left:0;right:0;bottom:0;overflow:hidden}
+.screen{display:none;position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;flex-direction:column}
+.screen.active{display:flex}
+.pad{padding:15px 18px;display:flex;flex-direction:column;gap:12px;padding-bottom:calc(var(--safe-bot)+24px)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx2)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.finput,.fselect{background:var(--s2);border:1px solid var(--b2);border-radius:10px;color:var(--tx1);font-family:var(--body);font-size:14px;padding:10px 12px;outline:none;width:100%;-webkit-appearance:none;appearance:none;transition:border-color .2s}
+.finput:focus,.fselect:focus{border-color:var(--accent)}
+.fselect{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.fselect option{background:#222}
+.sec-lbl{font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx2);margin-bottom:7px}
+.upload-zone{background:var(--s2);border:2px dashed var(--b2);border-radius:14px;padding:28px 18px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative}
+.upload-zone:active{background:var(--s3)}
+.upload-zone.loaded{border-style:solid;border-color:var(--green);background:var(--green-dim)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.upload-icon{font-size:28px;margin-bottom:8px}
+.upload-title{font-size:14px;font-weight:500;color:var(--tx1);margin-bottom:3px}
+.upload-sub{font-size:12px;color:var(--tx3)}
+.upload-fn{font-family:var(--mono);font-size:11px;color:var(--green);margin-top:4px;display:none}
+.sev-badge{font-family:var(--mono);font-size:9px;font-weight:700;padding:3px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.05em;flex-shrink:0}
+.sev-critical{background:var(--red-dim);color:var(--red);border:1px solid rgba(224,82,82,.3)}
+.sev-warning{background:var(--yellow-dim);color:var(--yellow);border:1px solid rgba(212,160,23,.3)}
+.sev-info{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(74,144,217,.3)}
+.issue-card{background:var(--s1);border:1px solid var(--b1);border-radius:12px;overflow:hidden;margin-bottom:8px}
+.issue-card:last-child{margin-bottom:0}
+.issue-hdr{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;user-select:none}
+.issue-hdr:active{background:var(--s2)}
+.issue-title{font-size:14px;font-weight:500;color:var(--tx1);flex:1;line-height:1.4}
+.issue-chev{color:var(--tx4);font-size:12px;flex-shrink:0;transition:transform .2s}
+.issue-card.open .issue-chev{transform:rotate(180deg)}
+.issue-body{display:none;padding:0 14px 13px;border-top:1px solid var(--b1)}
+.issue-card.open .issue-body{display:block}
+.issue-problem{font-size:13px;color:var(--tx2);line-height:1.6;margin-top:10px}
+.issue-fix-lbl{font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--green);margin-top:10px;margin-bottom:4px}
+.issue-fix{font-size:13px;color:var(--tx1);line-height:1.6;background:var(--green-dim);border:1px solid rgba(52,168,114,.2);border-radius:8px;padding:9px 11px}
+.review-summary{background:var(--s2);border:1px solid var(--b1);border-radius:12px;padding:13px 15px;display:flex;align-items:center;gap:14px}
+.rs-score{font-family:var(--disp);font-size:26px;font-weight:700;line-height:1;flex-shrink:0}
+.rs-score.fail{color:var(--red)}
+.rs-score.warn{color:var(--yellow)}
+.rs-score.pass{color:var(--green)}
+.rs-meta{flex:1}
+.rs-verdict{font-size:14px;font-weight:500;color:var(--tx1);margin-bottom:2px}
+.rs-sub{font-size:12px;color:var(--tx3);line-height:1.5;margin-top:2px}
+.issue-counts{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.ic-pill{font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:20px}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.sec-title{font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx2)}
+/* TRANSMITTAL LETTER */
+.letter-card{background:var(--s2);border:1px solid var(--b1);border-radius:12px;padding:14px 15px;font-size:12px;line-height:1.8;color:var(--tx2);white-space:pre-wrap;max-height:380px;overflow-y:auto;-webkit-overflow-scrolling:touch;font-family:var(--mono)}
+.btn-primary{width:100%;padding:14px;background:var(--accent);border:none;border-radius:13px;color:#fff;font-family:var(--disp);font-size:15px;font-weight:700;cursor:pointer;transition:opacity .2s,transform .1s;display:flex;align-items:center;justify-content:center;gap:7px;flex-shrink:0}
+.btn-primary:active{transform:scale(.98)}
+.btn-primary:disabled{opacity:.35;cursor:not-allowed}
+.btn-green{width:100%;padding:14px;background:var(--green-dim);border:1px solid rgba(52,168,114,.35);border-radius:13px;color:var(--green);font-family:var(--disp);font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px;flex-shrink:0}
+.btn-green:active{background:rgba(52,168,114,.2)}
+.btn-secondary{width:100%;padding:13px;background:transparent;border:1px solid var(--b2);border-radius:12px;color:var(--tx2);font-family:var(--body);font-size:14px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.btn-secondary:active{background:var(--s2)}
+.btn-copy{background:transparent;border:1px solid var(--b1);border-radius:8px;color:var(--tx3);font-family:var(--mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;padding:6px 11px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.btn-copy.copied{border-color:var(--green);color:var(--green)}
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(17,17,17,.92);z-index:100;flex-direction:column;align-items:center;justify-content:center;gap:14px;backdrop-filter:blur(4px)}
+.loading-overlay.show{display:flex}
+.spinner{width:32px;height:32px;border:2px solid var(--b2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-lbl{font-family:var(--mono);font-size:11px;color:var(--tx3);letter-spacing:.06em;text-transform:uppercase;text-align:center;padding:0 20px}
+.toast{position:fixed;bottom:calc(var(--safe-bot)+20px);left:50%;transform:translateX(-50%) translateY(14px);background:var(--s3);border:1px solid var(--b2);border-radius:20px;padding:9px 18px;font-family:var(--mono);font-size:12px;color:var(--tx1);letter-spacing:.04em;opacity:0;transition:all .25s;pointer-events:none;z-index:200;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.green{background:var(--green-dim);border-color:rgba(52,168,114,.4);color:var(--green)}
+.toast.blue{background:var(--blue-dim);border-color:rgba(74,144,217,.4);color:var(--blue)}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+@media(min-width:768px){
+  html,body{overflow:hidden}
+  .sidebar{display:flex}
+  .mob-topbar,.step-nav{display:none}
+  .screens-wrap{position:static;display:flex;flex-direction:row;height:100vh;margin-left:var(--sb-w)}
+  .screen{display:flex !important;position:static;overflow-y:auto;flex-direction:column}
+  #screen-upload{width:360px;flex:none;border-right:1px solid var(--b1)}
+  .upload-pad{height:100%;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;padding-bottom:18px}
+  #screen-review{flex:1;border-right:1px solid var(--b1)}
+  .review-pad{padding:18px;gap:14px;padding-bottom:18px}
+  #screen-letter{width:340px;flex:none}
+  .letter-pad{padding:18px;gap:14px;padding-bottom:18px}
+  .pane-hdr{display:flex !important;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--b1);margin-bottom:4px;flex-shrink:0}
+  .pane-title{font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx2)}
+  .btn-primary,.btn-secondary,.btn-green{padding:12px}
+  .letter-card{max-height:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sb-hdr">
+    <div class="sb-pill"><svg width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+    <div><div class="sb-brand">PM Tools</div><div class="sb-brand-sub">C&amp;W Contracting</div></div>
+  </div>
+  <div class="sb-nav">
+    <a class="sb-item" href="index.html"><svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="sb-lbl">Home</span></a>
+    <a class="sb-item" href="cw-call-notes-pwa.html"><svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.89a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span class="sb-lbl">Call Notes</span></a>
+    <a class="sb-item" href="cw-oac-notes-pwa.html"><svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span class="sb-lbl">OAC Notes</span></a>
+    <a class="sb-item" href="cw-tasks-pwa.html"><svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="sb-lbl">Tasks</span><span class="sb-badge" id="sbBadge" style="display:none">0</span></a>
+    <a class="sb-item active" href="cw-submittal-review-pwa.html"><svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="sb-lbl">Submittal Review</span></a>
+  </div>
+  <div class="sb-foot"><div class="sb-date" id="sbDate"></div></div>
+</nav>
+
+<div class="mob-topbar">
+  <div class="mob-logo">
+    <div class="mob-pill"><svg width="13" height="13" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+    <div><div class="mob-title">Submittal Review</div><div class="mob-sub">C&amp;W Contracting</div></div>
+  </div>
+  <div class="mob-right">
+    <a class="home-link" href="index.html"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</a>
+  </div>
+</div>
+
+<div class="step-nav">
+  <div class="step-tab active" id="tab-upload" data-tab="upload">01 Upload</div>
+  <div class="step-tab locked" id="tab-review" data-tab="review">02 Review</div>
+  <div class="step-tab locked" id="tab-letter" data-tab="letter">03 Transmittal</div>
+</div>
+
+<div class="screens-wrap">
+
+  <!-- UPLOAD -->
+  <div class="screen active" id="screen-upload">
+    <div class="upload-pad pad">
+      <div class="pane-hdr" style="display:none"><span class="pane-title">Upload Submittal</span></div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Project Name</label>
+          <input class="finput" type="text" id="projectName" placeholder="WMG Riverstone PC" autocomplete="off">
+        </div>
+        <div class="field">
+          <label>Job Number</label>
+          <input class="finput" type="text" id="jobNumber" placeholder="5007" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Trade / Category</label>
+        <select class="fselect" id="trade">
+          <option value="">— Select trade —</option>
+          <option>Doors, Frames &amp; Hardware</option>
+          <option>Flooring — LVT / VCT</option>
+          <option>Flooring — Carpet Tile</option>
+          <option>Flooring — Ceramic / Porcelain Tile</option>
+          <option>Flooring — Rubber Base &amp; Transitions</option>
+          <option>Flooring — Mixed / Multiple</option>
+          <option>Ceilings — ACT / Suspension</option>
+          <option>Drywall &amp; Framing</option>
+          <option>Millwork &amp; Casework</option>
+          <option>Painting &amp; Coatings</option>
+          <option>Storefront &amp; Glazing</option>
+          <option>Mechanical — HVAC</option>
+          <option>Mechanical — Plumbing Fixtures</option>
+          <option>Electrical &amp; Lighting</option>
+          <option>Fire Suppression / Sprinkler</option>
+          <option>Fire Alarm</option>
+          <option>Specialties &amp; Accessories</option>
+          <option>Signage &amp; Wayfinding</option>
+          <option>Roofing &amp; Waterproofing</option>
+          <option>Insulation</option>
+          <option>Sealants &amp; Joint Protection</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Product Designation</label>
+          <input class="finput" type="text" id="productCode" placeholder="LVT-1, RB-2, PT-1..." autocomplete="off">
+        </div>
+        <div class="field">
+          <label>Submitted By</label>
+          <input class="finput" type="text" id="submittedBy" placeholder="Subcontractor / supplier" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Architect (ATTN)</label>
+          <input class="finput" type="text" id="archContact" placeholder="Hanna Booth" autocomplete="off">
+        </div>
+        <div class="field">
+          <label>Architect Firm</label>
+          <input class="finput" type="text" id="archFirm" placeholder="Align Design Associates" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Reviewer Notes (optional)</label>
+        <input class="finput" type="text" id="reviewNotes" placeholder="e.g. Verify ADA compliance, check fire rating" autocomplete="off">
+      </div>
+
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
+          <span class="sec-lbl" style="margin-bottom:0">Submittal PDF</span>
+          <button id="clearBtn" type="button" style="display:none;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--tx4);background:transparent;border:1px solid var(--b1);border-radius:6px;padding:4px 9px;cursor:pointer">Clear</button>
+        </div>
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="pdfFile" accept=".pdf">
+          <div class="upload-icon" id="uploadIcon">📄</div>
+          <div class="upload-title" id="uploadTitle">Upload Submittal PDF</div>
+          <div class="upload-sub" id="uploadSub">AI reviews for issues and generates return transmittal</div>
+          <div class="upload-fn" id="uploadFn"></div>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="reviewBtn" type="button" disabled>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Review Submittal
+      </button>
+    </div>
+  </div>
+
+  <!-- REVIEW -->
+  <div class="screen" id="screen-review">
+    <div class="review-pad pad">
+      <div class="pane-hdr" style="display:none"><span class="pane-title">Review Results</span></div>
+
+      <div id="reviewSummary" style="display:none">
+        <div class="review-summary" id="summaryCard">
+          <div class="rs-score" id="scoreLabel">—</div>
+          <div class="rs-meta">
+            <div class="rs-verdict" id="verdictText">—</div>
+            <div class="rs-sub" id="verdictSub">—</div>
+            <div class="issue-counts" id="issueCounts"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="issuesCritical" style="display:none">
+        <div class="sec-head">
+          <span class="sec-title">Critical — must correct</span>
+          <span id="criticalCt" class="sev-badge sev-critical"></span>
+        </div>
+        <div id="criticalList"></div>
+      </div>
+
+      <div id="issuesWarning" style="display:none">
+        <div class="sec-head">
+          <span class="sec-title">Warnings</span>
+          <span id="warningCt" class="sev-badge sev-warning"></span>
+        </div>
+        <div id="warningList"></div>
+      </div>
+
+      <div id="issuesInfo" style="display:none">
+        <div class="sec-head">
+          <span class="sec-title">Notes</span>
+          <span id="infoCt" class="sev-badge sev-info"></span>
+        </div>
+        <div id="infoList"></div>
+      </div>
+
+      <div id="noIssues" style="display:none;background:var(--green-dim);border:1px solid rgba(52,168,114,.3);border-radius:12px;padding:14px 16px;">
+        <div style="font-family:var(--disp);font-size:14px;font-weight:700;color:var(--green);margin-bottom:3px;">No issues found</div>
+        <div style="font-size:13px;color:var(--tx3);line-height:1.5;">Submittal appears complete and compliant. Proceed to build approval transmittal.</div>
+      </div>
+
+      <button class="btn-primary" id="letterBtn" type="button">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Build Return Transmittal
+      </button>
+    </div>
+  </div>
+
+  <!-- LETTER / TRANSMITTAL -->
+  <div class="screen" id="screen-letter">
+    <div class="letter-pad pad">
+      <div class="pane-hdr" style="display:none"><span class="pane-title">Return Transmittal</span></div>
+
+      <div id="letterBanner" style="background:var(--blue-dim);border:1px solid rgba(74,144,217,.25);border-radius:12px;padding:11px 13px;flex-shrink:0">
+        <div style="font-family:var(--disp);font-size:13px;font-weight:700;margin-bottom:2px" id="letterBannerTitle">Return Transmittal</div>
+        <div style="font-size:12px;color:var(--tx3);line-height:1.5" id="letterBannerSub">Ready to copy or email.</div>
+      </div>
+
+      <div>
+        <div class="sec-head">
+          <span class="sec-title">Letter of Transmittal</span>
+          <button class="btn-copy" id="copyLetterBtn" type="button">Copy</button>
+        </div>
+        <div class="letter-card" id="letterContent"></div>
+      </div>
+
+      <button class="btn-green" id="sendEmailBtn" type="button">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Email to Architect
+      </button>
+
+      <button class="btn-secondary" id="newReviewBtn" type="button">+ New Submittal</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div><div class="loading-lbl" id="loadingLbl">Reviewing submittal...</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+function q(id){return document.getElementById(id);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+var isDesktop=function(){return window.innerWidth>=768;};
+var toastTimer=null;
+function showToast(msg,style){
+  var t=q('toast');t.textContent=msg;
+  t.className='toast show'+(style?' '+style:'');
+  clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove('show');},3200);
+}
+function setLoading(show,msg){q('loadingOverlay').classList.toggle('show',show);if(msg)q('loadingLbl').textContent=msg;}
+
+var sb=q('sbDate');if(sb)sb.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+function updateSbBadge(){try{var n=JSON.parse(localStorage.getItem('cw-tasks')||'[]').filter(function(t){return!t.done;}).length;var b=q('sbBadge');b.textContent=n;b.style.display=n>0?'inline-block':'none';}catch(e){}}
+updateSbBadge();
+
+function goTab(tab){
+  if(isDesktop())return;
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.querySelectorAll('.step-tab').forEach(function(t){t.classList.remove('active');});
+  q('screen-'+tab).classList.add('active');q('tab-'+tab).classList.add('active');
+}
+function unlockTab(tab){var el=q('tab-'+tab);if(el){el.classList.remove('locked');el.classList.add('complete');}}
+function lockTab(tab){var el=q('tab-'+tab);if(el){el.classList.add('locked');el.classList.remove('complete','active');}}
+document.querySelectorAll('.step-tab').forEach(function(tb){
+  tb.addEventListener('click',function(){if(!tb.classList.contains('locked'))goTab(tb.dataset.tab);});
+});
+function syncDesktop(){document.querySelectorAll('.pane-hdr').forEach(function(h){h.style.display=isDesktop()?'flex':'none';});}
+syncDesktop();window.addEventListener('resize',syncDesktop);
+
+var pdfBase64=null;
+var reviewResult=null;
+
+// Upload
+var uploadPending=false;
+q('uploadZone').addEventListener('click',function(){
+  if(uploadPending)return;uploadPending=true;setTimeout(function(){uploadPending=false;},600);
+  q('pdfFile').click();
+});
+q('pdfFile').addEventListener('change',function(e){
+  var file=e.target.files[0];if(!file)return;
+  if(!file.type.includes('pdf')&&!file.name.toLowerCase().endsWith('.pdf')){showToast('Please upload a PDF file');return;}
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    pdfBase64=ev.target.result.split(',')[1];
+    q('uploadZone').classList.add('loaded');
+    q('uploadIcon').textContent='✓';
+    q('uploadTitle').textContent=file.name;
+    q('uploadSub').style.display='none';
+    q('uploadFn').textContent=Math.round(file.size/1024)+'KB — ready to review';
+    q('uploadFn').style.display='block';
+    q('clearBtn').style.display='inline-block';
+    checkReady();
+  };
+  reader.onerror=function(){showToast('Could not read file — try again');};
+  reader.readAsDataURL(file);
+  e.target.value='';
+});
+q('clearBtn').addEventListener('click',function(){
+  pdfBase64=null;
+  q('uploadZone').classList.remove('loaded');
+  q('uploadIcon').textContent='📄';
+  q('uploadTitle').textContent='Upload Submittal PDF';
+  q('uploadSub').style.display='';
+  q('uploadFn').style.display='none';
+  q('clearBtn').style.display='none';
+  q('pdfFile').value='';
+  checkReady();
+});
+q('projectName').addEventListener('input',checkReady);
+function checkReady(){q('reviewBtn').disabled=!(pdfBase64&&q('projectName').value.trim());}
+
+// Review
+q('reviewBtn').addEventListener('click',runReview);
+function runReview(){
+  if(!pdfBase64){showToast('Upload a PDF first');return;}
+  if(!q('projectName').value.trim()){
+    q('projectName').style.borderColor='var(--red)';
+    setTimeout(function(){q('projectName').style.borderColor='';},2000);
+    showToast('Enter a project name first');return;
+  }
+  var btn=q('reviewBtn');btn.disabled=true;btn.textContent='Reviewing...';
+  setLoading(true,'Reviewing submittal...');
+
+  var proj=q('projectName').value.trim();
+  var jobNum=q('jobNumber').value.trim();
+  var trade=q('trade').value||'Not specified';
+  var prodCode=q('productCode').value.trim();
+  var sub=q('submittedBy').value.trim()||'Unknown';
+  var archContact=q('archContact').value.trim();
+  var archFirm=q('archFirm').value.trim();
+  var notes=q('reviewNotes').value.trim();
+
+  var prompt='You are an expert construction PM reviewer for C&W Contracting Services, Inc., Atlanta GA. Will Lusk is Lead PM.\n'
+    +'Review this submittal PDF and identify ALL issues, missing information, and compliance problems.\n'
+    +'Project: '+proj+(jobNum?' | Job #'+jobNum:'')+' | Trade: '+trade+(prodCode?' | Product designation: '+prodCode:'')+' | Submitted by: '+sub+'\n'
+    +(notes?'Reviewer notes: '+notes+'\n':'')
+    +'C&W SUBMITTAL REVIEW STANDARDS:\n'
+    +'CRITICAL (require resubmittal before approval):\n'
+    +'- Product submitted does not match specified product or approved equal\n'
+    +'- Substitution request not clearly labeled as such\n'
+    +'- Missing manufacturer cut sheets or product data\n'
+    +'- Missing required ratings (fire rating, ADA compliance, slip resistance, ASTM standards)\n'
+    +'- Dimensions, quantities, or door/room designations missing or incorrect\n'
+    +'- Hardware prep codes missing or inconsistent with door schedule\n'
+    +'- Missing required finish specifications or finish does not match schedule\n'
+    +'- Installation method not specified or conflicts with manufacturer requirements\n'
+    +'- Product does not meet commercial/healthcare-grade requirements for application\n'
+    +'- Missing warranty information where required\n'
+    +'- Spec sheets do not match product listed on transmittal\n'
+    +'WARNINGS (address before or during approval):\n'
+    +'- Product meets spec but has minor missing details\n'
+    +'- Clarification needed on installation method or substrate prep\n'
+    +'- Finish or color not confirmed against architect schedule\n'
+    +'- Coordination required with other trades (transitions, blocking, rough-in)\n'
+    +'- Lead time or availability concerns based on product\n'
+    +'- Recommended pre-installation meeting for complex items\n'
+    +'NOTES (informational for tracking):\n'
+    +'- Attic stock, spare parts, or maintenance requirements\n'
+    +'- Warranty documentation needed at closeout\n'
+    +'- O&M manual required\n'
+    +'- Items to verify in field during installation\n'
+    +'Return ONLY valid JSON with no markdown fences:\n'
+    +'{"verdict":"Revise and Resubmit or Approved as Noted or Approved","overallStatus":"fail or warn or pass","summary":"2-3 sentence plain English summary","issues":[{"severity":"critical or warning or info","title":"short issue title","problem":"clear description","fix":"specific actionable correction needed"}],"letterAction":"Revise and Resubmit or Approved as Noted or Approved","remarks":"any specific remarks for the transmittal letter"}';
+
+  function restoreBtn(){
+    btn.disabled=false;
+    btn.innerHTML='<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Review Submittal';
+  }
+
+  var ctrl=typeof AbortController!=='undefined'?new AbortController():null;
+  var tid=ctrl?setTimeout(function(){ctrl.abort();},60000):null;
+
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-calls':'true'
+    },
+    body:JSON.stringify({
+      model:'claude-opus-4-6',
+      max_tokens:2000,
+      messages:[{role:'user',content:[
+        {type:'document',source:{type:'base64',media_type:'application/pdf',data:pdfBase64}},
+        {type:'text',text:prompt}
+      ]}]
+    }),
+    signal:ctrl?ctrl.signal:undefined
+  })
+  .then(function(res){
+    if(tid)clearTimeout(tid);
+    if(!res.ok){
+      return res.json().then(function(errBody){
+        throw new Error(res.status+': '+(errBody.error&&errBody.error.message?errBody.error.message:JSON.stringify(errBody)));
+      }).catch(function(){throw new Error('Server returned '+res.status);});
+    }
+    return res.json();
+  })
+  .then(function(data){
+    var raw=(data.content||[]).map(function(b){return b.text||'';}).join('').replace(/```json|```/g,'').trim();
+    if(!raw)throw new Error('Empty response');
+    reviewResult=JSON.parse(raw);
+    populateReview(reviewResult);
+    unlockTab('review');
+    if(!isDesktop())goTab('review');
+    setLoading(false);
+    restoreBtn();
+  })
+  .catch(function(err){
+    if(tid)clearTimeout(tid);
+    var msg=err.name==='AbortError'?'Request timed out — check connection':(err.message||'Unknown error');
+    q('loadingLbl').textContent='Error: '+msg;
+    setTimeout(function(){setLoading(false);showToast('Failed: '+msg);},2000);
+    restoreBtn();
+  });
+}
+
+function populateReview(r){
+  var issues=r.issues||[];
+  var critical=issues.filter(function(i){return i.severity==='critical';});
+  var warnings=issues.filter(function(i){return i.severity==='warning';});
+  var info=issues.filter(function(i){return i.severity==='info';});
+
+  q('reviewSummary').style.display='block';
+  var sl=q('scoreLabel');
+  var status=r.overallStatus||'warn';
+  sl.className='rs-score '+(status==='fail'?'fail':status==='pass'?'pass':'warn');
+  sl.textContent=status==='fail'?'✗':status==='pass'?'✓':'!';
+  q('verdictText').textContent=r.verdict||'Review Complete';
+  q('verdictSub').textContent=r.summary||'';
+  var ic=q('issueCounts');ic.innerHTML='';
+  if(critical.length){var p=document.createElement('span');p.className='ic-pill sev-critical';p.textContent=critical.length+' critical';ic.appendChild(p);}
+  if(warnings.length){var p2=document.createElement('span');p2.className='ic-pill sev-warning';p2.textContent=warnings.length+' warning'+(warnings.length>1?'s':'');ic.appendChild(p2);}
+  if(info.length){var p3=document.createElement('span');p3.className='ic-pill sev-info';p3.textContent=info.length+' note'+(info.length>1?'s':'');ic.appendChild(p3);}
+
+  buildIssueSection('issuesCritical','criticalCt','criticalList',critical,'sev-critical');
+  buildIssueSection('issuesWarning','warningCt','warningList',warnings,'sev-warning');
+  buildIssueSection('issuesInfo','infoCt','infoList',info,'sev-info');
+  q('noIssues').style.display=(!issues.length)?'block':'none';
+  buildTransmittal(r);
+}
+
+function buildIssueSection(wrapId,ctId,listId,items,badgeClass){
+  var wrap=q(wrapId);var list=q(listId);
+  if(!items.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  q(ctId).textContent=items.length;
+  list.innerHTML='';
+  items.forEach(function(issue,i){
+    var card=document.createElement('div');card.className='issue-card'+(i===0?' open':'');
+    var hdr=document.createElement('div');hdr.className='issue-hdr';
+    var badge=document.createElement('span');badge.className='sev-badge '+badgeClass;
+    badge.textContent=issue.severity==='critical'?'Critical':issue.severity==='warning'?'Warning':'Note';
+    var title=document.createElement('span');title.className='issue-title';title.textContent=issue.title||'Issue';
+    var chev=document.createElement('span');chev.className='issue-chev';chev.textContent='▾';
+    hdr.appendChild(badge);hdr.appendChild(title);hdr.appendChild(chev);
+    var body=document.createElement('div');body.className='issue-body';
+    var prob=document.createElement('div');prob.className='issue-problem';prob.textContent=issue.problem||'';
+    body.appendChild(prob);
+    if(issue.fix){
+      var fixLbl=document.createElement('div');fixLbl.className='issue-fix-lbl';fixLbl.textContent='Required action';
+      var fixTxt=document.createElement('div');fixTxt.className='issue-fix';fixTxt.textContent=issue.fix;
+      body.appendChild(fixLbl);body.appendChild(fixTxt);
+    }
+    card.appendChild(hdr);card.appendChild(body);
+    hdr.addEventListener('click',function(){card.classList.toggle('open');});
+    list.appendChild(card);
+  });
+}
+
+function buildTransmittal(r){
+  var proj=q('projectName').value.trim();
+  var jobNum=q('jobNumber').value.trim();
+  var trade=q('trade').value||'—';
+  var prodCode=q('productCode').value.trim();
+  var sub=q('submittedBy').value.trim()||'—';
+  var archContact=q('archContact').value.trim()||'—';
+  var archFirm=q('archFirm').value.trim()||'—';
+  var action=r.letterAction||r.verdict||'Revise and Resubmit';
+  var today=new Date().toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'});
+  var issues=r.issues||[];
+  var critical=issues.filter(function(i){return i.severity==='critical';});
+  var warnings=issues.filter(function(i){return i.severity==='warning';});
+  var desc=trade+(prodCode?' — '+prodCode:'')+(sub&&sub!=='—'?' ('+sub+')':'');
+
+  // Format matching C&W Letter of Transmittal exactly
+  var lines=[];
+  lines.push('C&W Contracting Services, Inc.');
+  lines.push('445 Manget Street, Suite 100');
+  lines.push('Marietta, GA 30060');
+  lines.push('678-412-0011 | cwcontracting.com');
+  lines.push('');
+  lines.push('LETTER OF TRANSMITTAL');
+  lines.push('');
+  lines.push('Date:    '+today+'        Job Number: '+(jobNum||'—'));
+  lines.push('ATTN:    '+archContact);
+  lines.push('');
+  lines.push('TO:  '+archFirm);
+  lines.push('');
+  lines.push('RE:  '+proj);
+  lines.push('');
+  lines.push('Via: Digital / Email');
+  lines.push('');
+  lines.push('We Are Sending You: [✓] Spec Sheet');
+  lines.push('');
+  lines.push('Description:                                          Copies:');
+  lines.push(desc+'   1');
+  lines.push('');
+  var actionLine='These Are Transmitted As:';
+  if(action.toLowerCase().includes('approved')&&!action.toLowerCase().includes('noted')){
+    actionLine+=' [✓] For Approval';
+  } else if(action.toLowerCase().includes('noted')){
+    actionLine+=' [✓] Approved as Noted';
+  } else {
+    actionLine+=' [✓] For Review and Comment';
+  }
+  lines.push(actionLine);
+  lines.push('');
+  lines.push('ACTION: '+action.toUpperCase());
+  lines.push('');
+  if(r.summary){lines.push('REMARKS:');lines.push(r.summary);}
+  if(critical.length){
+    lines.push('');
+    lines.push('ITEMS REQUIRING CORRECTION BEFORE APPROVAL:');
+    critical.forEach(function(i,idx){lines.push((idx+1)+'. '+i.title+' — '+i.fix);});
+  }
+  if(warnings.length){
+    lines.push('');
+    lines.push('ITEMS TO ADDRESS:');
+    warnings.forEach(function(i,idx){lines.push((idx+1)+'. '+i.title+' — '+i.fix);});
+  }
+  if(r.remarks){lines.push('');lines.push(r.remarks);}
+  lines.push('');
+  lines.push('Person Sending: William Lusk');
+  lines.push('C&W Contracting Services, Inc.');
+
+  var letterText=lines.join('\n');
+  q('letterContent').textContent=letterText;
+
+  var isApproved=action.toLowerCase().includes('approved')&&!action.toLowerCase().includes('resubmit');
+  q('letterBannerTitle').style.color=isApproved?'var(--green)':'var(--accent)';
+  q('letterBannerTitle').textContent=action;
+  q('letterBanner').style.background=isApproved?'var(--green-dim)':'var(--accent-dim)';
+  q('letterBanner').style.borderColor=isApproved?'rgba(52,168,114,.25)':'rgba(232,98,42,.25)';
+  q('letterBannerSub').textContent=isApproved
+    ?'Submittal approved — transmittal ready to send to '+archContact+'.'
+    :critical.length+' item'+(critical.length!==1?'s':'')+' must be corrected before approval.';
+}
+
+q('letterBtn').addEventListener('click',function(){
+  if(!reviewResult){showToast('Run a review first');return;}
+  buildTransmittal(reviewResult);
+  unlockTab('letter');
+  if(!isDesktop())goTab('letter');
+});
+
+function copyText(text,btnId){
+  function flash(){var b=q(btnId);if(!b)return;b.textContent='Copied!';b.classList.add('copied');setTimeout(function(){b.textContent='Copy';b.classList.remove('copied');},2000);}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(flash).catch(function(){fallback(text,flash);});}
+  else{fallback(text,flash);}
+}
+function fallback(text,cb){
+  try{var ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0;top:0;left:0';document.body.appendChild(ta);ta.focus();ta.select();var ok=document.execCommand('copy');document.body.removeChild(ta);if(ok&&cb)cb();else showToast('Long-press to copy');}
+  catch(e){showToast('Long-press to copy');}
+}
+q('copyLetterBtn').addEventListener('click',function(){copyText(q('letterContent').textContent,'copyLetterBtn');});
+
+// Email to architect — address in JS only
+var ARCH_EMAIL_DEFAULT='';
+q('sendEmailBtn').addEventListener('click',function(){
+  if(!reviewResult)return;
+  var proj=q('projectName').value.trim();
+  var jobNum=q('jobNumber').value.trim();
+  var action=reviewResult.letterAction||reviewResult.verdict||'Submittal Review';
+  var subject='Submittal Return — '+proj+(jobNum?' Job #'+jobNum:'')+' — '+action;
+  var body=q('letterContent').textContent;
+  window.location.href='mailto:?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+});
+
+q('newReviewBtn').addEventListener('click',function(){
+  if(!confirm('Start a new review? Current results will be cleared.'))return;
+  pdfBase64=null;reviewResult=null;
+  q('projectName').value='';q('jobNumber').value='';q('trade').selectedIndex=0;
+  q('productCode').value='';q('submittedBy').value='';
+  q('archContact').value='';q('archFirm').value='';q('reviewNotes').value='';
+  q('uploadZone').classList.remove('loaded');q('uploadIcon').textContent='📄';
+  q('uploadTitle').textContent='Upload Submittal PDF';q('uploadSub').style.display='';
+  q('uploadFn').style.display='none';q('clearBtn').style.display='none';
+  q('reviewSummary').style.display='none';
+  q('issuesCritical').style.display='none';q('issuesWarning').style.display='none';
+  q('issuesInfo').style.display='none';q('noIssues').style.display='none';
+  q('letterContent').textContent='';
+  var btn=q('reviewBtn');btn.disabled=true;
+  btn.innerHTML='<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Review Submittal';
+  lockTab('review');lockTab('letter');
+  if(!isDesktop())goTab('upload');
+});
+
+var lt=0;
+document.addEventListener('touchend',function(e){
+  var tag=e.target.tagName;
+  if(tag==='BUTTON'||tag==='INPUT'||tag==='SELECT'||tag==='A')return;
+  if(e.target.closest('.issue-hdr,.upload-zone'))return;
+  var n=Date.now();if(n-lt<300)e.preventDefault();lt=n;
+},{passive:false});
+
+})();
+</script>
+</body>
+</html>

@@ -44,18 +44,18 @@
     "project": "General",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774487189945,
     "source": "manual",
     "subtasks": [
       {
         "id": "mn6sx7u2",
         "text": "Received from Brittany, send to Raquel",
-        "done": false,
+        "done": true,
         "addedAt": 1774488979946
       }
     ],
-    "updatedAt": 1774488979946
+    "updatedAt": 1774489566841
   },
   {
     "id": "mn6rumxf4loih30zaju",

@@ -3,13 +3,14 @@
     "id": "mn6rwunuec1mb65684g",
     "action": "Pickup passage set & other items from ADI",
     "owner": "Will",
-    "deadline": "TBD",
+    "deadline": "3/27",
     "project": "WMG Riverstone",
     "contact": "",
     "callDate": "",
     "done": false,
     "addedAt": 1774487283258,
-    "source": "manual"
+    "source": "manual",
+    "updatedAt": 1774487292805
   },
   {
     "id": "mn6rwlir4ng4vh0844v",

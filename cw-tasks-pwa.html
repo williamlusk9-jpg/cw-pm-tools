@@ -95,7 +95,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 .sort-lbl{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--tx4);flex-shrink:0}
 .sort-chip{font-family:var(--mono);font-size:10px;letter-spacing:.04em;padding:5px 11px;border-radius:20px;border:1px solid var(--b1);background:transparent;color:var(--tx4);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;-webkit-appearance:none}
 .sort-chip.active{background:var(--s2);border-color:var(--b2);color:var(--tx1)}
-.added-on{font-family:var(--mono);font-size:9px;color:var(--tx4);opacity:.5}
+.added-on{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--tx3)}
 .proj-tag{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:8px;background:var(--accent-dim);color:var(--accent);border:1px solid rgba(232,98,42,.25);flex-shrink:0;white-space:nowrap}
 /* SUBTASKS */
 .sub-progress{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:8px;background:var(--blue-dim);color:var(--blue);border:1px solid rgba(74,144,217,.3);flex-shrink:0}
@@ -136,8 +136,9 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 .sub-inline-inp:focus{border-color:var(--accent)}
 .sub-inline-add-btn{background:transparent;border:1px solid var(--b2);border-radius:8px;color:var(--tx3);font-family:var(--mono);font-size:10px;padding:6px 10px;cursor:pointer;flex-shrink:0;transition:all .15s;white-space:nowrap}
 .sub-inline-add-btn:active{background:var(--s3);color:var(--tx1)}
-.sub-expand-btn{background:none;border:none;color:var(--tx4);font-family:var(--mono);font-size:9px;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;padding:0 2px;flex-shrink:0;transition:color .15s}
-.sub-expand-btn:hover{color:var(--tx2)}
+.sub-expand-btn{background:var(--s2);border:1px solid var(--b1);border-radius:6px;color:var(--blue);font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;padding:4px 9px;flex-shrink:0;transition:all .15s;display:inline-flex;align-items:center;gap:4px;margin-top:5px;align-self:flex-start}
+.sub-expand-btn:hover{background:var(--s3);border-color:var(--blue);color:var(--blue)}
+.sub-expand-btn.has-subs{border-color:rgba(74,144,217,.35)}
 /* mobile subtask section in edit modal */
 .m-sub-sec{padding:10px 0 2px}
 .m-sub-lbl{font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);margin-bottom:7px}
@@ -163,7 +164,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 .owner-pill{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:8px;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
 .owner-pill.mine{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(74,144,217,.3)}
 .owner-pill.theirs{background:var(--green-dim);color:var(--green);border:1px solid rgba(52,168,114,.3)}
-.t-deadline{font-family:var(--mono);font-size:9px;color:var(--tx4)}
+.t-deadline{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--tx2)}
 .t-source{font-family:var(--mono);font-size:9px;color:var(--tx4);opacity:.6}
 .t-del{background:none;border:none;color:var(--tx4);font-size:17px;cursor:pointer;padding:0 2px;line-height:1;flex-shrink:0;align-self:center;opacity:0;transition:opacity .15s}
 .task-row:hover .t-del,.task-row:active .t-del{opacity:1}
@@ -594,8 +595,8 @@ function smartDeadline(raw){
 /* ── PROJECT SORT ── */
 // General always first, then alphabetical
 function projSortKey(name){
-  if(!name||name.toLowerCase()==='no project')return'ÿ no project'; // always last
-  if(name.toLowerCase()==='general')return'  general';              // always first
+  if(!name||name.toLowerCase()==='no project')return'zzzzz_no_project';
+  if(name.toLowerCase()==='general')return'00000_general';
   return name.toLowerCase();
 }
 
@@ -629,8 +630,12 @@ function emptyLabel(){
   return'No open tasks';
 }
 function allProjects(all){
-  return[...new Set(all.map(t=>t.project).filter(Boolean))].sort(function(a,b){
-    return projSortKey(a).localeCompare(projSortKey(b));
+  var unique=[...new Set(all.map(function(t){return t.project;}).filter(Boolean))];
+  return unique.sort(function(a,b){
+    var ka=projSortKey(a), kb=projSortKey(b);
+    if(ka<kb)return -1;
+    if(ka>kb)return 1;
+    return 0;
   });
 }
 
@@ -681,7 +686,7 @@ function buildDeskProjects(all){
   const projs=allProjects(all);const noProj=all.some(t=>!t.project);
   const list=q('dpList');list.innerHTML='';
   list.appendChild(deskProjItem('All projects',projFilter==='',all.filter(t=>!t.done).length,()=>{projFilter='';renderDesktop();}));
-  projs.forEach(p=>list.appendChild(deskProjItem(p,projFilter===p,all.filter(t=>!t.done&&t.project===p).length,()=>{projFilter=p;renderDesktop();})));
+  projs.forEach(function(p){list.appendChild(deskProjItem(p,projFilter===p,all.filter(function(t){return !t.done&&t.project===p;}).length,function(){projFilter=p;renderDesktop();}));});
   if(noProj)list.appendChild(deskProjItem('No project',projFilter==='__none__',all.filter(t=>!t.done&&!t.project).length,()=>{projFilter='__none__';renderDesktop();}));
 }
 function deskProjItem(name,active,ct,onClick){
@@ -818,7 +823,7 @@ function buildGrouped(tasks,container,desktop){
   // By project: General first, then alpha, No project last
   var groups={};
   tasks.forEach(function(t){var k=t.project||'No project';if(!groups[k])groups[k]=[];groups[k].push(t);});
-  Object.entries(groups).sort(function([a],[b]){return projSortKey(a).localeCompare(projSortKey(b));}).forEach(function([proj,items]){
+  Object.entries(groups).sort(function(ea,eb){var ka=projSortKey(ea[0]),kb=projSortKey(eb[0]);return ka<kb?-1:ka>kb?1:0;}).forEach(function([proj,items]){
     var sorted=sortTasksInGroup(items);
     var wrap=document.createElement('div');wrap.className='task-group';if(desktop)wrap.style.margin='0 8px 12px';
     var lbl=document.createElement('div');lbl.className='tg-lbl';
@@ -910,16 +915,17 @@ function buildRow(task,desktop){
     added.textContent='· added '+new Date(task.addedAt).toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'});
     meta.appendChild(added);
   }
-  body.appendChild(txt);body.appendChild(meta);
-  // Subtask expand toggle button
+  // Subtask expand toggle button — inside t-body, left-aligned under task text
   var subs=getSubtasks(task);
-  var expanded=subs.length>0; // auto-expand if has subtasks
+  var expanded=subs.length>0;
   var subPanel=buildInlineSubtasks(task,wrap);
   subPanel.style.display=expanded?'flex':'none';
   var expandBtn=document.createElement('button');
-  expandBtn.className='sub-expand-btn';expandBtn.type='button';
-  expandBtn.textContent=subs.length?subs.filter(function(s){return s.done;}).length+'/'+subs.length:'+ sub';
-  expandBtn.style.color=subs.length?'var(--blue)':'var(--tx4)';
+  expandBtn.className='sub-expand-btn'+(subs.length?' has-subs':'');expandBtn.type='button';
+  expandBtn.innerHTML=subs.length
+    ? '<svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/></svg> '
+      +subs.filter(function(s){return s.done;}).length+'/'+subs.length+' subtasks'
+    : '<svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> subtasks';
   expandBtn.addEventListener('click',function(e){
     e.stopPropagation();
     var shown=subPanel.style.display!=='none';
@@ -927,13 +933,16 @@ function buildRow(task,desktop){
     if(!shown){
       var fresh=getTasks().find(function(x){return x.id===task.id;})||task;
       var fs=getSubtasks(fresh);
-      expandBtn.textContent=fs.length?fs.filter(function(s){return s.done;}).length+'/'+fs.length:'+ sub';
+      expandBtn.innerHTML=fs.length
+        ? '<svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/></svg> '
+          +fs.filter(function(s){return s.done;}).length+'/'+fs.length+' subtasks'
+        : '<svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> subtasks';
     }
   });
+  body.appendChild(txt);body.appendChild(meta);body.appendChild(expandBtn);
   const del=document.createElement('button');del.className='t-del';del.type='button';del.textContent='×';
   del.addEventListener('click',e=>{e.stopPropagation();deleteTask(task.id);});
   row.appendChild(chk);row.appendChild(body);
-  row.appendChild(expandBtn);
   if(!desktop){
     const edit=document.createElement('button');edit.className='t-edit';edit.type='button';edit.textContent='Edit';
     edit.addEventListener('click',e=>{e.stopPropagation();openEditModal(task.id);});

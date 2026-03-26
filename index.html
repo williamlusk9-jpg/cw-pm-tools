@@ -127,6 +127,10 @@ body{min-height:100%;background:var(--bg);color:var(--tx1);font-family:var(--bod
       <span class="sb-lbl">Tasks</span>
       <span class="sb-badge" id="sbBadge" style="display:none">0</span>
     </a>
+    <a class="sb-item" href="cw-submittal-review-pwa.html">
+      <svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span class="sb-lbl">Submittal Review</span>
+    </a>
   </div>
   <div class="sb-footer"><div class="sb-date" id="sbDate"></div></div>
 </nav>
@@ -153,7 +157,7 @@ body{min-height:100%;background:var(--bg);color:var(--tx1);font-family:var(--bod
     <div class="stats-row">
       <div class="stat-card hi"><div class="stat-num" id="statOpen">0</div><div class="stat-lbl">Open tasks</div></div>
       <div class="stat-card"><div class="stat-num" id="statMine">0</div><div class="stat-lbl">My tasks</div></div>
-      <div class="stat-card"><div class="stat-num" id="statDone">0</div><div class="stat-lbl">Completed</div></div>
+      <div class="stat-card"><div class="stat-num" id="statTheirs">0</div><div class="stat-lbl">Theirs</div></div>
     </div>
 
     <div class="quote-card" id="quoteCard">
@@ -196,10 +200,15 @@ body{min-height:100%;background:var(--bg);color:var(--tx1);font-family:var(--bod
           <div class="ac-arrow">›</div>
         </a>
 
-      </div>
-    </div>
-
-    <div class="divider"></div>
+        <a class="app-card" href="cw-submittal-review-pwa.html">
+          <div class="ac-icon" style="background:#7c5cbf"><svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+          <div class="ac-body">
+            <div class="ac-title">Submittal Review</div>
+            <div class="ac-desc">Upload a submittal PDF, AI flags issues and drafts return letter</div>
+            <div class="ac-tags"><span class="ac-tag">PDF upload</span><span class="ac-tag">Issue flagging</span><span class="ac-tag">Return letter</span></div>
+          </div>
+          <div class="ac-arrow">›</div>
+        </a></div>
     <div class="footer-note">Action items from Call Notes and OAC meetings sync to Tasks automatically.</div>
 
   </div>
@@ -217,10 +226,10 @@ function refresh(){
     const tasks=JSON.parse(localStorage.getItem('cw-tasks')||'[]');
     const open=tasks.filter(t=>!t.done).length;
     const mine=tasks.filter(t=>!t.done&&isMyTask(t.owner)).length;
-    const done=tasks.filter(t=>t.done).length;
+    const theirs=tasks.filter(t=>!t.done&&!isMyTask(t.owner)).length;
     q('statOpen').textContent=open;
     q('statMine').textContent=mine;
-    q('statDone').textContent=done;
+    q('statTheirs').textContent=theirs;
     const show=open>0;
     const tb=q('taskBadge');tb.textContent=open;tb.style.display=show?'inline-block':'none';
     const sb=q('sbBadge');sb.textContent=open;sb.style.display=show?'inline-block':'none';

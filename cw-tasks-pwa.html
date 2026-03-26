@@ -413,6 +413,22 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 
 <div class="toast" id="toast"></div>
 
+<!-- GITHUB SYNC TOKEN MODAL -->
+<div id="tokenModalBack" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9000;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)">
+  <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:480px;display:flex;flex-direction:column;gap:14px;box-sizing:border-box">
+    <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#f0ede8">GitHub Sync</div>
+    <div style="font-size:13px;color:#8a8780;line-height:1.6">Paste your GitHub personal access token to sync tasks between iPhone and desktop. Stored only on this device.</div>
+    <div id="tmStatus" style="font-family:'DM Mono',monospace;font-size:12px;padding:10px 12px;border-radius:8px;background:#222;border:1px solid #333;color:#8a8780;line-height:1.5">Not connected</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <label style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0bdb8">Personal Access Token</label>
+      <input id="tokenInput" type="text" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="background:#222;border:1px solid #333;border-radius:10px;color:#f0ede8;font-family:'DM Mono',monospace;font-size:13px;padding:11px 13px;outline:none;width:100%;box-sizing:border-box;-webkit-appearance:none">
+    </div>
+    <button id="saveTokenBtn" type="button" style="width:100%;padding:14px;background:#E8622A;border:none;border-radius:13px;color:#fff;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none">Connect &amp; Sync</button>
+    <button id="disconnectBtn" type="button" style="display:none;width:100%;padding:13px;background:transparent;border:1px solid #333;border-radius:12px;color:#c0bdb8;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;-webkit-appearance:none">Disconnect</button>
+    <button id="closeTokenBtn" type="button" style="width:100%;padding:13px;background:transparent;border:1px solid #333;border-radius:12px;color:#8a8780;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;-webkit-appearance:none">Cancel</button>
+  </div>
+</div>
+
 <script>
 (function(){
 'use strict';
@@ -852,13 +868,19 @@ function syncOnLoad(){
 /* ── TOKEN MODAL ── */
 function openTokenModal(){
   var has=!!getToken();
-  q('tmStatus').textContent=has?'Connected to github.com/williamlusk9-jpg/cw-pm-tools':'Not connected — tasks only on this device';
-  q('tmStatus').className='tm-status '+(has?'connected':'disconnected');
+  var st=q('tmStatus');
+  if(has){
+    st.textContent='Connected to github.com/williamlusk9-jpg/cw-pm-tools';
+    st.style.background='rgba(52,168,114,.12)';st.style.color='#34a872';st.style.borderColor='rgba(52,168,114,.3)';
+  } else {
+    st.textContent='Not connected — tasks only saved on this device';
+    st.style.background='#222';st.style.color='#8a8780';st.style.borderColor='#333';
+  }
   q('tokenInput').value='';
   q('disconnectBtn').style.display=has?'block':'none';
-  q('tokenModalBack').classList.add('show');
+  q('tokenModalBack').style.display='flex';
 }
-function closeTokenModal(){q('tokenModalBack').classList.remove('show');}
+function closeTokenModal(){q('tokenModalBack').style.display='none';}
 q('syncDotMob').addEventListener('click',openTokenModal);
 q('syncDotSb').addEventListener('click',openTokenModal);
 q('closeTokenBtn').addEventListener('click',closeTokenModal);
@@ -866,14 +888,20 @@ q('tokenModalBack').addEventListener('click',function(e){if(e.target===this)clos
 q('disconnectBtn').addEventListener('click',function(){
   if(!confirm('Disconnect GitHub sync? Your tasks stay on this device.'))return;
   setToken('');setGhSha('');setSyncState('off');closeTokenModal();showToast('Disconnected');
+  var st=q('tmStatus');st.textContent='Not connected';st.style.background='#222';st.style.color='#8a8780';st.style.borderColor='#333';
 });
 q('saveTokenBtn').addEventListener('click',function(){
   var t=q('tokenInput').value.trim();
-  if(!t){q('tmStatus').textContent='Paste your token first';q('tmStatus').className='tm-status disconnected';return;}
+  var st=q('tmStatus');
+  if(!t){
+    st.textContent='Paste your token first — copy it from GitHub';
+    st.style.background='rgba(224,82,82,.12)';st.style.color='#e05252';st.style.borderColor='rgba(224,82,82,.3)';
+    return;
+  }
   var btn=q('saveTokenBtn');
-  btn.disabled=true;btn.textContent='Connecting...';
-  q('tmStatus').textContent='Testing connection...';
-  q('tmStatus').className='tm-status disconnected';
+  btn.disabled=true;btn.textContent='Connecting...';btn.style.opacity='.6';
+  st.textContent='Testing connection to GitHub...';
+  st.style.background='#222';st.style.color='#8a8780';st.style.borderColor='#333';
   setToken(t);
   // Test connection first
   fetch('https://api.github.com/repos/williamlusk9-jpg/cw-pm-tools/contents/tasks.json',{
@@ -883,22 +911,23 @@ q('saveTokenBtn').addEventListener('click',function(){
     if(res.status===401||res.status===403){throw new Error('Token invalid or missing repo permission');}
     if(res.status===404){
       // File doesn't exist yet — create it
-      q('tmStatus').textContent='Creating tasks.json in repo...';
+      st.textContent='First time — will create tasks.json in your repo...';
       return res; // will be handled as null remote in syncOnLoad
     }
     if(!res.ok){throw new Error('GitHub error: '+res.status);}
     return res;
   })
   .then(function(){
-    q('tmStatus').textContent='Connected! Syncing...';
-    q('tmStatus').className='tm-status connected';
-    setTimeout(function(){closeTokenModal();syncOnLoad();},800);
+    st.textContent='Connected! Syncing your tasks now...';
+    st.style.background='rgba(52,168,114,.12)';st.style.color='#34a872';st.style.borderColor='rgba(52,168,114,.3)';
+    btn.textContent='Connected!';
+    setTimeout(function(){closeTokenModal();syncOnLoad();},1000);
   })
   .catch(function(e){
     setToken('');
-    q('tmStatus').textContent='Error: '+e.message;
-    q('tmStatus').className='tm-status disconnected';
-    btn.disabled=false;btn.textContent='Connect & Sync';
+    st.textContent='Error: '+e.message;
+    st.style.background='rgba(224,82,82,.12)';st.style.color='#e05252';st.style.borderColor='rgba(224,82,82,.3)';
+    btn.disabled=false;btn.textContent='Connect & Sync';btn.style.opacity='1';
     setSyncState('err');
   });
 });
@@ -917,21 +946,5 @@ let lt=0;document.addEventListener('touchend',function(e){
 
 })();
 </script>
-<!-- GITHUB SYNC TOKEN MODAL -->
-<div class="token-modal-back" id="tokenModalBack">
-  <div class="token-modal">
-    <div class="tm-title">GitHub Sync</div>
-    <div class="tm-sub">Paste your GitHub personal access token to sync tasks between iPhone and desktop. It's stored only on this device — never in the app file.</div>
-    <div class="tm-status disconnected" id="tmStatus">Not connected</div>
-    <div class="field" style="display:flex;flex-direction:column;gap:6px">
-      <label style="font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx2)">Personal Access Token</label>
-      <input class="finput" type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-    </div>
-    <button class="btn-primary" id="saveTokenBtn" type="button">Connect &amp; Sync</button>
-    <button class="btn-secondary" id="disconnectBtn" type="button" style="display:none">Disconnect</button>
-    <button class="btn-secondary" id="closeTokenBtn" type="button">Cancel</button>
-  </div>
-</div>
-
 
 </html>

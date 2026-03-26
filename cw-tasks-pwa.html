@@ -423,6 +423,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
       <label style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0bdb8">Personal Access Token</label>
       <input id="tokenInput" type="text" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="background:#222;border:1px solid #333;border-radius:10px;color:#f0ede8;font-family:'DM Mono',monospace;font-size:13px;padding:11px 13px;outline:none;width:100%;box-sizing:border-box;-webkit-appearance:none">
     </div>
+    <button id="testTokenBtn" type="button" style="width:100%;padding:12px;background:transparent;border:1px solid #4a90d9;border-radius:12px;color:#4a90d9;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;-webkit-appearance:none">Test Connection</button>
     <button id="saveTokenBtn" type="button" style="width:100%;padding:14px;background:#E8622A;border:none;border-radius:13px;color:#fff;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;-webkit-appearance:none">Connect &amp; Sync</button>
     <button id="disconnectBtn" type="button" style="display:none;width:100%;padding:13px;background:transparent;border:1px solid #333;border-radius:12px;color:#c0bdb8;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;-webkit-appearance:none">Disconnect</button>
     <button id="closeTokenBtn" type="button" style="width:100%;padding:13px;background:transparent;border:1px solid #333;border-radius:12px;color:#8a8780;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;-webkit-appearance:none">Cancel</button>
@@ -909,6 +910,51 @@ function closeTokenModal(){q('tokenModalBack').style.display='none';}
 q('syncDotMob').addEventListener('click',openTokenModal);
 q('syncDotSb').addEventListener('click',openTokenModal);
 q('closeTokenBtn').addEventListener('click',closeTokenModal);
+q('testTokenBtn').addEventListener('click',function(){
+  var t=q('tokenInput').value.trim()||getToken();
+  var st=q('tmStatus');
+  if(!t){st.textContent='Paste a token first';return;}
+  st.textContent='Testing...';
+  st.style.background='#222';st.style.color='#8a8780';st.style.borderColor='#333';
+  // Test 1: can we reach the repo at all?
+  fetch('https://api.github.com/repos/williamlusk9-jpg/cw-pm-tools',{
+    headers:{'Authorization':'token '+t,'Accept':'application/vnd.github.v3+json'}
+  })
+  .then(function(res){return res.json().then(function(j){return {status:res.status,body:j};});})
+  .then(function(r){
+    if(r.status===200){
+      st.textContent='Repo OK ('+r.status+'). Testing file access...';
+      // Test 2: can we read tasks.json?
+      return fetch('https://api.github.com/repos/williamlusk9-jpg/cw-pm-tools/contents/tasks.json?ref=main',{
+        headers:{'Authorization':'token '+t,'Accept':'application/vnd.github.v3+json'}
+      })
+      .then(function(res2){return res2.json().then(function(j2){return {status:res2.status,body:j2};});})
+      .then(function(r2){
+        if(r2.status===200){
+          st.style.background='rgba(52,168,114,.12)';st.style.color='#34a872';st.style.borderColor='rgba(52,168,114,.3)';
+          st.textContent='All good! Repo OK, tasks.json found. Hit Connect & Sync.';
+          if(r2.body&&r2.body.sha)setGhSha(r2.body.sha);
+        } else {
+          st.style.background='rgba(224,82,82,.12)';st.style.color='#e05252';st.style.borderColor='rgba(224,82,82,.3)';
+          st.textContent='File error '+r2.status+': '+JSON.stringify(r2.body).slice(0,100);
+        }
+      });
+    } else if(r.status===401||r.status===403){
+      st.style.background='rgba(224,82,82,.12)';st.style.color='#e05252';st.style.borderColor='rgba(224,82,82,.3)';
+      st.textContent='Token rejected ('+r.status+'): '+r.body.message;
+    } else if(r.status===404){
+      st.style.background='rgba(224,82,82,.12)';st.style.color='#e05252';st.style.borderColor='rgba(224,82,82,.3)';
+      st.textContent='Repo not found (404). Check: '+r.body.message;
+    } else {
+      st.style.background='rgba(224,82,82,.12)';st.style.color='#e05252';st.style.borderColor='rgba(224,82,82,.3)';
+      st.textContent='Unexpected '+r.status+': '+JSON.stringify(r.body).slice(0,100);
+    }
+  })
+  .catch(function(e){
+    st.style.background='rgba(224,82,82,.12)';st.style.color='#e05252';st.style.borderColor='rgba(224,82,82,.3)';
+    st.textContent='Network error: '+e.message;
+  });
+});
 q('tokenModalBack').addEventListener('click',function(e){if(e.target===this)closeTokenModal();});
 q('disconnectBtn').addEventListener('click',function(){
   if(!confirm('Disconnect GitHub sync? Your tasks stay on this device.'))return;

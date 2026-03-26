@@ -275,20 +275,6 @@
     "source": "manual"
   },
   {
-    "id": "mn6fcscv0sti6fk4oodq",
-    "action": "Pickup passage set from ADI",
-    "owner": "Will",
-    "deadline": "3/28/26",
-    "project": "WMG Riverstone",
-    "contact": "",
-    "callDate": "",
-    "done": false,
-    "addedAt": 1774466191759,
-    "source": "manual",
-    "subtasks": [],
-    "updatedAt": 1774533019042
-  },
-  {
     "id": "mn656ohob42qtf8a58g",
     "action": "Invoice PPG Arbor Springs mini split install",
     "owner": "Will",

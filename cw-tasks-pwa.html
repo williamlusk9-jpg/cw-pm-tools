@@ -790,6 +790,7 @@ q('ddDel').addEventListener('click',()=>{
 
 /* ── GITHUB SYNC ── */
 var GH_API='https://api.github.com/repos/williamlusk9-jpg/cw-pm-tools/contents/tasks.json';
+var GH_BRANCH='main';
 function getToken(){try{return localStorage.getItem('cw-gh-token')||'';}catch(e){return '';}}
 function setToken(t){try{localStorage.setItem('cw-gh-token',t);}catch(e){}}
 function getGhSha(){try{return localStorage.getItem('cw-gh-sha')||'';}catch(e){return '';}}
@@ -825,7 +826,7 @@ function pushToGitHub(tasks,retry){
   setSyncState('syncing');
   var json=JSON.stringify(tasks,null,2);
   var content=btoa(unescape(encodeURIComponent(json)));
-  var body={message:'cw-tasks sync '+new Date().toISOString(),content:content};
+  var body={message:'cw-tasks sync '+new Date().toISOString(),content:content,branch:GH_BRANCH};
   var sha=getGhSha();if(sha)body.sha=sha;
   var respStatus=0;
   fetch(GH_API,{method:'PUT',headers:{'Authorization':'token '+token,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:JSON.stringify(body)})
@@ -853,7 +854,7 @@ function pushToGitHub(tasks,retry){
 
 function fetchFromGitHub(shaOnly){
   var token=getToken();if(!token){setSyncState('off');return Promise.resolve(null);}
-  return fetch(GH_API,{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}})
+  return fetch(GH_API+'?ref='+GH_BRANCH,{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}})
   .then(function(res){
     if(res.status===404)return null;
     if(!res.ok)throw new Error('Fetch failed: '+res.status);
@@ -928,8 +929,8 @@ q('saveTokenBtn').addEventListener('click',function(){
   st.style.background='#222';st.style.color='#8a8780';st.style.borderColor='#333';
   setToken(t);
   // Test connection first
-  fetch('https://api.github.com/repos/williamlusk9-jpg/cw-pm-tools/contents/tasks.json',{
-    headers:{'Authorization':'token '+t}
+  fetch('https://api.github.com/repos/williamlusk9-jpg/cw-pm-tools/contents/tasks.json?ref=main',{
+    headers:{'Authorization':'token '+t,'Accept':'application/vnd.github.v3+json'}
   })
   .then(function(res){
     if(res.status===401||res.status===403){throw new Error('Token invalid or missing repo permission');}

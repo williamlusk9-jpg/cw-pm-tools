@@ -823,46 +823,70 @@ function schedulePush(){clearTimeout(pushDebounce);pushDebounce=setTimeout(funct
 function pushToGitHub(tasks,retry){
   var token=getToken();if(!token){setSyncState('off');return;}
   setSyncState('syncing');
-  var content=btoa(unescape(encodeURIComponent(JSON.stringify(tasks,null,2))));
-  var body={message:'sync '+new Date().toISOString(),content:content};
+  var json=JSON.stringify(tasks,null,2);
+  var content=btoa(unescape(encodeURIComponent(json)));
+  var body={message:'cw-tasks sync '+new Date().toISOString(),content:content};
   var sha=getGhSha();if(sha)body.sha=sha;
-  fetch(GH_API,{method:'PUT',headers:{'Authorization':'token '+token,'Content-Type':'application/json'},body:JSON.stringify(body)})
+  var respStatus=0;
+  fetch(GH_API,{method:'PUT',headers:{'Authorization':'token '+token,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:JSON.stringify(body)})
   .then(function(res){
-    if(res.status===409&&retry<1){return fetchFromGitHub(true).then(function(){pushToGitHub(tasks,1);});}
-    if(!res.ok)throw new Error(res.status);
+    respStatus=res.status;
+    if(res.status===409&&retry<1){
+      // SHA conflict — re-fetch SHA and retry once
+      return fetchFromGitHub(true).then(function(){pushToGitHub(tasks,1);}).then(function(){return null;});
+    }
+    if(!res.ok){return res.text().then(function(txt){throw new Error('GitHub '+res.status+': '+txt.slice(0,120));});}
     return res.json();
   })
   .then(function(data){
+    if(!data)return; // was a retry, already handled
     if(data&&data.content&&data.content.sha)setGhSha(data.content.sha);
     setSyncState('ok');
+    showToast('Synced','green');
   })
-  .catch(function(e){console.error('GH push error:',e);setSyncState('err');showToast('Sync error: '+(e.message||'check connection'));});
+  .catch(function(e){
+    console.error('GH push error (status '+respStatus+'):',e.message);
+    setSyncState('err');
+    showToast('Sync error: '+e.message.slice(0,60));
+  });
 }
 
 function fetchFromGitHub(shaOnly){
   var token=getToken();if(!token){setSyncState('off');return Promise.resolve(null);}
-  return fetch(GH_API,{headers:{'Authorization':'token '+token}})
-  .then(function(res){if(res.status===404)return null;if(!res.ok)throw new Error(res.status);return res.json();})
+  return fetch(GH_API,{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}})
+  .then(function(res){
+    if(res.status===404)return null;
+    if(!res.ok)throw new Error('Fetch failed: '+res.status);
+    return res.json();
+  })
   .then(function(data){
     if(!data)return null;
-    setGhSha(data.sha);
+    if(data.sha)setGhSha(data.sha);
     if(shaOnly)return null;
-    return JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g,'')))));
+    var decoded=decodeURIComponent(escape(atob(data.content.split('\n').join(''))));
+    return JSON.parse(decoded);
   })
-  .catch(function(e){console.error('GH fetch:',e);return null;});
+  .catch(function(e){console.error('GH fetch error:',e.message);return null;});
 }
 
 function syncOnLoad(){
   var token=getToken();if(!token){setSyncState('off');return;}
   setSyncState('syncing');
   fetchFromGitHub(false).then(function(remote){
-    if(!remote){pushToGitHub(getTasks(),0);return;}
+    if(!remote){
+      // File doesn't exist yet — push local tasks to create it
+      pushToGitHub(getTasks(),0);
+      return;
+    }
     var merged=mergeTasks(getTasks(),remote);
     saveTasks(merged,true);
     render();updateSbBadge(merged);
-    setSyncState('ok');
     pushToGitHub(merged,0);
-  }).catch(function(){setSyncState('err');});
+  }).catch(function(e){
+    console.error('syncOnLoad error:',e);
+    setSyncState('err');
+    showToast('Sync failed: '+(e.message||'unknown error'));
+  });
 }
 
 /* ── TOKEN MODAL ── */

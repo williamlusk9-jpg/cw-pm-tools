@@ -1,5 +1,17 @@
 [
   {
+    "id": "mn6rvq54t4s694mafz",
+    "action": "Get schedule & CO's finalized",
+    "owner": "Will",
+    "deadline": "TBD",
+    "project": "Kodak",
+    "contact": "",
+    "callDate": "",
+    "done": false,
+    "addedAt": 1774487230744,
+    "source": "manual"
+  },
+  {
     "id": "mn6rverx9x9bo6htojb",
     "action": "C2H: Finish mini split connections. Engineer & COA coordination",
     "owner": "C2H",

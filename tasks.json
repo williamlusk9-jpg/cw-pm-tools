@@ -1,5 +1,17 @@
 [
   {
+    "id": "mn6rvyu1icv12vym4aj",
+    "action": "Talk w Curtis about crane for chiller delivery",
+    "owner": "Will",
+    "deadline": "TBD",
+    "project": "Kodak",
+    "contact": "",
+    "callDate": "",
+    "done": false,
+    "addedAt": 1774487242009,
+    "source": "manual"
+  },
+  {
     "id": "mn6rvq54t4s694mafz",
     "action": "Get schedule & CO's finalized",
     "owner": "Will",

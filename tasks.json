@@ -3,13 +3,14 @@
     "id": "mn7r8k1xb1rdf74ssjc",
     "action": "Call King Glass- Panic bar, when glass is ready",
     "owner": "Will",
-    "deadline": "TBD",
+    "deadline": "3/26/26",
     "project": "WMG Riverstone",
     "contact": "",
     "callDate": "",
     "done": false,
     "addedAt": 1774546615941,
-    "source": "manual"
+    "source": "manual",
+    "updatedAt": 1774546628346
   },
   {
     "id": "mn7qk9wqy1z1l8e18vq",

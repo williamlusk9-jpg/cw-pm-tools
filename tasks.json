@@ -198,15 +198,8 @@
     "done": false,
     "addedAt": 1774466191759,
     "source": "manual",
-    "subtasks": [
-      {
-        "id": "mn6soucr",
-        "text": "Get pictures from Allen",
-        "done": false,
-        "addedAt": 1774488589227
-      }
-    ],
-    "updatedAt": 1774488589227
+    "subtasks": [],
+    "updatedAt": 1774533019042
   },
   {
     "id": "mn656ohob42qtf8a58g",

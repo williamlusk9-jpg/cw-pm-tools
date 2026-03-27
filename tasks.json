@@ -301,19 +301,19 @@
     "project": "General",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774449110652,
     "source": "manual",
     "subtasks": [
       {
         "id": "mn7ituga",
         "text": "Received from Brittany, send to Raquel",
-        "done": false,
+        "done": true,
         "addedAt": 1774532492650,
         "due": ""
       }
     ],
-    "updatedAt": 1774532492650
+    "updatedAt": 1774610709527
   },
   {
     "id": "mn655ankiwjapxg81sl",

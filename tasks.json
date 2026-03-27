@@ -7,19 +7,19 @@
     "project": "Bidding Work",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774614782200,
     "source": "manual",
     "subtasks": [
       {
         "id": "mn8vtpzk",
         "text": "Fountain Oaks broken curb",
-        "done": false,
+        "done": true,
         "addedAt": 1774614788048,
         "due": ""
       }
     ],
-    "updatedAt": 1774614788048
+    "updatedAt": 1774614790269
   },
   {
     "id": "mn8vsbs2mbmpcdp7yk",

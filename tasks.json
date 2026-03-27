@@ -7,7 +7,7 @@
     "project": "Bidding Work",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774614914164,
     "source": "manual"
   },
@@ -19,7 +19,7 @@
     "project": "Bidding Work",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774614825938,
     "source": "manual",
     "updatedAt": 1774614835162

@@ -7,19 +7,19 @@
     "project": "Bidding Work",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774614722978,
     "source": "manual",
     "subtasks": [
       {
         "id": "mn8vsmgw",
         "text": "Fountain Oaks broken cubr",
-        "done": false,
+        "done": true,
         "addedAt": 1774614736832,
         "due": ""
       }
     ],
-    "updatedAt": 1774614736832
+    "updatedAt": 1774614738668
   },
   {
     "id": "mn8vpt5ljftt1uvk5f",

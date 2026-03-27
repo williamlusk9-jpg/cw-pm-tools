@@ -287,18 +287,11 @@
     "project": "WMG Riverstone",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774466191759,
     "source": "manual",
-    "subtasks": [
-      {
-        "id": "mn6soucr",
-        "text": "Get pictures from Allen",
-        "done": false,
-        "addedAt": 1774488589227
-      }
-    ],
-    "updatedAt": 1774488589227
+    "subtasks": [],
+    "updatedAt": 1774610070871
   },
   {
     "id": "mn656ohob42qtf8a58g",

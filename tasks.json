@@ -1,29 +1,5 @@
 [
   {
-    "id": "mn8uqfx3xbvtzuekpe",
-    "action": "1",
-    "owner": "Will",
-    "deadline": "Sat 3/27",
-    "project": "General",
-    "contact": "",
-    "callDate": "",
-    "done": false,
-    "addedAt": 1774612955415,
-    "source": "manual"
-  },
-  {
-    "id": "mn8u4nhfdaf0qa75ruc",
-    "action": "1",
-    "owner": "Will",
-    "deadline": "3/27/27",
-    "project": "General",
-    "contact": "",
-    "callDate": "",
-    "done": false,
-    "addedAt": 1774611938787,
-    "source": "manual"
-  },
-  {
     "id": "mn8tjoy32eyakxzjc9h",
     "action": "Pickup items from ADI: Passage set, blank plates, sweep strip",
     "owner": "Will",

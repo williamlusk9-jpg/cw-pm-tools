@@ -605,8 +605,10 @@ function smartDeadline(raw){
     var now=new Date();
     var d=new Date(stripped+' '+now.getFullYear());
     if(!isNaN(d.getTime())){
-      // Use next year if date has passed
-      if(d<now)d=new Date(stripped+' '+(now.getFullYear()+1));
+      // Compare date only (not time) to avoid midnight < current-time false positive
+      var today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+      var dDate=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+      if(dDate<today)d=new Date(stripped+' '+(now.getFullYear()+1));
       // Return: Fri 3/27 (no year)
       var mo=d.getMonth()+1;var dy=d.getDate();
       return dayOfWeek(d)+' '+mo+'/'+dy;

@@ -424,7 +424,7 @@
     "project": "General",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774487179923,
     "source": "manual",
     "subtasks": [],
@@ -495,7 +495,7 @@
     "project": "General",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774470633822,
     "source": "manual"
   },

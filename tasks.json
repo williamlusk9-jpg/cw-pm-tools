@@ -556,7 +556,7 @@
     "project": "Kodak",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774444495576,
     "source": "manual"
   },
@@ -592,7 +592,7 @@
     "project": "Kodak",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774442802638,
     "source": "manual"
   },

@@ -81,13 +81,6 @@
     "source": "manual",
     "subtasks": [
       {
-        "id": "mn8vwtu7",
-        "text": "--",
-        "done": true,
-        "addedAt": 1774614933007,
-        "due": ""
-      },
-      {
         "id": "mn8vx1jb",
         "text": "Fountain Oaks broken curb",
         "done": false,
@@ -102,7 +95,7 @@
         "due": ""
       }
     ],
-    "updatedAt": 1774990712751
+    "updatedAt": 1774990718453
   },
   {
     "id": "mn8vwfar6znlcldsxrs",

@@ -85,12 +85,12 @@
       {
         "id": "mn8w1aqn",
         "text": "Whole Foods- Brick walkway",
-        "done": false,
+        "done": true,
         "addedAt": 1774615141535,
         "due": ""
       }
     ],
-    "updatedAt": 1774615141535
+    "updatedAt": 1775154464026
   },
   {
     "id": "mn8vwqmvp5gfzviwvw7",
@@ -343,14 +343,14 @@
     "source": "manual",
     "subtasks": [
       {
-        "id": "mn7j1z9l",
-        "text": "Sent Jeff Pinska info to view site. Will send available dates for install",
+        "id": "mnht4lku",
+        "text": "Jeff Pinska scheduled to begin Tuesday 4/7",
         "done": false,
-        "addedAt": 1774532872137,
+        "addedAt": 1775154452286,
         "due": ""
       }
     ],
-    "updatedAt": 1774532872137
+    "updatedAt": 1775154455683
   },
   {
     "id": "mn7isvz8wkw77cjlhk",

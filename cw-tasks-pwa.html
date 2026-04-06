@@ -1678,7 +1678,7 @@ if(calMobBtn)calMobBtn.addEventListener('click',openCalendarSetup);
 q('calSetupClose').addEventListener('click',closeCalendarSetup);
 q('calSetupModal').addEventListener('click',function(e){if(e.target===this)closeCalendarSetup();});
 q('calUrlCopy').addEventListener('click',function(){
-  var url='https://raw.githubusercontent.com/williamlusk9-jpg/cw-pm-tools/main/tasks.ics';
+  var url='https://williamlusk9-jpg.github.io/cw-pm-tools/tasks.ics';
   if(navigator.clipboard&&navigator.clipboard.writeText){
     navigator.clipboard.writeText(url).then(function(){
       q('calUrlCopy').textContent='Copied!';
@@ -1719,7 +1719,7 @@ let lt=0;document.addEventListener('touchend',function(e){
     <div style="font-size:13px;color:#8a8780;line-height:1.65">Your tasks automatically push to a calendar file every time they sync. Subscribe once in Outlook and it stays current — no buttons, no exports.</div>
     <div style="background:#222;border:1px solid #333;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:10px">
       <div style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0bdb8">Subscription URL</div>
-      <div style="font-family:'DM Mono',monospace;font-size:11px;color:#4a90d9;word-break:break-all;line-height:1.6">https://raw.githubusercontent.com/williamlusk9-jpg/cw-pm-tools/main/tasks.ics</div>
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:#4a90d9;word-break:break-all;line-height:1.6">https://williamlusk9-jpg.github.io/cw-pm-tools/tasks.ics</div>
       <button id="calUrlCopy" type="button" style="align-self:flex-start;background:transparent;border:1px solid #4a90d9;border-radius:7px;color:#4a90d9;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;padding:6px 14px;cursor:pointer">Copy URL</button>
     </div>
     <div style="background:#222;border:1px solid #333;border-radius:10px;padding:12px 14px">

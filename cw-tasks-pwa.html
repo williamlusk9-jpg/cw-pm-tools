@@ -328,6 +328,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
   <div class="sb-foot">
     <div class="sb-date" id="sbDate"></div>
     <div class="sync-dot off" id="syncDotSb" title="GitHub Sync"><div class="sd"></div><span id="syncLblSb">Not connected</span></div>
+    <button id="calSetupBtn" type="button" title="Outlook Calendar Setup" style="display:flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--b1);border-radius:8px;color:var(--tx4);font-family:var(--mono);font-size:10px;padding:6px 10px;cursor:pointer;transition:all .2s;width:100%;margin-top:4px"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Outlook Sync</button>
   </div>
 </nav>
 
@@ -362,6 +363,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
   </div>
   <div id="mList" style="display:flex;flex-direction:column;gap:12px;flex:1"></div>
   <button class="clear-btn" id="mClear" type="button">Clear completed tasks</button>
+  <button id="calSetupBtnMob" type="button" style="display:flex;align-items:center;justify-content:center;gap:6px;background:transparent;border:1px solid var(--b1);border-radius:10px;color:var(--tx4);font-family:var(--mono);font-size:10px;padding:9px 14px;cursor:pointer;width:100%;margin-top:4px"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Outlook Calendar Setup</button>
 </div>
 
 <!-- FAB -->
@@ -543,7 +545,7 @@ function isMyTask(o){const s=(o||'').toLowerCase();return s==='will'||s.includes
 const sbDate=q('sbDate');if(sbDate)sbDate.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
 function updateSbBadge(tasks){
   const open=(tasks||getTasks()).filter(t=>!t.done).length;
-  const b=q('sbBadge');b.textContent=open;b.style.display=open>0?'inline-block':'none';
+  const b=q('sbBadge');if(b){b.textContent=open;b.style.display=open>0?'inline-block':'none';}
 }
 
 /* ── PWA ── */
@@ -738,70 +740,273 @@ function buildDeskList(all){
   }
 }
 /* ── SUBTASK HELPERS ── */
-function getSubtasks(task){return Array.isArray(task.subtasks)?task.subtasks:[];}
+/* ── RECURSIVE TASK TREE ── */
 
+// Get children of any node (top-level task or subtask)
+function getSubtasks(node){return Array.isArray(node.subtasks)?node.subtasks:[];}
+
+// Navigate to a node at a path within a root task
+// path [] = the task itself; [0] = first subtask; [0,1] = second child of first subtask
+function getNodeAtPath(rootTask,path){
+  var node=rootTask;
+  for(var i=0;i<path.length;i++){
+    var subs=node.subtasks||[];
+    if(subs[path[i]]===undefined)return null;
+    node=subs[path[i]];
+  }
+  return node;
+}
+
+// Run a mutation on a node at path, save, re-render
+function mutatePath(rootTaskId,path,mutFn){
+  var tasks=getTasks();
+  var t=tasks.find(function(x){return x.id===rootTaskId;});
+  if(!t)return;
+  var node=getNodeAtPath(t,path);
+  if(!node)return;
+  mutFn(node,t);
+  t.updatedAt=Date.now();
+  saveTasks(tasks);
+  render();
+}
+
+// Add a child to a node at path
+function addChildAtPath(rootTaskId,path,text,due){
+  if(!text.trim())return;
+  var tasks=getTasks();
+  var t=tasks.find(function(x){return x.id===rootTaskId;});
+  if(!t)return;
+  var node=getNodeAtPath(t,path);
+  if(!node)return;
+  if(!Array.isArray(node.subtasks))node.subtasks=[];
+  node.subtasks.push({
+    id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),
+    text:text.trim(),
+    done:false,
+    addedAt:Date.now(),
+    due:due?smartDeadline(due):'',
+    subtasks:[]
+  });
+  t.updatedAt=Date.now();
+  saveTasks(tasks);
+  render();
+}
+
+// Delete a node at path
+function deleteAtPath(rootTaskId,path){
+  if(!path.length)return; // never delete root via this
+  var tasks=getTasks();
+  var t=tasks.find(function(x){return x.id===rootTaskId;});
+  if(!t)return;
+  var parentPath=path.slice(0,-1);
+  var idx=path[path.length-1];
+  var parent=getNodeAtPath(t,parentPath);
+  if(!parent||!Array.isArray(parent.subtasks))return;
+  parent.subtasks.splice(idx,1);
+  t.updatedAt=Date.now();
+  saveTasks(tasks);
+  render();
+}
+
+// Count total descendants done/total
+function countDesc(node){
+  var subs=getSubtasks(node);
+  if(!subs.length)return null;
+  var total=0,done=0;
+  function walk(n){
+    var ch=getSubtasks(n);
+    ch.forEach(function(c){total++;if(c.done)done++;walk(c);});
+  }
+  walk(node);
+  return total?{total:total,done:done}:null;
+}
+
+/* ── RECURSIVE NODE RENDERER ── */
+function buildNodeChildren(rootTaskId,parentNode,parentPath,depth){
+  var panel=document.createElement('div');
+  panel.className='sub-inline';
+  if(depth>0)panel.style.paddingLeft=(13+depth*14)+'px';
+
+  var subs=getSubtasks(parentNode);
+
+  subs.forEach(function(sub,idx){
+    var myPath=parentPath.concat([idx]);
+
+    var itemWrap=document.createElement('div');
+    itemWrap.style.marginBottom='5px';
+
+    // ── Row ──
+    var row=document.createElement('div');
+    row.className='sub-inline-row';
+    if(sub.done)row.style.opacity='.45';
+
+    // Checkbox
+    var chk=document.createElement('div');
+    chk.className='sub-inline-check'+(sub.done?' checked':'');
+    chk.innerHTML='<svg width="9" height="9" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+    chk.addEventListener('click',function(e){
+      e.stopPropagation();
+      mutatePath(rootTaskId,myPath,function(node,root){
+        node.done=!node.done;
+      });
+    });
+
+    // Body
+    var subBody=document.createElement('div');
+    subBody.style.cssText='flex:1;min-width:0;display:flex;flex-direction:column;gap:3px';
+
+    // Text (click to edit inline)
+    var txt=document.createElement('div');
+    txt.className='sub-inline-text'+(sub.done?' done-sub':'');
+    txt.textContent=sub.text;
+    txt.title='Click to edit';
+    txt.style.cursor='pointer';
+    txt.addEventListener('click',function(e){
+      e.stopPropagation();
+      var inp=document.createElement('input');
+      inp.value=sub.text;
+      inp.className='sub-inline-inp';
+      inp.style.cssText='width:100%;margin:0';
+      txt.replaceWith(inp);
+      inp.focus();inp.select();
+      function save(){
+        if(!inp.value.trim()){inp.replaceWith(txt);return;}
+        mutatePath(rootTaskId,myPath,function(node){node.text=inp.value.trim();});
+      }
+      inp.addEventListener('blur',save);
+      inp.addEventListener('keydown',function(e2){
+        if(e2.key==='Enter'){e2.preventDefault();save();}
+        if(e2.key==='Escape'){inp.replaceWith(txt);}
+      });
+    });
+
+    // Meta row: dates
+    var metaRow=document.createElement('div');
+    metaRow.className='sub-inline-meta';
+
+    if(sub.addedAt){
+      var sadd=document.createElement('span');
+      sadd.className='sub-inline-date has-val';
+      sadd.textContent='ADDED '+new Date(sub.addedAt).toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'});
+      metaRow.appendChild(sadd);
+    }
+
+    var dueTag=document.createElement('span');
+    dueTag.className='sub-inline-date'+(sub.due?' has-val':'');
+    dueTag.textContent=sub.due?'DUE '+sub.due:'+ DUE DATE';
+    dueTag.title='Click to set due date';
+    dueTag.style.cursor='pointer';
+    dueTag.addEventListener('click',function(e){
+      e.stopPropagation();
+      var cur=sub.due||'';
+      var v=prompt('Due date (e.g. 4/15):',cur);
+      if(v===null)return;
+      mutatePath(rootTaskId,myPath,function(node){
+        node.due=v.trim()?smartDeadline(v):'';
+      });
+    });
+    metaRow.appendChild(dueTag);
+
+    // Subtask expand button (shows children count)
+    var childSubs=getSubtasks(sub);
+    var childDone=childSubs.filter(function(c){return c.done;}).length;
+    var expandBtn=document.createElement('button');
+    expandBtn.className='sub-expand-btn'+(childSubs.length?' has-subs':'');
+    expandBtn.type='button';
+    expandBtn.style.cssText='font-size:9px;padding:3px 7px;margin:0';
+    expandBtn.innerHTML=childSubs.length
+      ? '<svg width="8" height="8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> '+childDone+'/'+childSubs.length
+      : '<svg width="8" height="8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> add sub';
+    metaRow.appendChild(expandBtn);
+
+    subBody.appendChild(txt);
+    subBody.appendChild(metaRow);
+
+    // Delete
+    var del=document.createElement('button');
+    del.className='sub-inline-del';del.type='button';del.textContent='×';
+    del.addEventListener('click',function(e){
+      e.stopPropagation();
+      if(childSubs.length&&!confirm('Delete this item and all its subtasks?'))return;
+      deleteAtPath(rootTaskId,myPath);
+    });
+
+    row.appendChild(chk);row.appendChild(subBody);row.appendChild(del);
+    itemWrap.appendChild(row);
+
+    // Recursive children panel
+    var childPanel=buildNodeChildren(rootTaskId,sub,myPath,depth+1);
+    var childVisible=childSubs.length>0;
+    childPanel.style.display=childVisible?'flex':'none';
+    expandBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      childPanel.style.display=childPanel.style.display==='none'?'flex':'none';
+    });
+    itemWrap.appendChild(childPanel);
+    panel.appendChild(itemWrap);
+  });
+
+  // ── Add child input ──
+  var addRow=document.createElement('div');
+  addRow.className='sub-inline-add';
+  addRow.style.cssText='flex-wrap:wrap;gap:6px;margin-top:4px';
+
+  var inp=document.createElement('input');
+  inp.className='sub-inline-inp';inp.type='text';
+  inp.placeholder=depth===0?'Add subtask...':'Add sub-subtask...';
+  inp.autocomplete='off';inp.style.minWidth='120px';
+
+  var dueInp=document.createElement('input');
+  dueInp.className='sub-inline-inp';dueInp.type='text';
+  dueInp.placeholder='Due date';dueInp.autocomplete='off';
+  dueInp.style.cssText='width:88px;flex:none';
+  dueInp.addEventListener('click',function(e){e.stopPropagation();});
+
+  var addBtn=document.createElement('button');
+  addBtn.className='sub-inline-add-btn';addBtn.type='button';addBtn.textContent='+ Add';
+
+  addBtn.addEventListener('click',function(e){
+    e.stopPropagation();
+    if(!inp.value.trim())return;
+    addChildAtPath(rootTaskId,parentPath,inp.value,dueInp.value);
+    inp.value='';dueInp.value='';inp.focus();
+  });
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addBtn.click();}});
+  inp.addEventListener('click',function(e){e.stopPropagation();});
+
+  addRow.appendChild(inp);addRow.appendChild(dueInp);addRow.appendChild(addBtn);
+  panel.appendChild(addRow);
+
+  return panel;
+}
+
+/* ── LEGACY COMPAT: renderSubList used by desktop detail panel ── */
 function renderSubList(containerId,progressId,task,desktop){
-  var subs=getSubtasks(task);
-  var list=q(containerId);if(!list)return;
-  list.innerHTML='';
-  var done=subs.filter(function(s){return s.done;}).length;
+  var container=q(containerId);if(!container)return;
+  container.innerHTML='';
+  var panel=buildNodeChildren(task.id,task,[],0);
+  // Move children out of panel's flex wrapper into container directly
+  Array.from(panel.childNodes).forEach(function(n){container.appendChild(n.cloneNode(true));});
+  // Re-attach events by replacing with live panel
+  container.innerHTML='';
+  container.appendChild(panel);
+  // Update progress indicator
   var prog=progressId?q(progressId):null;
   if(prog){
+    var subs=getSubtasks(task);
     if(subs.length){
+      var done=subs.filter(function(s){return s.done;}).length;
       prog.style.display='inline-block';
       prog.textContent=done+'/'+subs.length;
-      prog.className='sub-progress'+(done===subs.length&&subs.length?' done':'');
+      prog.className='sub-progress'+(done===subs.length?' done':'');
     } else {
       prog.style.display='none';
     }
   }
-  subs.forEach(function(sub,idx){
-    var row=document.createElement('div');row.className='sub-row';
-    var chk=document.createElement('div');chk.className='sub-check'+(sub.done?' checked':'');
-    chk.innerHTML='<svg width="9" height="9" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
-    chk.addEventListener('click',function(){
-      var tasks=getTasks();var t=tasks.find(function(x){return x.id===task.id;});
-      if(!t)return;
-      if(!Array.isArray(t.subtasks))t.subtasks=[];
-      t.subtasks[idx].done=!t.subtasks[idx].done;
-      t.updatedAt=Date.now();
-      // Auto-complete parent if all subtasks done
-      if(t.subtasks.length&&t.subtasks.every(function(s){return s.done;}))t.done=true;
-      else if(t.done&&t.subtasks.length>0&&t.subtasks.some(function(s){return!s.done;}))t.done=false;
-      saveTasks(tasks);
-      render();
-      if(desktop)buildDeskDetail();
-      else renderSubList(containerId,progressId,t,desktop);
-    });
-    var txt=document.createElement('span');txt.className='sub-text'+(sub.done?' done-sub':'');txt.textContent=sub.text;
-    var del=document.createElement('button');del.className='sub-del';del.type='button';del.textContent='×';
-    del.addEventListener('click',function(){
-      var tasks=getTasks();var t=tasks.find(function(x){return x.id===task.id;});
-      if(!t)return;
-      if(!Array.isArray(t.subtasks))return;
-      t.subtasks.splice(idx,1);
-      t.updatedAt=Date.now();
-      saveTasks(tasks);
-      render();
-      if(desktop)buildDeskDetail();
-      else renderSubList(containerId,progressId,getTasks().find(function(x){return x.id===task.id;})||task,desktop);
-    });
-    row.appendChild(chk);row.appendChild(txt);row.appendChild(del);
-    list.appendChild(row);
-  });
 }
 
-function addSubtask(taskId,text,containerId,progressId,desktop){
-  if(!text.trim())return;
-  var tasks=getTasks();var t=tasks.find(function(x){return x.id===taskId;});
-  if(!t)return;
-  if(!Array.isArray(t.subtasks))t.subtasks=[];
-  t.subtasks.push({id:Date.now().toString(36),text:text.trim(),done:false,addedAt:Date.now()});
-  t.updatedAt=Date.now();
-  saveTasks(tasks);
-  render();
-  if(desktop)buildDeskDetail();
-  else renderSubList(containerId,progressId,tasks.find(function(x){return x.id===taskId;})||t,false);
+function addSubtask(rootTaskId,text,containerId,progressId,desktop){
+  addChildAtPath(rootTaskId,[],text,'');
 }
 
 function buildDeskDetail(){
@@ -816,40 +1021,35 @@ function buildDeskDetail(){
   q('ddSrc').textContent=(task.source==='call'?'Phone call':task.source==='oac'?'OAC meeting':'Manual')+(task.callDate?' · '+task.callDate:'');
   q('ddDoneLbl').textContent=task.done?'Mark open':'Mark complete';
   const dl=q('ddProjDl');if(dl){dl.innerHTML='';allProjects(getTasks()).forEach(p=>{const o=document.createElement('option');o.value=p;dl.appendChild(o);});}
-  // Render subtasks
-  renderSubList('ddSubList','ddSubProgress',task,true);
-  // Wire add input
+  // Render recursive subtask tree
+  var ddSub=q('ddSubList');if(ddSub){
+    ddSub.innerHTML='';
+    ddSub.appendChild(buildNodeChildren(task.id,task,[],0));
+  }
   var ddInp=q('ddSubInp');if(ddInp)ddInp.value='';
 }
 
 /* ── GROUPED LIST ── */
 function buildGrouped(tasks,container,desktop){
   if(sortMode==='due'){
-    // Flat list sorted by due date, no-due last — show project tag on each row
     var sorted=sortTasksInGroup(tasks);
     var card=document.createElement('div');card.className='task-list-card';
     if(desktop)card.style.margin='0 8px';
     sorted.forEach(function(t){
       var itemWrap=buildRow(t,desktop);
-      // Inject project tag into the row's meta line
       if(t.project){
         var meta=itemWrap.querySelector('.t-meta');
-        if(meta){
-          var ptag=document.createElement('span');
-          ptag.className='proj-tag';
-          ptag.textContent=t.project;
-          meta.insertBefore(ptag,meta.firstChild);
-        }
+        if(meta){var ptag=document.createElement('span');ptag.className='proj-tag';ptag.textContent=t.project;meta.insertBefore(ptag,meta.firstChild);}
       }
       card.appendChild(itemWrap);
     });
     container.appendChild(card);
     return;
   }
-  // By project: General first, then alpha, No project last
   var groups={};
   tasks.forEach(function(t){var k=t.project||'No project';if(!groups[k])groups[k]=[];groups[k].push(t);});
-  Object.entries(groups).sort(function(ea,eb){var ka=projSortKey(ea[0]),kb=projSortKey(eb[0]);return ka<kb?-1:ka>kb?1:0;}).forEach(function([proj,items]){
+  Object.entries(groups).sort(function(ea,eb){var ka=projSortKey(ea[0]),kb=projSortKey(eb[0]);return ka<kb?-1:ka>kb?1:0;}).forEach(function(entry){
+    var proj=entry[0];var items=entry[1];
     var sorted=sortTasksInGroup(items);
     var wrap=document.createElement('div');wrap.className='task-group';if(desktop)wrap.style.margin='0 8px 12px';
     var lbl=document.createElement('div');lbl.className='tg-lbl';
@@ -862,94 +1062,8 @@ function buildGrouped(tasks,container,desktop){
   });
 }
 
-/* ── BUILD ROW ── */
-function buildInlineSubtasks(task,wrap){
-  var subs=getSubtasks(task);
-  var panel=document.createElement('div');panel.className='sub-inline';
-  // Existing subtasks
-  function renderSubs(){
-    panel.innerHTML='';
-    var freshTask=getTasks().find(function(x){return x.id===task.id;})||task;
-    var freshSubs=getSubtasks(freshTask);
-    freshSubs.forEach(function(sub,idx){
-      var row=document.createElement('div');row.className='sub-inline-row';
-      var chk=document.createElement('div');chk.className='sub-inline-check'+(sub.done?' checked':'');
-      chk.innerHTML='<svg width="9" height="9" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
-      chk.addEventListener('click',function(e){
-        e.stopPropagation();
-        var tasks=getTasks();var t=tasks.find(function(x){return x.id===task.id;});
-        if(!t||!t.subtasks)return;
-        t.subtasks[idx].done=!t.subtasks[idx].done;
-        t.updatedAt=Date.now();
-        if(t.subtasks.length>0&&t.subtasks.every(function(s){return s.done;}))t.done=true;
-        else if(t.done&&t.subtasks.length>0&&t.subtasks.some(function(s){return!s.done;}))t.done=false;
-        saveTasks(tasks);render();
-      });
-      var subBody=document.createElement('div');subBody.style.cssText='flex:1;min-width:0';
-      var txt=document.createElement('span');txt.className='sub-inline-text'+(sub.done?' done-sub':'');txt.textContent=sub.text;
-      var subMeta=document.createElement('div');subMeta.className='sub-inline-meta';
-      // ADDED date
-      if(sub.addedAt){
-        var sadd=document.createElement('span');sadd.className='sub-inline-date has-val';
-        sadd.textContent='ADDED '+new Date(sub.addedAt).toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'});
-        subMeta.appendChild(sadd);
-      }
-      // Due date — clickable to edit
-      var sdueSpan=document.createElement('span');
-      sdueSpan.className='sub-inline-date'+(sub.due?' has-val':'');
-      sdueSpan.textContent=sub.due?'DUE '+sub.due:'+ DUE DATE';
-      sdueSpan.addEventListener('click',function(e){
-        e.stopPropagation();
-        var newDue=prompt('Due date for subtask:',sub.due||'');
-        if(newDue===null)return;
-        var tasks2=getTasks();var t2=tasks2.find(function(x){return x.id===task.id;});
-        if(!t2||!t2.subtasks)return;
-        t2.subtasks[idx].due=newDue.trim()?smartDeadline(newDue):'';
-        t2.updatedAt=Date.now();
-        saveTasks(tasks2);render();
-      });
-      subMeta.appendChild(sdueSpan);
-      subBody.appendChild(txt);if(subMeta.children.length)subBody.appendChild(subMeta);
-      var del=document.createElement('button');del.className='sub-inline-del';del.type='button';del.textContent='×';
-      del.addEventListener('click',function(e){
-        e.stopPropagation();
-        var tasks=getTasks();var t=tasks.find(function(x){return x.id===task.id;});
-        if(!t||!t.subtasks)return;
-        t.subtasks.splice(idx,1);t.updatedAt=Date.now();
-        saveTasks(tasks);render();
-      });
-      row.appendChild(chk);row.appendChild(subBody);row.appendChild(del);
-      panel.appendChild(row);
-    });
-    // Add subtask input
-    var addRow=document.createElement('div');addRow.className='sub-inline-add';addRow.style.flexWrap='wrap';addRow.style.gap='6px';
-    var inp=document.createElement('input');inp.className='sub-inline-inp';inp.type='text';
-    inp.placeholder='Add subtask...';inp.autocomplete='off';inp.style.minWidth='120px';
-    var subDueInp=document.createElement('input');subDueInp.className='sub-inline-inp';subDueInp.type='text';
-    subDueInp.placeholder='Due date';subDueInp.autocomplete='off';subDueInp.style.cssText='width:90px;flex:none';
-    subDueInp.addEventListener('click',function(e){e.stopPropagation();});
-    var btn=document.createElement('button');btn.className='sub-inline-add-btn';btn.type='button';btn.textContent='+ Add';
-    btn.addEventListener('click',function(e){
-      e.stopPropagation();
-      if(!inp.value.trim())return;
-      var tasks=getTasks();var t=tasks.find(function(x){return x.id===task.id;});
-      if(!t)return;
-      if(!Array.isArray(t.subtasks))t.subtasks=[];
-      var subDueVal=subDueInp?subDueInp.value.trim():''; t.subtasks.push({id:Date.now().toString(36),text:inp.value.trim(),done:false,addedAt:Date.now(),due:subDueVal?smartDeadline(subDueVal):''});
-      t.updatedAt=Date.now();
-      saveTasks(tasks);render();
-    });
-    inp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();btn.click();}});
-    inp.addEventListener('click',function(e){e.stopPropagation();});
-    addRow.appendChild(inp);addRow.appendChild(subDueInp);addRow.appendChild(btn);
-    panel.appendChild(addRow);
-  }
-  renderSubs();
-  return panel;
-}
-
+/* ── BUILD ROW (top-level task) ── */
 function buildRow(task,desktop){
-  // Outer wrapper replaces direct card child
   var wrap=document.createElement('div');wrap.className='task-item-wrap';
   var row=document.createElement('div');
   row.className='task-row'+(task.done?' done-row':'')+(desktop&&task.id===selectedId?' sel-row':'');
@@ -962,35 +1076,25 @@ function buildRow(task,desktop){
   const pill=document.createElement('span');pill.className='owner-pill '+(isMyTask(task.owner)?'mine':'theirs');pill.textContent=task.owner||'Unknown';
   const dl=document.createElement('span');dl.className='t-deadline';dl.textContent='· '+(task.deadline||'TBD');
   meta.appendChild(pill);meta.appendChild(dl);
-  // Added-on date
   if(task.addedAt){
     var added=document.createElement('span');added.className='added-on';
     added.textContent='· ADDED '+new Date(task.addedAt).toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'});
     meta.appendChild(added);
   }
-  // Subtask expand toggle button — inside t-body, left-aligned under task text
+  // Expand/collapse subtree button
   var subs=getSubtasks(task);
+  var childDone=subs.filter(function(s){return s.done;}).length;
+  var subPanel=buildNodeChildren(task.id,task,[],0);
   var expanded=subs.length>0;
-  var subPanel=buildInlineSubtasks(task,wrap);
   subPanel.style.display=expanded?'flex':'none';
   var expandBtn=document.createElement('button');
   expandBtn.className='sub-expand-btn'+(subs.length?' has-subs':'');expandBtn.type='button';
   expandBtn.innerHTML=subs.length
-    ? '<svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/></svg> '
-      +subs.filter(function(s){return s.done;}).length+'/'+subs.length+' subtasks'
+    ? '<svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> '+childDone+'/'+subs.length+' subtasks'
     : '<svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> subtasks';
   expandBtn.addEventListener('click',function(e){
     e.stopPropagation();
-    var shown=subPanel.style.display!=='none';
-    subPanel.style.display=shown?'none':'flex';
-    if(!shown){
-      var fresh=getTasks().find(function(x){return x.id===task.id;})||task;
-      var fs=getSubtasks(fresh);
-      expandBtn.innerHTML=fs.length
-        ? '<svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/></svg> '
-          +fs.filter(function(s){return s.done;}).length+'/'+fs.length+' subtasks'
-        : '<svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> subtasks';
-    }
+    subPanel.style.display=subPanel.style.display==='none'?'flex':'none';
   });
   body.appendChild(txt);body.appendChild(meta);body.appendChild(expandBtn);
   const del=document.createElement('button');del.className='t-del';del.type='button';del.textContent='×';
@@ -1008,9 +1112,6 @@ function buildRow(task,desktop){
   return wrap;
 }
 
-/* ── TASK ACTIONS ── */
-function selectTask(id){selectedId=id;renderDesktop();}
-function toggleTask(id){const tasks=getTasks();const t=tasks.find(x=>x.id===id);if(t){t.done=!t.done;saveTasks(tasks);if(selectedId===id)buildDeskDetail();render();}}
 function deleteTask(id){
   if(selectedId===id)selectedId=null;
   if(editingId===id)closeEditModal();
@@ -1069,6 +1170,8 @@ function updateProjDatalist(all){
 }
 
 /* ── OWNER FILTER EVENTS ── */
+/* ── EVENT WIRING — runs after DOM ready ── */
+function wireEvents(){
 q('mChips').addEventListener('click',e=>{const b=e.target.closest('button[data-f]');if(!b)return;ownerFilter=b.dataset.f;render();});
 // Sort chips
 function applySortChips(){
@@ -1215,6 +1318,9 @@ q('ddDel').addEventListener('click',()=>{
 /* ── GITHUB SYNC ── */
 var GH_API='https://api.github.com/repos/williamlusk9-jpg/cw-pm-tools/contents/tasks.json';
 var GH_BRANCH='main';
+var ICS_API='https://api.github.com/repos/williamlusk9-jpg/cw-pm-tools/contents/tasks.ics';
+function getIcsSha(){try{return localStorage.getItem('cw-gh-ics-sha')||'';}catch(e){return '';}}
+function setIcsSha(s){try{localStorage.setItem('cw-gh-ics-sha',s);}catch(e){}}
 function getToken(){try{return localStorage.getItem('cw-gh-token')||'';}catch(e){return '';}}
 function setToken(t){try{localStorage.setItem('cw-gh-token',t);}catch(e){}}
 function getGhSha(){try{return localStorage.getItem('cw-gh-sha')||'';}catch(e){return '';}}
@@ -1242,6 +1348,121 @@ function mergeTasks(local,remote){
   return Object.values(map).sort(function(a,b){return(b.addedAt||0)-(a.addedAt||0);});
 }
 
+/* ── ICS CALENDAR FILE ── */
+function parseDateToICS(str){
+  // Converts a due date string to YYYYMMDD for iCal
+  if(!str||str.toLowerCase()==='tbd')return null;
+  // Strip day-of-week prefix e.g. "Fri 3/27"
+  var s=str.replace(/^(mon|tue|wed|thu|fri|sat|sun)\w*\s+/i,'').trim();
+  var d=new Date(s);
+  if(!isNaN(d.getTime()))return fmtICS(d);
+  // Try appending current year
+  var now=new Date();
+  var d2=new Date(s+' '+now.getFullYear());
+  if(!isNaN(d2.getTime())){
+    var today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    var d2d=new Date(d2.getFullYear(),d2.getMonth(),d2.getDate());
+    if(d2d<today)d2=new Date(s+' '+(now.getFullYear()+1));
+    return fmtICS(d2);
+  }
+  return null;
+}
+function fmtICS(d){
+  var pad=function(n){return String(n).padStart(2,'0');};
+  return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate());
+}
+function uid(){return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);}
+
+function collectDatedItems(tasks){
+  // Returns flat list of {summary, description, dtstart} for every task/subtask
+  // at any depth that has a valid due date and is not done
+  var items=[];
+  var stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'')+'Z';
+
+  function walk(node,depth,parentTitle){
+    var title=node.action||node.text||'Task';
+    var fullTitle=depth===0?title:(parentTitle?parentTitle+' › '+title:title);
+    var proj=node.project||'';
+
+    // Add this node if it has a due date and is open
+    if(!node.done){
+      var due=depth===0?(node.deadline||''):(node.due||'');
+      var dtstart=parseDateToICS(due);
+      if(dtstart){
+        var summary=fullTitle+(proj?' ['+proj+']':'');
+        var desc='Owner: '+(node.owner||'Will')
+          +(node.deadline||node.due?'\nDue: '+(node.deadline||node.due):'')
+          +(depth>0?'\nParent: '+parentTitle:'')
+          +(proj?'\nProject: '+proj:'');
+        items.push({summary:summary,description:desc,dtstart:dtstart,stamp:stamp,uid:uid()});
+      }
+    }
+
+    // Recurse into subtasks
+    var subs=Array.isArray(node.subtasks)?node.subtasks:[];
+    subs.forEach(function(sub){walk(sub,depth+1,fullTitle);});
+  }
+
+  tasks.forEach(function(t){walk(t,0,'');});
+  return items;
+}
+
+function buildICS(tasks){
+  var items=collectDatedItems(tasks);
+  if(!items.length){
+    return 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//C&W PM Tools//EN\r\nX-WR-CALNAME:C&W Tasks\r\nX-WR-CALDESC:C&W Contracting Services - task due dates\r\nEND:VCALENDAR';
+  }
+  var out=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//C&W PM Tools//EN',
+    'X-WR-CALNAME:C&W Tasks','X-WR-CALDESC:C&W Contracting Services - task due dates',
+    'CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+  function fold(key,val){
+    var raw=key+':'+val;
+    if(raw.length<=75)return raw;
+    var res=raw.slice(0,75);var rest=raw.slice(75);
+    while(rest.length){res+='\r\n '+rest.slice(0,74);rest=rest.slice(74);}
+    return res;
+  }
+  items.forEach(function(item){
+    out.push('BEGIN:VEVENT');
+    out.push('UID:'+item.uid+'@cw-pm-tools');
+    out.push('DTSTAMP:'+item.stamp);
+    out.push('DTSTART;VALUE=DATE:'+item.dtstart);
+    out.push('DTEND;VALUE=DATE:'+item.dtstart);
+    out.push(fold('SUMMARY',item.summary));
+    out.push(fold('DESCRIPTION',item.description));
+    out.push('STATUS:NEEDS-ACTION');
+    out.push('END:VEVENT');
+  });
+  out.push('END:VCALENDAR');
+  return out.join('\r\n');
+}
+
+function pushICS(tasks,token){
+  var icsText=buildICS(tasks);
+  var content=btoa(unescape(encodeURIComponent(icsText)));
+  var body={message:'tasks.ics '+new Date().toISOString(),content:content,branch:GH_BRANCH};
+  var sha=getIcsSha();if(sha)body.sha=sha;
+  fetch(ICS_API,{method:'PUT',
+    headers:{'Authorization':'token '+token,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
+    body:JSON.stringify(body)
+  })
+  .then(function(res){
+    if(res.status===409){
+      fetch(ICS_API+'?ref='+GH_BRANCH,{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}})
+      .then(function(r){return r.json();})
+      .then(function(d){if(d&&d.sha){setIcsSha(d.sha);pushICS(tasks,token);}})
+      .catch(function(){});
+      return;
+    }
+    if(!res.ok)return;
+    return res.json();
+  })
+  .then(function(data){
+    if(data&&data.content&&data.content.sha)setIcsSha(data.content.sha);
+  })
+  .catch(function(e){console.warn('ICS push:',e.message);});
+}
+
 var pushDebounce=null;
 function schedulePush(){clearTimeout(pushDebounce);pushDebounce=setTimeout(function(){pushToGitHub(getTasks(),0);},1500);}
 
@@ -1257,17 +1478,18 @@ function pushToGitHub(tasks,retry){
   .then(function(res){
     respStatus=res.status;
     if(res.status===409&&retry<1){
-      // SHA conflict — re-fetch SHA and retry once
       return fetchFromGitHub(true).then(function(){pushToGitHub(tasks,1);}).then(function(){return null;});
     }
-    if(!res.ok){return res.text().then(function(txt){throw new Error('GitHub '+res.status+': '+txt.slice(0,120));});}
+    if(!res.ok){return res.text().then(function(txt){throw new Error('GitHub '+res.status+': '+txt.slice(0,120));}).catch(function(){throw new Error('Server returned '+res.status);});}
     return res.json();
   })
   .then(function(data){
-    if(!data)return; // was a retry, already handled
+    if(!data)return;
     if(data&&data.content&&data.content.sha)setGhSha(data.content.sha);
     setSyncState('ok');
     showToast('Synced','green');
+    // Push ICS calendar for Outlook
+    pushICS(tasks,token);
   })
   .catch(function(e){
     console.error('GH push error (status '+respStatus+'):',e.message);
@@ -1298,11 +1520,7 @@ function syncOnLoad(){
   var token=getToken();if(!token){setSyncState('off');return;}
   setSyncState('syncing');
   fetchFromGitHub(false).then(function(remote){
-    if(!remote){
-      // File doesn't exist yet — push local tasks to create it
-      pushToGitHub(getTasks(),0);
-      return;
-    }
+    if(!remote){pushToGitHub(getTasks(),0);return;}
     var merged=mergeTasks(getTasks(),remote);
     saveTasks(merged,true);
     render();updateSbBadge(merged);
@@ -1333,37 +1551,29 @@ function closeTokenModal(){q('tokenModalBack').style.display='none';}
 q('syncDotMob').addEventListener('click',openTokenModal);
 q('syncDotSb').addEventListener('click',openTokenModal);
 q('closeTokenBtn').addEventListener('click',closeTokenModal);
+q('tokenModalBack').addEventListener('click',function(e){if(e.target===this)closeTokenModal();});
 q('testTokenBtn').addEventListener('click',function(){
   var t=q('tokenInput').value.trim()||getToken();
   var st=q('tmStatus');
   if(!t){st.textContent='Paste a token first';return;}
   st.textContent='Checking token scopes...';
   st.style.background='#222';st.style.color='#8a8780';st.style.borderColor='#333';
-
-  // Step 1: check what scopes this token actually has
-  fetch('https://api.github.com/user',{
-    headers:{'Authorization':'token '+t,'Accept':'application/vnd.github.v3+json'}
-  })
+  fetch('https://api.github.com/user',{headers:{'Authorization':'token '+t,'Accept':'application/vnd.github.v3+json'}})
   .then(function(res){
     var scopes=res.headers.get('X-OAuth-Scopes')||'(none returned)';
-    var rateRemaining=res.headers.get('X-RateLimit-Remaining')||'?';
-    return res.json().then(function(j){return {status:res.status,body:j,scopes:scopes,rate:rateRemaining};});
+    return res.json().then(function(j){return {status:res.status,body:j,scopes:scopes};});
   })
   .then(function(r){
     if(r.status===401){
       st.style.background='rgba(224,82,82,.12)';st.style.color='#e05252';st.style.borderColor='rgba(224,82,82,.3)';
-      st.textContent='Token invalid (401): '+r.body.message;
-      return;
+      st.textContent='Token invalid (401): '+r.body.message;return;
     }
     var hasRepo=r.scopes.includes('repo');
     var user=r.body.login||'unknown';
     if(!hasRepo){
       st.style.background='rgba(224,82,82,.12)';st.style.color='#e05252';st.style.borderColor='rgba(224,82,82,.3)';
-      st.textContent='Token OK for user "'+user+'" BUT missing repo scope. Scopes: '+r.scopes+'. Regenerate with repo checked.';
-      return;
+      st.textContent='Token OK for "'+user+'" BUT missing repo scope. Scopes: '+r.scopes+'. Regenerate with repo checked.';return;
     }
-    // Has repo scope — now test actual file write access
-    st.textContent='Token has repo scope for "'+user+'". Testing file read...';
     fetch('https://api.github.com/repos/williamlusk9-jpg/cw-pm-tools/contents/tasks.json?ref=main',{
       headers:{'Authorization':'token '+t,'Accept':'application/vnd.github.v3+json'}
     })
@@ -1371,7 +1581,7 @@ q('testTokenBtn').addEventListener('click',function(){
     .then(function(r2){
       if(r2.status===200){
         st.style.background='rgba(52,168,114,.12)';st.style.color='#34a872';st.style.borderColor='rgba(52,168,114,.3)';
-        st.textContent='All good! User: '+user+', repo scope confirmed, tasks.json found. Hit Connect & Sync.';
+        st.textContent='All good! User: '+user+', repo scope confirmed. Hit Connect & Sync.';
         if(r2.body&&r2.body.sha)setGhSha(r2.body.sha);
       } else {
         st.style.background='rgba(224,82,82,.12)';st.style.color='#e05252';st.style.borderColor='rgba(224,82,82,.3)';
@@ -1384,7 +1594,6 @@ q('testTokenBtn').addEventListener('click',function(){
     st.textContent='Network error: '+e.message;
   });
 });
-q('tokenModalBack').addEventListener('click',function(e){if(e.target===this)closeTokenModal();});
 q('disconnectBtn').addEventListener('click',function(){
   if(!confirm('Disconnect GitHub sync? Your tasks stay on this device.'))return;
   setToken('');setGhSha('');setSyncState('off');closeTokenModal();showToast('Disconnected');
@@ -1403,7 +1612,6 @@ q('saveTokenBtn').addEventListener('click',function(){
   setToken(t);
   st.textContent='Connecting...';
   st.style.background='#222';st.style.color='#8a8780';st.style.borderColor='#333';
-  // Just sync — no pre-flight, test button already confirmed access
   syncOnLoad();
   setTimeout(function(){
     var state=q('syncDotMob')?q('syncDotMob').className:'';
@@ -1413,29 +1621,80 @@ q('saveTokenBtn').addEventListener('click',function(){
       btn.textContent='Connected!';
       setTimeout(function(){closeTokenModal();},1000);
     } else if(state.includes('err')){
-      st.textContent='Sync failed — see error above';
+      st.textContent='Sync failed — check token';
       st.style.background='rgba(224,82,82,.12)';st.style.color='#e05252';st.style.borderColor='rgba(224,82,82,.3)';
       btn.disabled=false;btn.textContent='Connect & Sync';btn.style.opacity='1';
     } else {
-      // Still syncing — close modal and let it finish in background
       closeTokenModal();
     }
-  },3000);
+  },3500);
 });
 
+/* ── OUTLOOK CALENDAR SETUP ── */
+function openCalendarSetup(){q('calSetupModal').style.display='flex';}
+function closeCalendarSetup(){q('calSetupModal').style.display='none';}
+q('calSetupBtn').addEventListener('click',openCalendarSetup);
+var calMobBtn=document.getElementById('calSetupBtnMob');
+if(calMobBtn)calMobBtn.addEventListener('click',openCalendarSetup);
+q('calSetupClose').addEventListener('click',closeCalendarSetup);
+q('calSetupModal').addEventListener('click',function(e){if(e.target===this)closeCalendarSetup();});
+q('calUrlCopy').addEventListener('click',function(){
+  var url='https://raw.githubusercontent.com/williamlusk9-jpg/cw-pm-tools/main/tasks.ics';
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(function(){
+      q('calUrlCopy').textContent='Copied!';
+      setTimeout(function(){q('calUrlCopy').textContent='Copy URL';},2000);
+    });
+  } else {
+    var ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    q('calUrlCopy').textContent='Copied!';
+    setTimeout(function(){q('calUrlCopy').textContent='Copy URL';},2000);
+  }
+});
+
+} // end wireEvents
+
 /* ── INIT ── */
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',wireEvents);
+} else {
+  wireEvents();
+}
 render();
 syncOnLoad();
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){render();syncOnLoad();}});
 let lt=0;document.addEventListener('touchend',function(e){
-  // Never interfere with buttons, inputs, checkboxes, selects, or modals
   const tag=e.target.tagName;
   if(tag==='BUTTON'||tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA'||tag==='A')return;
-  if(e.target.closest('.modal,.modal-back,.t-check,.t-edit,.t-del,.fab,.chip,.proj-tab,.dp-item,.dl-chip'))return;
+  if(e.target.closest('.modal,.modal-back,.t-check,.t-edit,.t-del,.fab,.chip,.proj-tab,.dp-item,.dl-chip,.sub-inline-check,.sub-inline-del,.sub-expand-btn,.sub-inline-add-btn'))return;
   const n=Date.now();if(n-lt<300)e.preventDefault();lt=n;
 },{passive:false});
 
 })();
 </script>
+
+<!-- OUTLOOK CALENDAR SETUP MODAL -->
+<div id="calSetupModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9000;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)">
+  <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:500px;display:flex;flex-direction:column;gap:14px;box-sizing:border-box;max-height:90vh;overflow-y:auto">
+    <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#f0ede8">Outlook Calendar Sync</div>
+    <div style="font-size:13px;color:#8a8780;line-height:1.65">Your tasks automatically push to a calendar file every time they sync. Subscribe once in Outlook and it stays current — no buttons, no exports.</div>
+    <div style="background:#222;border:1px solid #333;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:10px">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0bdb8">Subscription URL</div>
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:#4a90d9;word-break:break-all;line-height:1.6">https://raw.githubusercontent.com/williamlusk9-jpg/cw-pm-tools/main/tasks.ics</div>
+      <button id="calUrlCopy" type="button" style="align-self:flex-start;background:transparent;border:1px solid #4a90d9;border-radius:7px;color:#4a90d9;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;padding:6px 14px;cursor:pointer">Copy URL</button>
+    </div>
+    <div style="background:#222;border:1px solid #333;border-radius:10px;padding:12px 14px">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#c0bdb8;margin-bottom:10px">One-Time Setup in Outlook</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;gap:10px;align-items:flex-start"><div style="background:#E8622A;color:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">1</div><div style="font-size:13px;color:#c0bdb8;line-height:1.5">Open <strong style="color:#f0ede8">Outlook</strong> on desktop → Calendar view</div></div>
+        <div style="display:flex;gap:10px;align-items:flex-start"><div style="background:#E8622A;color:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">2</div><div style="font-size:13px;color:#c0bdb8;line-height:1.5">Click <strong style="color:#f0ede8">Add Calendar</strong> → <strong style="color:#f0ede8">Subscribe from web</strong></div></div>
+        <div style="display:flex;gap:10px;align-items:flex-start"><div style="background:#E8622A;color:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">3</div><div style="font-size:13px;color:#c0bdb8;line-height:1.5">Paste the URL above → name it <strong style="color:#f0ede8">C&amp;W Tasks</strong> → click <strong style="color:#f0ede8">Import</strong></div></div>
+        <div style="display:flex;gap:10px;align-items:flex-start"><div style="background:#34a872;color:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">✓</div><div style="font-size:13px;color:#c0bdb8;line-height:1.5">Done — Outlook polls automatically every few hours. Only tasks with a due date appear.</div></div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:#555;line-height:1.5;font-family:'DM Mono',monospace">Note: Outlook refreshes subscribed calendars every 1–24 hrs. Changes in Outlook won't sync back to the app — this is one-way.</div>
+    <button id="calSetupClose" type="button" style="width:100%;padding:13px;background:transparent;border:1px solid #333;border-radius:12px;color:#8a8780;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer">Close</button>
+  </div>
+</div>
 
 </html>

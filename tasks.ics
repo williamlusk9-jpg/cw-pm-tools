@@ -6,8 +6,8 @@ X-WR-CALDESC:C&W Contracting Services - task due dates
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 BEGIN:VEVENT
-UID:mnnsrn9d-6anv2rffaua@cw-pm-tools
-DTSTAMP:20260406T230404ZZ
+UID:mnnu2tqu-duf9u562edo@cw-pm-tools
+DTSTAMP:20260406T234046ZZ
 DTSTART;VALUE=DATE:20010406
 DTEND;VALUE=DATE:20010406
 SUMMARY:APC Plastic Surgery- Sent architect list of questions [Bidding Work
@@ -18,8 +18,8 @@ Project: Bidding Work
 STATUS:NEEDS-ACTION
 END:VEVENT
 BEGIN:VEVENT
-UID:mnnsrn9d-cq90c492mxn@cw-pm-tools
-DTSTAMP:20260406T230404ZZ
+UID:mnnu2tqu-h1krvbtrzra@cw-pm-tools
+DTSTAMP:20260406T234046ZZ
 DTSTART;VALUE=DATE:20010410
 DTEND;VALUE=DATE:20010410
 SUMMARY:Review millwork shops & submit for review [PPG Newnan]
@@ -29,8 +29,8 @@ Project: PPG Newnan
 STATUS:NEEDS-ACTION
 END:VEVENT
 BEGIN:VEVENT
-UID:mnnsrn9d-5sffnmtwg3o@cw-pm-tools
-DTSTAMP:20260406T230404ZZ
+UID:mnnu2tqu-ha3i1xwt7th@cw-pm-tools
+DTSTAMP:20260406T234046ZZ
 DTSTART;VALUE=DATE:20010407
 DTEND;VALUE=DATE:20010407
 SUMMARY:Tonya › Parkside D building EIFS replacement
@@ -40,8 +40,8 @@ Parent: Tonya
 STATUS:NEEDS-ACTION
 END:VEVENT
 BEGIN:VEVENT
-UID:mnnsrn9d-ba6p183wliu@cw-pm-tools
-DTSTAMP:20260406T230404ZZ
+UID:mnnu2tqu-s5z578velv@cw-pm-tools
+DTSTAMP:20260406T234046ZZ
 DTSTART;VALUE=DATE:20260326
 DTEND;VALUE=DATE:20260326
 SUMMARY:Call Tonya to discuss needed invoice for HE Whole Foods repairs [Ge

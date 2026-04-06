@@ -9,7 +9,17 @@
     "callDate": "",
     "done": false,
     "addedAt": 1775515118484,
-    "source": "manual"
+    "source": "manual",
+    "subtasks": [
+      {
+        "id": "mnnrv3pi",
+        "text": "Inline dehumidifier",
+        "done": false,
+        "addedAt": 1775515126662,
+        "due": ""
+      }
+    ],
+    "updatedAt": 1775515126662
   },
   {
     "id": "mnnlw8i5zqlaegcnl",

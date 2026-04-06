@@ -131,7 +131,7 @@
       {
         "id": "mn8w0oqf",
         "text": "Dollar Tree- Low wall repair",
-        "done": false,
+        "done": true,
         "addedAt": 1774615113015,
         "due": ""
       },
@@ -143,7 +143,7 @@
         "due": ""
       }
     ],
-    "updatedAt": 1775154473065
+    "updatedAt": 1775515193195
   },
   {
     "id": "mn8vwqmvp5gfzviwvw7",

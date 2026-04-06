@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1072,9 +1075,45 @@ function buildRow(task,desktop){
   chk.addEventListener('click',e=>{e.stopPropagation();toggleTask(task.id);});
   const body=document.createElement('div');body.className='t-body';
   const txt=document.createElement('div');txt.className='t-text';txt.textContent=task.action;
+  txt.title='Click to edit';txt.style.cursor='text';
+  txt.addEventListener('click',function(e){
+    e.stopPropagation();
+    var inp=document.createElement('textarea');
+    inp.value=task.action;
+    inp.style.cssText='width:100%;background:var(--s2);border:1px solid var(--accent);border-radius:8px;color:var(--tx1);font-family:var(--body);font-size:14px;line-height:1.5;padding:5px 8px;outline:none;resize:none;box-sizing:border-box;min-height:40px';
+    inp.rows=2;
+    txt.replaceWith(inp);
+    inp.focus();inp.select();
+    function saveInline(){
+      var val=inp.value.trim();
+      if(!val){inp.replaceWith(txt);return;}
+      if(val===task.action){inp.replaceWith(txt);return;}
+      var tasks=getTasks();var t=tasks.find(function(x){return x.id===task.id;});
+      if(!t){inp.replaceWith(txt);return;}
+      t.action=val;t.updatedAt=Date.now();
+      saveTasks(tasks);render();
+    }
+    inp.addEventListener('blur',saveInline);
+    inp.addEventListener('keydown',function(e2){
+      if(e2.key==='Enter'&&!e2.shiftKey){e2.preventDefault();saveInline();}
+      if(e2.key==='Escape'){inp.replaceWith(txt);}
+    });
+  });
   const meta=document.createElement('div');meta.className='t-meta';
   const pill=document.createElement('span');pill.className='owner-pill '+(isMyTask(task.owner)?'mine':'theirs');pill.textContent=task.owner||'Unknown';
   const dl=document.createElement('span');dl.className='t-deadline';dl.textContent='· '+(task.deadline||'TBD');
+  dl.title='Click to edit due date';dl.style.cursor='pointer';
+  dl.addEventListener('click',function(e){
+    e.stopPropagation();
+    var cur=task.deadline&&task.deadline!=='TBD'?task.deadline:'';
+    var v=prompt('Due date (e.g. 4/15):',cur);
+    if(v===null)return;
+    var tasks=getTasks();var t=tasks.find(function(x){return x.id===task.id;});
+    if(!t)return;
+    t.deadline=v.trim()?smartDeadline(v):'TBD';t.updatedAt=Date.now();
+    saveTasks(tasks);render();
+    if(selectedId===task.id)buildDeskDetail();
+  });
   meta.appendChild(pill);meta.appendChild(dl);
   if(task.addedAt){
     var added=document.createElement('span');added.className='added-on';
@@ -1287,7 +1326,7 @@ q('ddSave').addEventListener('click',()=>{
   t.action=q('ddTitleInp').value.trim()||t.action;t.owner=q('ddOwnerInp').value.trim()||t.owner;
   var _newDl=q('ddDueInp').value.trim();t.deadline=_newDl?smartDeadline(_newDl):t.deadline;t.project=q('ddProjInp').value.trim();
   t.updatedAt=Date.now();
-  saveTasks(tasks);render();showToast('Task saved','green');
+  saveTasks(tasks);render();buildDeskDetail();showToast('Task saved','green');
 });
 q('ddCalBtn').addEventListener('click',()=>{
   if(!selectedId)return;

@@ -1442,7 +1442,7 @@ function collectDatedItems(tasks){
           +(node.deadline||node.due?'\nDue: '+(node.deadline||node.due):'')
           +(depth>0?'\nParent: '+parentTitle:'')
           +(proj?'\nProject: '+proj:'');
-        items.push({summary:summary,description:desc,dtstart:dtstart,stamp:stamp,uid:uid()});
+        items.push({summary:summary,description:desc,dtstart:dtstart,stamp:stamp,uid:'cwt-'+node.id+(depth>0?'-'+parentTitle.replace(/[^a-z0-9]/gi,'').slice(0,20):'')});
       }
     }
 
@@ -1483,6 +1483,24 @@ function buildICS(tasks){
   });
   out.push('END:VCALENDAR');
   return out.join('\r\n');
+}
+
+function exportToOutlook(){
+  var tasks=getTasks();
+  var open=tasks.filter(function(t){return !t.done;});
+  var icsText=buildICS(open);
+  if(!icsText||icsText.indexOf('BEGIN:VEVENT')===-1){
+    showToast('No open tasks with due dates to export','blue');return;
+  }
+  var blob=new Blob([icsText],{type:'text/calendar;charset=utf-8'});
+  var fname='CW-Tasks-'+new Date().toISOString().slice(0,10)+'.ics';
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download=fname;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);},3000);
+  showToast('Calendar file downloaded — open it to import into Outlook','green');
+  closeCalendarSetup();
 }
 
 function pushICS(tasks,token){
@@ -1686,19 +1704,7 @@ var calMobBtn=document.getElementById('calSetupBtnMob');
 if(calMobBtn)calMobBtn.addEventListener('click',openCalendarSetup);
 q('calSetupClose').addEventListener('click',closeCalendarSetup);
 q('calSetupModal').addEventListener('click',function(e){if(e.target===this)closeCalendarSetup();});
-q('calUrlCopy').addEventListener('click',function(){
-  var url='https://williamlusk9-jpg.github.io/cw-pm-tools/tasks.ics';
-  if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(url).then(function(){
-      q('calUrlCopy').textContent='Copied!';
-      setTimeout(function(){q('calUrlCopy').textContent='Copy URL';},2000);
-    });
-  } else {
-    var ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
-    q('calUrlCopy').textContent='Copied!';
-    setTimeout(function(){q('calUrlCopy').textContent='Copy URL';},2000);
-  }
-});
+// calUrlCopy removed — using direct download instead
 
 } // end wireEvents
 
@@ -1725,30 +1731,39 @@ let lt=0;document.addEventListener('touchend',function(e){
 <div id="calSetupModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9000;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)">
   <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:20px 20px 0 0;padding:22px 18px 40px;width:100%;max-width:500px;display:flex;flex-direction:column;gap:16px;box-sizing:border-box;max-height:90vh;overflow-y:auto">
     <div style="display:flex;align-items:center;justify-content:space-between">
-      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#f0ede8">Outlook Calendar Sync</div>
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#f0ede8">Export to Outlook</div>
       <button id="calSetupClose" type="button" style="background:none;border:none;color:#8a8780;font-size:22px;cursor:pointer;line-height:1;padding:0 4px">×</button>
     </div>
-    <div style="font-size:13px;color:#8a8780;line-height:1.65">Tasks with due dates sync to your Outlook calendar automatically every time the app syncs. One-time setup — nothing to do after.</div>
+    <div style="font-size:13px;color:#8a8780;line-height:1.65">Exports all open tasks with due dates as a calendar file. Windows opens it directly in Outlook — no URLs, no setup required.</div>
 
-    <!-- PRIMARY: webcal button -->
-    <div style="background:#1d2d1d;border:1px solid rgba(52,168,114,.3);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px">
-      <div style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#34a872">Recommended — One click</div>
-      <div style="font-size:13px;color:#c0bdb8;line-height:1.5">Click the button below. Windows will ask if you want to open it in Outlook — click <strong style="color:#f0ede8">Yes</strong>. Done.</div>
-      <a id="webcalLink" href="webcal://williamlusk9-jpg.github.io/cw-pm-tools/tasks.ics" style="display:inline-flex;align-items:center;gap:8px;background:#34a872;border:none;border-radius:10px;color:#fff;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;padding:11px 18px;cursor:pointer;text-decoration:none;align-self:flex-start">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        Subscribe in Outlook
-      </a>
+    <div style="background:#1d2d1d;border:1px solid rgba(52,168,114,.3);border-radius:12px;padding:16px">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#34a872;margin-bottom:10px">How it works</div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="background:#34a872;color:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;width:20px;height:20px;min-width:20px;display:flex;align-items:center;justify-content:center">1</div>
+          <div style="font-size:13px;color:#c0bdb8;line-height:1.5">Click <strong style="color:#f0ede8">Download Calendar File</strong> below</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="background:#34a872;color:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;width:20px;height:20px;min-width:20px;display:flex;align-items:center;justify-content:center">2</div>
+          <div style="font-size:13px;color:#c0bdb8;line-height:1.5">A <strong style="color:#f0ede8">.ics file</strong> downloads — double-click it in your Downloads folder</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="background:#34a872;color:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;width:20px;height:20px;min-width:20px;display:flex;align-items:center;justify-content:center">3</div>
+          <div style="font-size:13px;color:#c0bdb8;line-height:1.5">Outlook opens automatically and asks to import — click <strong style="color:#f0ede8">Yes</strong></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="background:#34a872;color:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;width:20px;height:20px;min-width:20px;display:flex;align-items:center;justify-content:center">✓</div>
+          <div style="font-size:13px;color:#c0bdb8;line-height:1.5">All your tasks with due dates appear in your calendar instantly</div>
+        </div>
+      </div>
     </div>
 
-    <!-- SECONDARY: manual URL -->
-    <div style="background:#222;border:1px solid #333;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px">
-      <div style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#8a8780">Manual — if button doesn't work</div>
-      <div style="font-size:12px;color:#8a8780;line-height:1.5">In Outlook: <strong style="color:#c0bdb8">Home ribbon → Open Calendar → From Internet</strong> → paste this URL:</div>
-      <div style="font-family:'DM Mono',monospace;font-size:11px;color:#4a90d9;word-break:break-all;line-height:1.6;background:#1a1a1a;padding:8px 10px;border-radius:7px">https://williamlusk9-jpg.github.io/cw-pm-tools/tasks.ics</div>
-      <button id="calUrlCopy" type="button" style="align-self:flex-start;background:transparent;border:1px solid #4a90d9;border-radius:7px;color:#4a90d9;font-family:'DM Mono',monospace;font-size:11px;font-weight:700;padding:6px 14px;cursor:pointer">Copy URL</button>
-    </div>
+    <button id="exportOutlookBtn" type="button" onclick="exportToOutlook()" style="width:100%;padding:14px;background:#34a872;border:none;border-radius:12px;color:#fff;font-family:'DM Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:opacity .2s;display:flex;align-items:center;justify-content:center;gap:8px">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download Calendar File
+    </button>
 
-    <div style="font-size:11px;color:#444;line-height:1.5;font-family:'DM Mono',monospace">Outlook refreshes every 1-24 hrs automatically. Only tasks with a due date appear. Completed tasks are excluded.</div>
+    <div style="font-size:11px;color:#444;font-family:'DM Mono',monospace;line-height:1.6">Re-export anytime tasks change. If an event already exists in Outlook, re-importing will update it rather than duplicate it.</div>
   </div>
 </div>
 

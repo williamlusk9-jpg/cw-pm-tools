@@ -1151,6 +1151,26 @@ function buildRow(task,desktop){
   return wrap;
 }
 
+function toggleTask(id){
+  var tasks=getTasks();
+  var t=tasks.find(function(x){return x.id===id;});
+  if(!t)return;
+  t.done=!t.done;
+  t.updatedAt=Date.now();
+  saveTasks(tasks);
+  if(isDesktop()){
+    if(selectedId===id)buildDeskDetail();
+    renderDesktop();
+  } else {
+    renderMobile();
+  }
+}
+
+function selectTask(id){
+  selectedId=id;
+  renderDesktop();
+}
+
 function deleteTask(id){
   if(selectedId===id)selectedId=null;
   if(editingId===id)closeEditModal();
@@ -1706,6 +1726,8 @@ q('calSetupClose').addEventListener('click',closeCalendarSetup);
 q('calSetupModal').addEventListener('click',function(e){if(e.target===this)closeCalendarSetup();});
 // calUrlCopy removed — using direct download instead
 
+  var exportBtn=document.getElementById('exportOutlookBtn');
+  if(exportBtn)exportBtn.addEventListener('click',exportToOutlook);
 } // end wireEvents
 
 /* ── INIT ── */
@@ -1758,7 +1780,7 @@ let lt=0;document.addEventListener('touchend',function(e){
       </div>
     </div>
 
-    <button id="exportOutlookBtn" type="button" onclick="exportToOutlook()" style="width:100%;padding:14px;background:#34a872;border:none;border-radius:12px;color:#fff;font-family:'DM Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:opacity .2s;display:flex;align-items:center;justify-content:center;gap:8px">
+    <button id="exportOutlookBtn" type="button" style="width:100%;padding:14px;background:#34a872;border:none;border-radius:12px;color:#fff;font-family:'DM Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:opacity .2s;display:flex;align-items:center;justify-content:center;gap:8px">
       <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Download Calendar File
     </button>

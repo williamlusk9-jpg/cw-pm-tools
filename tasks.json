@@ -81,9 +81,10 @@
     "project": "PPG Newnan",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1775505101838,
-    "source": "manual"
+    "source": "manual",
+    "updatedAt": 1775659768114
   },
   {
     "id": "mnjeyl0l0r8lq18uarw",

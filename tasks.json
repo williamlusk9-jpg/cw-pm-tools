@@ -211,11 +211,19 @@
             "addedAt": 1775671311436,
             "due": "",
             "subtasks": []
+          },
+          {
+            "id": "mnqcv5wj3d1",
+            "text": "Get pricing from awning vendor to remove & reinstall. Get alt price for new fabric",
+            "done": false,
+            "addedAt": 1775671333795,
+            "due": "",
+            "subtasks": []
           }
         ]
       }
     ],
-    "updatedAt": 1775671311436
+    "updatedAt": 1775671333795
   },
   {
     "id": "mn8vwfar6znlcldsxrs",

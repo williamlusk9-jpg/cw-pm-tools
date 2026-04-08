@@ -219,11 +219,19 @@
             "addedAt": 1775671333795,
             "due": "",
             "subtasks": []
+          },
+          {
+            "id": "mnqcvgykjni",
+            "text": "Get pricing for fencing",
+            "done": false,
+            "addedAt": 1775671348124,
+            "due": "",
+            "subtasks": []
           }
         ]
       }
     ],
-    "updatedAt": 1775671333795
+    "updatedAt": 1775671348124
   },
   {
     "id": "mn8vwfar6znlcldsxrs",

@@ -441,9 +441,17 @@
         "done": true,
         "addedAt": 1775154452286,
         "due": ""
+      },
+      {
+        "id": "mnqct0ycu6b",
+        "text": "Stanley to paint weekend of 4/11",
+        "done": false,
+        "addedAt": 1775671234068,
+        "due": "",
+        "subtasks": []
       }
     ],
-    "updatedAt": 1775671223192
+    "updatedAt": 1775671234069
   },
   {
     "id": "mn7isvz8wkw77cjlhk",

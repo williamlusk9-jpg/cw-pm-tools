@@ -39,14 +39,14 @@
       {
         "id": "mnnrv3pi",
         "text": "Inline dehumidifier",
-        "done": false,
+        "done": true,
         "addedAt": 1775515126662,
         "due": ""
       },
       {
         "id": "mnnrvhz2",
         "text": "Plumbing specs",
-        "done": false,
+        "done": true,
         "addedAt": 1775515145150,
         "due": ""
       },
@@ -58,7 +58,7 @@
         "due": ""
       }
     ],
-    "updatedAt": 1775515172102
+    "updatedAt": 1775653314883
   },
   {
     "id": "mnnlw8i5zqlaegcnl",

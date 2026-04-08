@@ -521,6 +521,46 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
   </div>
 </div>
 
+<!-- OUTLOOK CALENDAR SETUP MODAL -->
+<div id="calSetupModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9000;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)">
+  <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:20px 20px 0 0;padding:22px 18px 40px;width:100%;max-width:500px;display:flex;flex-direction:column;gap:16px;box-sizing:border-box;max-height:90vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#f0ede8">Export to Outlook</div>
+      <button id="calSetupClose" type="button" style="background:none;border:none;color:#8a8780;font-size:22px;cursor:pointer;line-height:1;padding:0 4px">×</button>
+    </div>
+    <div style="font-size:13px;color:#8a8780;line-height:1.65">Exports all open tasks with due dates as a calendar file. Windows opens it directly in Outlook — no URLs, no setup required.</div>
+
+    <div style="background:#1d2d1d;border:1px solid rgba(52,168,114,.3);border-radius:12px;padding:16px">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#34a872;margin-bottom:10px">How it works</div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="background:#34a872;color:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;width:20px;height:20px;min-width:20px;display:flex;align-items:center;justify-content:center">1</div>
+          <div style="font-size:13px;color:#c0bdb8;line-height:1.5">Click <strong style="color:#f0ede8">Download Calendar File</strong> below</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="background:#34a872;color:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;width:20px;height:20px;min-width:20px;display:flex;align-items:center;justify-content:center">2</div>
+          <div style="font-size:13px;color:#c0bdb8;line-height:1.5">A <strong style="color:#f0ede8">.ics file</strong> downloads — double-click it in your Downloads folder</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="background:#34a872;color:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;width:20px;height:20px;min-width:20px;display:flex;align-items:center;justify-content:center">3</div>
+          <div style="font-size:13px;color:#c0bdb8;line-height:1.5">Outlook opens automatically and asks to import — click <strong style="color:#f0ede8">Yes</strong></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="background:#34a872;color:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;width:20px;height:20px;min-width:20px;display:flex;align-items:center;justify-content:center">✓</div>
+          <div style="font-size:13px;color:#c0bdb8;line-height:1.5">All your tasks with due dates appear in your calendar instantly</div>
+        </div>
+      </div>
+    </div>
+
+    <button id="exportOutlookBtn" type="button" style="width:100%;padding:14px;background:#34a872;border:none;border-radius:12px;color:#fff;font-family:'DM Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:opacity .2s;display:flex;align-items:center;justify-content:center;gap:8px">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download Calendar File
+    </button>
+
+    <div style="font-size:11px;color:#444;font-family:'DM Mono',monospace;line-height:1.6">Re-export anytime tasks change. If an event already exists in Outlook, re-importing will update it rather than duplicate it.</div>
+  </div>
+</div>
+
 <script>
 (function(){
 'use strict';
@@ -1230,14 +1270,44 @@ function updateProjDatalist(all){
 
 /* ── OWNER FILTER EVENTS ── */
 /* ── EVENT WIRING — runs after DOM ready ── */
-function wireEvents(){
-q('mChips').addEventListener('click',e=>{const b=e.target.closest('button[data-f]');if(!b)return;ownerFilter=b.dataset.f;render();});
-// Sort chips
+
 function applySortChips(){
   document.querySelectorAll('.sort-chip').forEach(function(c){
     c.classList.toggle('active',c.dataset.s===sortMode);
   });
 }
+
+function openAddModal(projHint){
+  q('aAction').value='';q('aOwner').value='Will';q('aDue').value='';q('aSrc').value='manual';
+  q('aProj').value=projHint||projFilter||'';
+  updateProjDatalist(getTasks());
+  q('addBack').classList.add('show');
+  setTimeout(()=>q('aAction').focus(),200);
+}
+
+function closeAddModal(){q('addBack').classList.remove('show');}
+q('fab').addEventListener('click',()=>openAddModal(''));
+
+function openEditModal(id){
+  const task=getTasks().find(t=>t.id===id);if(!task)return;
+  editingId=id;
+  q('eAction').value=task.action||'';q('eOwner').value=task.owner||'';
+  q('eDue').value=task.deadline||'';q('eProj').value=task.project||'';
+  updateProjDatalist(getTasks());
+  // Render subtasks in mobile edit modal
+  renderSubList('eSubList',null,task,false);
+  q('eSubInp').value='';
+  q('editBack').classList.add('show');
+  setTimeout(()=>q('eAction').focus(),200);
+}
+
+function closeEditModal(){q('editBack').classList.remove('show');editingId=null;}
+q('editCancel').addEventListener('click',closeEditModal);
+
+
+function wireEvents(){
+q('mChips').addEventListener('click',e=>{const b=e.target.closest('button[data-f]');if(!b)return;ownerFilter=b.dataset.f;render();});
+// Sort chips
 q('mSortBar').addEventListener('click',function(e){
   var b=e.target.closest('button[data-s]');if(!b)return;
   sortMode=b.dataset.s;applySortChips();render();
@@ -1259,15 +1329,6 @@ q('mClear').addEventListener('click',()=>{
 });
 
 /* ── ADD MODAL ── */
-function openAddModal(projHint){
-  q('aAction').value='';q('aOwner').value='Will';q('aDue').value='';q('aSrc').value='manual';
-  q('aProj').value=projHint||projFilter||'';
-  updateProjDatalist(getTasks());
-  q('addBack').classList.add('show');
-  setTimeout(()=>q('aAction').focus(),200);
-}
-function closeAddModal(){q('addBack').classList.remove('show');}
-q('fab').addEventListener('click',()=>openAddModal(''));
 q('dlAdd').addEventListener('click',()=>openAddModal(''));
 q('dpAdd').addEventListener('click',()=>openAddModal(''));
 q('addCancel').addEventListener('click',closeAddModal);
@@ -1289,20 +1350,6 @@ q('addSave').addEventListener('click',()=>{
 });
 
 /* ── EDIT MODAL (mobile) ── */
-function openEditModal(id){
-  const task=getTasks().find(t=>t.id===id);if(!task)return;
-  editingId=id;
-  q('eAction').value=task.action||'';q('eOwner').value=task.owner||'';
-  q('eDue').value=task.deadline||'';q('eProj').value=task.project||'';
-  updateProjDatalist(getTasks());
-  // Render subtasks in mobile edit modal
-  renderSubList('eSubList',null,task,false);
-  q('eSubInp').value='';
-  q('editBack').classList.add('show');
-  setTimeout(()=>q('eAction').focus(),200);
-}
-function closeEditModal(){q('editBack').classList.remove('show');editingId=null;}
-q('editCancel').addEventListener('click',closeEditModal);
 q('editBack').addEventListener('click',e=>{if(e.target===q('editBack'))closeEditModal();});
 q('eCalBtn').addEventListener('click',()=>{
   if(!editingId)return;
@@ -1373,6 +1420,8 @@ q('ddDel').addEventListener('click',()=>{
   if(!confirm('Delete this task?'))return;
   saveTasks(getTasks().filter(t=>t.id!==selectedId));selectedId=null;renderDesktop();
 });
+
+} // end wireEvents
 
 /* ── GITHUB SYNC ── */
 var GH_API='https://api.github.com/repos/williamlusk9-jpg/cw-pm-tools/contents/tasks.json';
@@ -1728,7 +1777,7 @@ q('calSetupModal').addEventListener('click',function(e){if(e.target===this)close
 
   var exportBtn=document.getElementById('exportOutlookBtn');
   if(exportBtn)exportBtn.addEventListener('click',exportToOutlook);
-} // end wireEvents
+
 
 /* ── INIT ── */
 if(document.readyState==='loading'){
@@ -1749,44 +1798,5 @@ let lt=0;document.addEventListener('touchend',function(e){
 })();
 </script>
 
-<!-- OUTLOOK CALENDAR SETUP MODAL -->
-<div id="calSetupModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9000;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)">
-  <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:20px 20px 0 0;padding:22px 18px 40px;width:100%;max-width:500px;display:flex;flex-direction:column;gap:16px;box-sizing:border-box;max-height:90vh;overflow-y:auto">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#f0ede8">Export to Outlook</div>
-      <button id="calSetupClose" type="button" style="background:none;border:none;color:#8a8780;font-size:22px;cursor:pointer;line-height:1;padding:0 4px">×</button>
-    </div>
-    <div style="font-size:13px;color:#8a8780;line-height:1.65">Exports all open tasks with due dates as a calendar file. Windows opens it directly in Outlook — no URLs, no setup required.</div>
-
-    <div style="background:#1d2d1d;border:1px solid rgba(52,168,114,.3);border-radius:12px;padding:16px">
-      <div style="font-family:'DM Mono',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#34a872;margin-bottom:10px">How it works</div>
-      <div style="display:flex;flex-direction:column;gap:9px">
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <div style="background:#34a872;color:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;width:20px;height:20px;min-width:20px;display:flex;align-items:center;justify-content:center">1</div>
-          <div style="font-size:13px;color:#c0bdb8;line-height:1.5">Click <strong style="color:#f0ede8">Download Calendar File</strong> below</div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <div style="background:#34a872;color:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;width:20px;height:20px;min-width:20px;display:flex;align-items:center;justify-content:center">2</div>
-          <div style="font-size:13px;color:#c0bdb8;line-height:1.5">A <strong style="color:#f0ede8">.ics file</strong> downloads — double-click it in your Downloads folder</div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <div style="background:#34a872;color:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;width:20px;height:20px;min-width:20px;display:flex;align-items:center;justify-content:center">3</div>
-          <div style="font-size:13px;color:#c0bdb8;line-height:1.5">Outlook opens automatically and asks to import — click <strong style="color:#f0ede8">Yes</strong></div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:flex-start">
-          <div style="background:#34a872;color:#fff;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;width:20px;height:20px;min-width:20px;display:flex;align-items:center;justify-content:center">✓</div>
-          <div style="font-size:13px;color:#c0bdb8;line-height:1.5">All your tasks with due dates appear in your calendar instantly</div>
-        </div>
-      </div>
-    </div>
-
-    <button id="exportOutlookBtn" type="button" style="width:100%;padding:14px;background:#34a872;border:none;border-radius:12px;color:#fff;font-family:'DM Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:opacity .2s;display:flex;align-items:center;justify-content:center;gap:8px">
-      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Download Calendar File
-    </button>
-
-    <div style="font-size:11px;color:#444;font-family:'DM Mono',monospace;line-height:1.6">Re-export anytime tasks change. If an event already exists in Outlook, re-importing will update it rather than duplicate it.</div>
-  </div>
-</div>
-
+</html>
 </html>

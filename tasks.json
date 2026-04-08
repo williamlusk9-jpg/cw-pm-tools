@@ -148,13 +148,6 @@
     "source": "manual",
     "subtasks": [
       {
-        "id": "mn8vxk13",
-        "text": "--",
-        "done": false,
-        "addedAt": 1774614966951,
-        "due": ""
-      },
-      {
         "id": "mn8w017q",
         "text": "Bodyfitz- Repair drywall. Conductor heads complete",
         "done": false,
@@ -183,7 +176,7 @@
         "due": ""
       }
     ],
-    "updatedAt": 1775566312247
+    "updatedAt": 1775671251756
   },
   {
     "id": "mn8vwqmvp5gfzviwvw7",
@@ -436,13 +429,6 @@
     "source": "manual",
     "subtasks": [
       {
-        "id": "mnht4lku",
-        "text": "Jeff Pinska scheduled to begin Tuesday 4/7",
-        "done": true,
-        "addedAt": 1775154452286,
-        "due": ""
-      },
-      {
         "id": "mnqct0ycu6b",
         "text": "Stanley to paint weekend of 4/11",
         "done": false,
@@ -451,7 +437,7 @@
         "subtasks": []
       }
     ],
-    "updatedAt": 1775671234069
+    "updatedAt": 1775671246741
   },
   {
     "id": "mn7isvz8wkw77cjlhk",

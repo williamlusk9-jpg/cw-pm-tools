@@ -44,7 +44,7 @@
     "project": "Bidding Work",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1775515118484,
     "source": "manual",
     "subtasks": [
@@ -70,7 +70,7 @@
         "due": ""
       }
     ],
-    "updatedAt": 1775653314883
+    "updatedAt": 1775659739602
   },
   {
     "id": "mnnlw8i5zqlaegcnl",

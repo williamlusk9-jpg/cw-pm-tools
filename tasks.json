@@ -202,10 +202,20 @@
         "text": "Parkside D building EIFS replacement",
         "done": false,
         "addedAt": 1774615172838,
-        "due": "Fri 4/10"
+        "due": "Fri 4/10",
+        "subtasks": [
+          {
+            "id": "mnqcuong5ok",
+            "text": "Get pricing from SCRT to remove gutters & install temporary",
+            "done": false,
+            "addedAt": 1775671311436,
+            "due": "",
+            "subtasks": []
+          }
+        ]
       }
     ],
-    "updatedAt": 1775659754210
+    "updatedAt": 1775671311436
   },
   {
     "id": "mn8vwfar6znlcldsxrs",

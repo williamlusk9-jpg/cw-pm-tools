@@ -9,7 +9,18 @@
     "callDate": "",
     "done": false,
     "addedAt": 1776264911163,
-    "source": "manual"
+    "source": "manual",
+    "subtasks": [
+      {
+        "id": "mo06a1ijqjo",
+        "text": "Shelf & tape lights- do not show on electrical package or lighting schedule",
+        "done": false,
+        "addedAt": 1776264932395,
+        "due": "",
+        "subtasks": []
+      }
+    ],
+    "updatedAt": 1776264932395
   },
   {
     "id": "mo053jva70za6lp9wn",

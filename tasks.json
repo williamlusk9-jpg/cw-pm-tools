@@ -247,13 +247,6 @@
     "source": "manual",
     "subtasks": [
       {
-        "id": "mn8vx1jb",
-        "text": "Fountain Oaks broken curb",
-        "done": false,
-        "addedAt": 1774614942983,
-        "due": "Fri 4/10"
-      },
-      {
         "id": "mn8w1yw6",
         "text": "Parkside D building EIFS replacement",
         "done": false,
@@ -295,7 +288,7 @@
         ]
       }
     ],
-    "updatedAt": 1775671360308
+    "updatedAt": 1776706844752
   },
   {
     "id": "mn8vwfar6znlcldsxrs",

@@ -497,20 +497,20 @@
     "project": "Tonya",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774532840656,
     "source": "manual",
     "subtasks": [
       {
         "id": "mnqct0ycu6b",
         "text": "Stanley to paint weekend of 4/11",
-        "done": false,
+        "done": true,
         "addedAt": 1775671234068,
         "due": "",
         "subtasks": []
       }
     ],
-    "updatedAt": 1775671246741
+    "updatedAt": 1776706540145
   },
   {
     "id": "mn7isvz8wkw77cjlhk",

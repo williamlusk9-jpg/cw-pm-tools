@@ -1,5 +1,17 @@
 [
   {
+    "id": "mo7hd70fptrnxa5nye",
+    "action": "Release subs & schedule",
+    "owner": "Will",
+    "deadline": "TBD",
+    "project": "Kenmar Building Medex",
+    "contact": "",
+    "callDate": "",
+    "done": false,
+    "addedAt": 1776706818495,
+    "source": "manual"
+  },
+  {
     "id": "mo7hcy2lio950tslqlf",
     "action": "Sign contract & return",
     "owner": "Will",

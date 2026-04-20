@@ -555,8 +555,8 @@
   },
   {
     "id": "mn6rverx9x9bo6htojb",
-    "action": "Engineer to review plans for chemical exhaust system",
-    "owner": "C2H",
+    "action": "Kodak to send new exhaust hood specs",
+    "owner": "Kodak",
     "deadline": "TBD",
     "project": "Kodak",
     "contact": "",
@@ -564,7 +564,7 @@
     "done": false,
     "addedAt": 1774487216014,
     "source": "manual",
-    "updatedAt": 1774987927098
+    "updatedAt": 1776706769686
   },
   {
     "id": "mn6ruuntb474zcdq48u",

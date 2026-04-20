@@ -1,5 +1,17 @@
 [
   {
+    "id": "mo7hcy2lio950tslqlf",
+    "action": "Sign contract & return",
+    "owner": "Will",
+    "deadline": "TBD",
+    "project": "Kenmar Building Medex",
+    "contact": "",
+    "callDate": "",
+    "done": false,
+    "addedAt": 1776706806909,
+    "source": "manual"
+  },
+  {
     "id": "mo7h6v3ckut4oo2ze5",
     "action": "Send updated proposal",
     "owner": "Will",

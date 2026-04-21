@@ -55,9 +55,10 @@
     "project": "Kenmar Building Medex",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1776706806909,
-    "source": "manual"
+    "source": "manual",
+    "updatedAt": 1776792410166
   },
   {
     "id": "mo7h6v3ckut4oo2ze5",

@@ -16,13 +16,14 @@
     "id": "mo8wu0rthbm8hjnmtfn",
     "action": "Open job # for PPG Monroe opener",
     "owner": "Will",
-    "deadline": "TBD",
+    "deadline": "Tue 4/21",
     "project": "General",
     "contact": "",
     "callDate": "",
     "done": false,
     "addedAt": 1776793263977,
-    "source": "manual"
+    "source": "manual",
+    "updatedAt": 1776793305881
   },
   {
     "id": "mo8w8rqthydz4hsidtl",

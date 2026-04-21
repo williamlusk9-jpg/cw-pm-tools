@@ -3,13 +3,14 @@
     "id": "mo8wufq57cxxfyr1z0l",
     "action": "Open job # for QPC Midtown electrical add",
     "owner": "Will",
-    "deadline": "TBD",
+    "deadline": "Tue 4/21",
     "project": "General",
     "contact": "",
     "callDate": "",
     "done": false,
     "addedAt": 1776793283357,
-    "source": "manual"
+    "source": "manual",
+    "updatedAt": 1776793298060
   },
   {
     "id": "mo8wu0rthbm8hjnmtfn",

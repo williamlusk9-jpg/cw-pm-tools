@@ -282,9 +282,10 @@
     "project": "General",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774980574124,
-    "source": "manual"
+    "source": "manual",
+    "updatedAt": 1776855577602
   },
   {
     "id": "mn8vxejmcboi837dygw",

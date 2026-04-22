@@ -67,10 +67,10 @@
     "project": "General",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1776793283357,
     "source": "manual",
-    "updatedAt": 1776793298060
+    "updatedAt": 1776860837061
   },
   {
     "id": "mo8wu0rthbm8hjnmtfn",
@@ -80,10 +80,10 @@
     "project": "General",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1776793263977,
     "source": "manual",
-    "updatedAt": 1776793305881
+    "updatedAt": 1776860837755
   },
   {
     "id": "mo8w8rqthydz4hsidtl",

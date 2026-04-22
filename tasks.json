@@ -43,9 +43,10 @@
     "project": "Kodak",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1776862241762,
-    "source": "manual"
+    "source": "manual",
+    "updatedAt": 1776872825195
   },
   {
     "id": "moa1iwucnryukrxh31",

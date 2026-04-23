@@ -96,8 +96,17 @@
     "done": false,
     "addedAt": 1776872717467,
     "source": "manual",
-    "subtasks": [],
-    "updatedAt": 1776949638304
+    "subtasks": [
+      {
+        "id": "mobhxq79h0a",
+        "text": "Proposal ready, send to Tonya",
+        "done": false,
+        "addedAt": 1776949641189,
+        "due": "",
+        "subtasks": []
+      }
+    ],
+    "updatedAt": 1776949641189
   },
   {
     "id": "moa1wgde6s5fijay4ek",

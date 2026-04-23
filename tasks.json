@@ -7,9 +7,10 @@
     "project": "Genu",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1776940571900,
-    "source": "manual"
+    "source": "manual",
+    "updatedAt": 1776949609012
   },
   {
     "id": "moag3ie97s1r9hk2h3b",

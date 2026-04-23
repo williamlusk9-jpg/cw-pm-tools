@@ -86,14 +86,6 @@
     "source": "manual",
     "subtasks": [
       {
-        "id": "moa8cn3nn1z",
-        "text": "Sent to Josh Stacy. Waiting on response",
-        "done": true,
-        "addedAt": 1776873074675,
-        "due": "",
-        "subtasks": []
-      },
-      {
         "id": "mobcxxx64de",
         "text": "$2,500 sub cost",
         "done": false,
@@ -102,7 +94,7 @@
         "subtasks": []
       }
     ],
-    "updatedAt": 1776941254787
+    "updatedAt": 1776941256740
   },
   {
     "id": "moa1wgde6s5fijay4ek",

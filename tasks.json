@@ -92,9 +92,17 @@
         "addedAt": 1776873074675,
         "due": "",
         "subtasks": []
+      },
+      {
+        "id": "mobcxxx64de",
+        "text": "$2,500 sub cost",
+        "done": false,
+        "addedAt": 1776941253114,
+        "due": "",
+        "subtasks": []
       }
     ],
-    "updatedAt": 1776873080923
+    "updatedAt": 1776941253114
   },
   {
     "id": "moa1wgde6s5fijay4ek",

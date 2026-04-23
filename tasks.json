@@ -145,17 +145,8 @@
     "done": false,
     "addedAt": 1776856521294,
     "source": "manual",
-    "subtasks": [
-      {
-        "id": "moa8cbo7l1r",
-        "text": "Emailed, waiting on response",
-        "done": false,
-        "addedAt": 1776873059863,
-        "due": "",
-        "subtasks": []
-      }
-    ],
-    "updatedAt": 1776873059863
+    "subtasks": [],
+    "updatedAt": 1776949645758
   },
   {
     "id": "mo9yhmyb8u0d07prx8p",

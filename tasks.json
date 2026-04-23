@@ -153,7 +153,7 @@
     "project": "PPG Monroe Auto Opener",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1776856511603,
     "source": "manual",
     "subtasks": [
@@ -166,7 +166,7 @@
         "subtasks": []
       }
     ],
-    "updatedAt": 1776873057045
+    "updatedAt": 1776941265079
   },
   {
     "id": "mo9yhbpr3ry5g25jvp",

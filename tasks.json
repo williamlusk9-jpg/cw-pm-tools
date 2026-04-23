@@ -60,7 +60,18 @@
     "callDate": "",
     "done": false,
     "addedAt": 1776872809529,
-    "source": "manual"
+    "source": "manual",
+    "subtasks": [
+      {
+        "id": "mobhxgg69nb",
+        "text": "Proposal ready, send to Tonya",
+        "done": false,
+        "addedAt": 1776949628550,
+        "due": "",
+        "subtasks": []
+      }
+    ],
+    "updatedAt": 1776949628550
   },
   {
     "id": "moa85lantokgn5731s",

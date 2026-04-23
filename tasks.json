@@ -31,9 +31,10 @@
     "project": "WMG Riverstone",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1776886064027,
-    "source": "manual"
+    "source": "manual",
+    "updatedAt": 1776941221952
   },
   {
     "id": "moadifo3bb4t7ljujh7",

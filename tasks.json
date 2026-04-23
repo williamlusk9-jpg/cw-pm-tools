@@ -88,7 +88,7 @@
       {
         "id": "moa8cn3nn1z",
         "text": "Sent to Josh Stacy. Waiting on response",
-        "done": false,
+        "done": true,
         "addedAt": 1776873074675,
         "due": "",
         "subtasks": []
@@ -102,7 +102,7 @@
         "subtasks": []
       }
     ],
-    "updatedAt": 1776941253114
+    "updatedAt": 1776941254787
   },
   {
     "id": "moa1wgde6s5fijay4ek",

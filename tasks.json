@@ -20,9 +20,10 @@
     "project": "Kodak",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1776886085601,
-    "source": "manual"
+    "source": "manual",
+    "updatedAt": 1776962108356
   },
   {
     "id": "moag31qxb5osx4nb9w",

@@ -96,17 +96,8 @@
     "done": false,
     "addedAt": 1776872717467,
     "source": "manual",
-    "subtasks": [
-      {
-        "id": "mobcxxx64de",
-        "text": "$2,500 sub cost",
-        "done": true,
-        "addedAt": 1776941253114,
-        "due": "",
-        "subtasks": []
-      }
-    ],
-    "updatedAt": 1776949635877
+    "subtasks": [],
+    "updatedAt": 1776949638304
   },
   {
     "id": "moa1wgde6s5fijay4ek",

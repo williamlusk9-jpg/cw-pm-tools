@@ -620,27 +620,11 @@
             "addedAt": 1775671333795,
             "due": "",
             "subtasks": []
-          },
-          {
-            "id": "mnqcvgykjni",
-            "text": "Get pricing for fencing",
-            "done": false,
-            "addedAt": 1775671348124,
-            "due": "",
-            "subtasks": []
-          },
-          {
-            "id": "mnqcvqd0gie",
-            "text": "Add pricing to build & install tunnel",
-            "done": false,
-            "addedAt": 1775671360308,
-            "due": "",
-            "subtasks": []
           }
         ]
       }
     ],
-    "updatedAt": 1777994147052
+    "updatedAt": 1777994152444
   },
   {
     "id": "mn8vwfar6znlcldsxrs",

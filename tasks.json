@@ -614,14 +614,6 @@
         "due": "Fri 4/10",
         "subtasks": [
           {
-            "id": "mnqcuong5ok",
-            "text": "Get pricing from SCRT to remove gutters & install temporary",
-            "done": false,
-            "addedAt": 1775671311436,
-            "due": "",
-            "subtasks": []
-          },
-          {
             "id": "mnqcv5wj3d1",
             "text": "Get pricing from awning vendor to remove & reinstall. Get alt price for new fabric",
             "done": false,
@@ -648,7 +640,7 @@
         ]
       }
     ],
-    "updatedAt": 1776706844752
+    "updatedAt": 1777994147052
   },
   {
     "id": "mn8vwfar6znlcldsxrs",

@@ -579,7 +579,12 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 /* ── STORAGE ── */
 function getTasks(){try{return JSON.parse(localStorage.getItem('cw-tasks')||'[]');}catch(e){return[];}}
 function saveTasks(a,skipPush){
-  try{localStorage.setItem('cw-tasks',JSON.stringify(a));}catch(e){}
+  try{
+    var now=Date.now();
+    a.forEach(function(t){if(t&&!t.updatedAt&&!t.addedAt)t.addedAt=now;});
+    localStorage.setItem('cw-tasks',JSON.stringify(a));
+    localStorage.setItem('cw-tasks-savedAt',String(now));
+  }catch(e){}
   if(!skipPush)schedulePush();
 }
 function isMyTask(o){const s=(o||'').toLowerCase();return s==='will'||s.includes('will lusk')||s==='me'||s==='pm';}
@@ -1443,17 +1448,42 @@ function setSyncState(state){
 }
 
 function mergeTasks(local,remote){
-  var map={};
-  local.forEach(function(t){map[t.id]=t;});
-  remote.forEach(function(t){
-    if(!map[t.id]){map[t.id]=t;}
-    else{
-      var lu=map[t.id].updatedAt||map[t.id].addedAt||0;
-      var ru=t.updatedAt||t.addedAt||0;
-      if(ru>lu)map[t.id]=t;
+  // remote._syncedAt is stamped on every push — tells us when the remote list was last written
+  var remoteSyncedAt=remote._syncedAt||0;
+  var remoteMap={};
+  // Filter out metadata key
+  var remoteTasks=Array.isArray(remote)?remote:Object.values(remote).filter(function(x){return x&&x.id;});
+  remoteTasks.forEach(function(t){if(t&&t.id)remoteMap[t.id]=t;});
+
+  var result=[];
+
+  // Start with remote as source of truth
+  remoteTasks.forEach(function(t){if(t&&t.id)result.push(t);});
+
+  // Add local tasks that are newer than the remote sync (added/edited after last push)
+  local.forEach(function(t){
+    if(!t||!t.id)return;
+    if(remoteMap[t.id]){
+      // Both have it — keep whichever is newer
+      var lu=t.updatedAt||t.addedAt||0;
+      var ru=remoteMap[t.id].updatedAt||remoteMap[t.id].addedAt||0;
+      if(lu>ru){
+        // Replace with local version
+        var idx=result.findIndex(function(r){return r.id===t.id;});
+        if(idx>-1)result[idx]=t;
+      }
+    } else {
+      // Task in local but NOT in remote
+      var localModified=t.updatedAt||t.addedAt||0;
+      if(localModified>remoteSyncedAt){
+        // Created/modified after the remote was last synced — keep it (local addition)
+        result.push(t);
+      }
+      // else: was in remote before, now gone — it was deleted on the other device, drop it
     }
   });
-  return Object.values(map).sort(function(a,b){return(b.addedAt||0)-(a.addedAt||0);});
+
+  return result.sort(function(a,b){return(b.addedAt||0)-(a.addedAt||0);});
 }
 
 /* ── ICS CALENDAR FILE ── */
@@ -1604,7 +1634,13 @@ function schedulePush(){clearTimeout(pushDebounce);pushDebounce=setTimeout(funct
 function pushToGitHub(tasks,retry){
   var token=getToken();if(!token){setSyncState('off');return;}
   setSyncState('syncing');
-  var json=JSON.stringify(tasks,null,2);
+  // Stamp sync time so other devices know when this list was last authoritative
+  var syncedAt=Date.now();
+  var tasksWithMeta=tasks.slice(); // don't mutate original
+  // Store _syncedAt as a property on the array (won't survive JSON array serialization)
+  // Instead encode it as a wrapper object
+  var payload={_syncedAt:syncedAt,tasks:tasks};
+  var json=JSON.stringify(payload,null,2);
   var content=btoa(unescape(encodeURIComponent(json)));
   var body={message:'cw-tasks sync '+new Date().toISOString(),content:content,branch:GH_BRANCH};
   var sha=getGhSha();if(sha)body.sha=sha;
@@ -1646,7 +1682,17 @@ function fetchFromGitHub(shaOnly){
     if(data.sha)setGhSha(data.sha);
     if(shaOnly)return null;
     var decoded=decodeURIComponent(escape(atob(data.content.split('\n').join(''))));
-    return JSON.parse(decoded);
+    var parsed=JSON.parse(decoded);
+    // Handle both old format (plain array) and new format ({_syncedAt, tasks})
+    if(Array.isArray(parsed)){
+      return parsed; // old format — no syncedAt, merge will be conservative
+    }
+    if(parsed&&parsed.tasks){
+      var taskArr=parsed.tasks;
+      taskArr._syncedAt=parsed._syncedAt||0;
+      return taskArr;
+    }
+    return parsed;
   })
   .catch(function(e){console.error('GH fetch error:',e.message);return null;});
 }

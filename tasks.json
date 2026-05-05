@@ -759,7 +759,7 @@
     "project": "WMG Riverstone",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774546737802,
     "source": "manual",
     "updatedAt": 1774546991613
@@ -772,7 +772,7 @@
     "project": "WMG Riverstone",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774546615941,
     "source": "manual",
     "updatedAt": 1774546628346
@@ -807,7 +807,7 @@
     "project": "General",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774544633312,
     "source": "manual",
     "subtasks": [
@@ -877,7 +877,7 @@
     "project": "WMG Riverstone",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774487283258,
     "source": "manual",
     "updatedAt": 1774487292805
@@ -946,7 +946,7 @@
     "project": "General",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774487179923,
     "source": "manual",
     "subtasks": [],
@@ -972,7 +972,7 @@
     "project": "Frank Yuan Plastic Surgery",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774472290789,
     "source": "manual"
   },
@@ -1018,7 +1018,7 @@
     "project": "General",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774470633822,
     "source": "manual"
   },
@@ -1078,7 +1078,7 @@
     "project": "Kodak",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774444495576,
     "source": "manual"
   },
@@ -1114,7 +1114,7 @@
     "project": "Kodak",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1774442802638,
     "source": "manual"
   },

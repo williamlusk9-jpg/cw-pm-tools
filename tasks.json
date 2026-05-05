@@ -330,9 +330,10 @@
     "project": "Tonya",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1776706879145,
-    "source": "manual"
+    "source": "manual",
+    "updatedAt": 1777988953711
   },
   {
     "id": "mo7hd70fptrnxa5nye",

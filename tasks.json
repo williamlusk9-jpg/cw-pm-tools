@@ -120,7 +120,7 @@
     "project": "Tonya",
     "contact": "",
     "callDate": "",
-    "done": false,
+    "done": true,
     "addedAt": 1776872809529,
     "source": "manual",
     "subtasks": [
@@ -133,7 +133,7 @@
         "subtasks": []
       }
     ],
-    "updatedAt": 1776949631720
+    "updatedAt": 1777986176076
   },
   {
     "id": "moa85lantokgn5731s",

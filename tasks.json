@@ -1,5 +1,5 @@
 {
-  "_syncedAt": 1778069335833,
+  "_syncedAt": 1778069349990,
   "tasks": [
     {
       "id": "mosmhdnf7n3rf6srse7",
@@ -33,9 +33,10 @@
       "project": "PPG Newnan",
       "contact": "",
       "callDate": "",
-      "done": false,
+      "done": true,
       "addedAt": 1777406684377,
-      "source": "manual"
+      "source": "manual",
+      "updatedAt": 1778069346973
     },
     {
       "id": "moj21hidj8xncwsh2j",
@@ -45,10 +46,10 @@
       "project": "PPG Newnan",
       "contact": "",
       "callDate": "",
-      "done": false,
+      "done": true,
       "addedAt": 1777406672101,
       "source": "manual",
-      "updatedAt": 1777406694723
+      "updatedAt": 1778069348481
     },
     {
       "id": "moj20d86ej6bkoa87zs",
@@ -58,9 +59,10 @@
       "project": "PPG Newnan",
       "contact": "",
       "callDate": "",
-      "done": false,
+      "done": true,
       "addedAt": 1777406619895,
-      "source": "manual"
+      "source": "manual",
+      "updatedAt": 1778069347434
     },
     {
       "id": "mobcjcahhetnocvmrf",

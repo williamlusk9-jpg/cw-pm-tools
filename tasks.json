@@ -1,6 +1,18 @@
 {
-  "_syncedAt": 1778079211154,
+  "_syncedAt": 1778079226555,
   "tasks": [
+    {
+      "id": "mou6gmonrc4d87qzzlo",
+      "action": "Pay app 3 / CO-2",
+      "owner": "Will",
+      "deadline": "Fri 5/8",
+      "project": "WMG Riverstone",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1778079225047,
+      "source": "manual"
+    },
     {
       "id": "mou0yhcvpwu5txfpobm",
       "action": "Look @ Chapman's front windows not opening easily",

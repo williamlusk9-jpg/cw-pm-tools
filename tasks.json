@@ -1,5 +1,5 @@
 {
-  "_syncedAt": 1778069982085,
+  "_syncedAt": 1778069992130,
   "tasks": [
     {
       "id": "mou0yhcvpwu5txfpobm",
@@ -272,10 +272,10 @@
       "project": "Tonya",
       "contact": "",
       "callDate": "",
-      "done": false,
+      "done": true,
       "addedAt": 1776801498997,
       "source": "manual",
-      "updatedAt": 1778069389094
+      "updatedAt": 1778069990613
     },
     {
       "id": "mo91pxdrpywkdjliaan",

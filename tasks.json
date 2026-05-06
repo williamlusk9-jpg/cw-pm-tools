@@ -1,5 +1,5 @@
 {
-  "_syncedAt": 1778069390596,
+  "_syncedAt": 1778069409640,
   "tasks": [
     {
       "id": "mosmhdnf7n3rf6srse7",
@@ -344,7 +344,7 @@
     },
     {
       "id": "mo7hd70fptrnxa5nye",
-      "action": "Release subs & schedule",
+      "action": "Scheduled for 5/16",
       "owner": "Will",
       "deadline": "TBD",
       "project": "Kenmar Building Medex",
@@ -363,7 +363,7 @@
           "subtasks": []
         }
       ],
-      "updatedAt": 1777988967494
+      "updatedAt": 1778069408123
     },
     {
       "id": "mo7hcy2lio950tslqlf",

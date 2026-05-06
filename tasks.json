@@ -1,5 +1,5 @@
 {
-  "_syncedAt": 1778069365840,
+  "_syncedAt": 1778069386023,
   "tasks": [
     {
       "id": "mosmhdnf7n3rf6srse7",
@@ -254,7 +254,7 @@
     },
     {
       "id": "mo91qiyd5f64mlczzst",
-      "action": "Bodyfitz drywall repairs",
+      "action": "Bodyfitz drywall repairs- Scheduled for Saturday",
       "owner": "Will",
       "deadline": "TBD",
       "project": "Tonya",
@@ -262,7 +262,8 @@
       "callDate": "",
       "done": false,
       "addedAt": 1776801498997,
-      "source": "manual"
+      "source": "manual",
+      "updatedAt": 1778069384520
     },
     {
       "id": "mo91pxdrpywkdjliaan",

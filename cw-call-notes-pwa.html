@@ -31,7 +31,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 .sb-pill{width:34px;height:34px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .sb-brand{font-family:var(--disp);font-weight:700;font-size:15px;color:var(--tx1);letter-spacing:-.3px}
 .sb-brand-sub{font-family:var(--mono);font-size:9px;color:var(--tx4);letter-spacing:.07em;text-transform:uppercase;margin-top:2px}
-.sb-nav{padding:10px 8px;flex:1;display:flex;flex-direction:column;gap:2px}
+.sb-nav{padding:10px 8px;flex:1;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
 .sb-item{display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:8px;text-decoration:none;color:var(--tx3);transition:background .15s,color .15s;border:1px solid transparent}
 .sb-item:hover{background:var(--s1);color:var(--tx2)}
 .sb-item.active{background:var(--accent-dim);border-color:rgba(232,98,42,.2);color:var(--accent)}
@@ -199,6 +199,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
     <a class="sb-item active" href="cw-call-notes-pwa.html"><svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.89a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span class="sb-lbl">Call Notes</span></a>
     <a class="sb-item" href="cw-oac-notes-pwa.html"><svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span class="sb-lbl">OAC Notes</span></a>
     <a class="sb-item" href="cw-tasks-pwa.html"><svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="sb-lbl">Tasks</span><span class="sb-badge" id="sbBadge" style="display:none">0</span></a>
+    <a class="sb-item" href="cw-submittal-review-pwa.html"><svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="sb-lbl">Submittal Review</span></a>
   </div>
   <div class="sb-foot"><div class="sb-date" id="sbDate"></div></div>
 </nav>
@@ -444,72 +445,199 @@ q('project').addEventListener('input',function(){renderProjDrop();});
 q('project').addEventListener('blur',function(){setTimeout(closeProjDrop,200);});
 
 // ─── RECORDING ───
-// iOS Safari rule: recognition.start() must be called synchronously in the
-// click handler. No getUserMedia before start() — that creates a mic conflict.
-// continuous=false + rec.start() in onend is the correct iOS loop pattern.
+// Platform detection
+var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+// Show unsupported message on non-Safari desktop
+if(!SR){
+  q('micLbl').textContent = 'Use Safari or Chrome for voice recording';
+}
+
+// Permission state tracking
+var micPermGranted = false;
+
+// Request mic permission explicitly first — required on iOS 17+ before
+// SpeechRecognition will work. We use a brief getUserMedia call just to
+// trigger the system permission dialog, then immediately release the stream.
+function requestMicPermission(callback){
+  if(micPermGranted){callback(true);return;}
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    // No getUserMedia — skip straight to SpeechRecognition (older iOS)
+    micPermGranted=true;callback(true);return;
+  }
+  navigator.mediaDevices.getUserMedia({audio:true,video:false})
+  .then(function(stream){
+    // Immediately stop all tracks — we just needed the permission grant
+    stream.getTracks().forEach(function(t){t.stop();});
+    micPermGranted=true;
+    callback(true);
+  })
+  .catch(function(err){
+    if(err.name==='NotAllowedError'||err.name==='PermissionDeniedError'){
+      showToast('Mic access denied — go to Settings > Safari > Microphone');
+    } else {
+      // On some iOS versions getUserMedia throws even with permission granted
+      // Attempt SpeechRecognition anyway
+      micPermGranted=true;
+    }
+    callback(false);
+  });
+}
 
 q('micBtn').addEventListener('click',function(){
   if(isRecording){stopRec();return;}
-  startRec();
+  if(!SR){
+    showToast('Voice recording needs Safari (iPhone) or Chrome (desktop)');
+    return;
+  }
+  // Must get permission before starting — but the actual SR.start()
+  // must happen in a user-gesture callback chain on iOS
+  requestMicPermission(function(granted){
+    if(!granted && !micPermGranted)return;
+    startRec();
+  });
 });
 
 function startRec(){
-  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){showToast('Speech recognition requires Safari on iPhone');return;}
+  if(!SR)return;
   isRecording=true;
+  finalTx=q('transcript').value; // preserve any existing text
+  interimTx='';
   setRecUI(true);
-  beginRecognition();
+  launchRecognition();
 }
 
-function buildRecognition(){
-  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+function launchRecognition(){
+  if(!isRecording)return;
+  // Tear down any existing instance cleanly
+  if(recognition){
+    recognition.onend=null;
+    recognition.onerror=null;
+    recognition.onresult=null;
+    try{recognition.abort();}catch(e){}
+    recognition=null;
+  }
+
   var rec=new SR();
-  rec.continuous=false;
+
+  // iOS Safari: continuous=true causes mic to cut out after ~60s
+  // The fix: use continuous=false, restart in onend
+  // Chrome desktop: continuous=true works correctly
+  if(isIOS||isSafari){
+    rec.continuous=false;
+  } else {
+    rec.continuous=true;
+  }
+
   rec.interimResults=true;
+  rec.maxAlternatives=1;
   rec.lang='en-US';
+
+  rec.onstart=function(){
+    // Confirmed mic is live — clear any error state
+    q('micLbl').textContent='Recording — tap to stop';
+  };
+
   rec.onresult=function(e){
-    interimTx='';
+    var newFinal='';
+    var newInterim='';
     for(var i=e.resultIndex;i<e.results.length;i++){
-      if(e.results[i].isFinal)finalTx+=e.results[i][0].transcript+' ';
-      else interimTx+=e.results[i][0].transcript;
+      if(e.results[i].isFinal){
+        newFinal+=e.results[i][0].transcript;
+      } else {
+        newInterim+=e.results[i][0].transcript;
+      }
     }
+    if(newFinal){
+      // Append with smart spacing
+      if(finalTx && finalTx.slice(-1)!==' '){
+        finalTx+='. ';
+      }
+      finalTx+=newFinal+' ';
+    }
+    interimTx=newInterim;
     var box=q('transcript');
-    box.value=finalTx+interimTx;
-    box.classList.toggle('interim',!!interimTx);
+    box.value=finalTx+(interimTx?'['+interimTx+']':'');
     box.scrollTop=box.scrollHeight;
     q('charCount').textContent=box.value.length+' chars';
   };
+
   rec.onerror=function(e){
-    if(e.error==='no-speech'||e.error==='aborted')return;
-    if(e.error==='not-allowed'){
+    // no-speech and aborted are expected — not errors
+    if(e.error==='no-speech'){
+      // Normal silence — restart if still recording
+      if(isRecording){
+        clearTimeout(restartTimer);
+        restartTimer=setTimeout(launchRecognition,200);
+      }
+      return;
+    }
+    if(e.error==='aborted')return;
+    if(e.error==='not-allowed'||e.error==='service-not-allowed'){
       showToast('Mic blocked — allow in Settings > Safari > Microphone');
       isRecording=false;setRecUI(false);return;
     }
-    if(isRecording){clearTimeout(restartTimer);restartTimer=setTimeout(beginRecognition,300);}
+    if(e.error==='network'){
+      // Network error — wait and retry
+      if(isRecording){
+        clearTimeout(restartTimer);
+        restartTimer=setTimeout(launchRecognition,1000);
+      }
+      return;
+    }
+    if(e.error==='audio-capture'){
+      showToast('Mic not found or in use by another app');
+      isRecording=false;setRecUI(false);return;
+    }
+    // Unknown error — retry
+    if(isRecording){
+      clearTimeout(restartTimer);
+      restartTimer=setTimeout(launchRecognition,500);
+    }
   };
+
   rec.onend=function(){
     if(!isRecording)return;
-    try{rec.start();}
-    catch(e){clearTimeout(restartTimer);restartTimer=setTimeout(beginRecognition,150);}
+    // iOS/Safari: session ended — restart immediately
+    // Small delay avoids InvalidStateError when the session is still closing
+    clearTimeout(restartTimer);
+    restartTimer=setTimeout(function(){
+      if(isRecording)launchRecognition();
+    },isIOS||isSafari?100:50);
   };
-  return rec;
-}
 
-function beginRecognition(){
-  if(!isRecording)return;
-  if(recognition){try{recognition.abort();}catch(e){}}
-  recognition=buildRecognition();
-  try{recognition.start();}
-  catch(e){if(isRecording){clearTimeout(restartTimer);restartTimer=setTimeout(beginRecognition,200);}}
+  recognition=rec;
+  try{
+    rec.start();
+  } catch(startErr){
+    // InvalidStateError — already started, or session not fully closed yet
+    clearTimeout(restartTimer);
+    restartTimer=setTimeout(launchRecognition,300);
+  }
 }
 
 function stopRec(){
   isRecording=false;
   clearTimeout(restartTimer);
-  if(recognition){try{recognition.abort();}catch(e){}recognition=null;}
-  interimTx='';
+  if(recognition){
+    recognition.onend=null;
+    recognition.onerror=null;
+    try{recognition.stop();}catch(e){}
+    recognition=null;
+  }
+  // Flush any interim text as final
+  if(interimTx){
+    if(finalTx&&finalTx.slice(-1)!==' ')finalTx+='. ';
+    finalTx+=interimTx+' ';
+    interimTx='';
+  }
+  var box=q('transcript');
+  box.value=finalTx;
+  box.classList.remove('interim');
   setRecUI(false);
-  q('charCount').textContent=q('transcript').value.length+' chars';
+  q('charCount').textContent=box.value.length+' chars';
 }
 
 function setRecUI(on){

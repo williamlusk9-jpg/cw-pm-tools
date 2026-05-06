@@ -1,5 +1,5 @@
 {
-  "_syncedAt": 1778069409640,
+  "_syncedAt": 1778069438681,
   "tasks": [
     {
       "id": "mosmhdnf7n3rf6srse7",
@@ -568,13 +568,6 @@
       "source": "manual",
       "subtasks": [
         {
-          "id": "mn8w017q",
-          "text": "Bodyfitz- Repair drywall. Conductor heads complete",
-          "done": false,
-          "addedAt": 1774615082534,
-          "due": ""
-        },
-        {
           "id": "mn8w0b6d",
           "text": "Whole Foods- Install bollards",
           "done": false,
@@ -599,7 +592,7 @@
           ]
         }
       ],
-      "updatedAt": 1777994141841
+      "updatedAt": 1778069437178
     },
     {
       "id": "mn8vwqmvp5gfzviwvw7",

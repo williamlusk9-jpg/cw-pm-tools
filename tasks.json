@@ -1,9 +1,9 @@
 {
-  "_syncedAt": 1778069349990,
+  "_syncedAt": 1778069360039,
   "tasks": [
     {
       "id": "mosmhdnf7n3rf6srse7",
-      "action": "Order fire extinguishers",
+      "action": "Pickup fire extinguishers",
       "owner": "Will",
       "deadline": "Tue 5/5",
       "project": "Kodak",
@@ -11,7 +11,8 @@
       "callDate": "",
       "done": false,
       "addedAt": 1777985201499,
-      "source": "manual"
+      "source": "manual",
+      "updatedAt": 1778069358531
     },
     {
       "id": "mosmh3fbr8ddcpupb9",

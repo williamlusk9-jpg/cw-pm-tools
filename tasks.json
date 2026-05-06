@@ -1,6 +1,18 @@
 {
-  "_syncedAt": 1778089593153,
+  "_syncedAt": 1778089635002,
   "tasks": [
+    {
+      "id": "moucnpwcf57xmr9iuf4",
+      "action": "Parkaire: Send proposal to repair burned fence",
+      "owner": "Will",
+      "deadline": "Fri 5/8",
+      "project": "Tonya",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1778089633501,
+      "source": "manual"
+    },
     {
       "id": "mou6gmonrc4d87qzzlo",
       "action": "Pay app 3",

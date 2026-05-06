@@ -1,9 +1,9 @@
 {
-  "_syncedAt": 1778089586045,
+  "_syncedAt": 1778089593153,
   "tasks": [
     {
       "id": "mou6gmonrc4d87qzzlo",
-      "action": "Pay app 3 / CO-2",
+      "action": "Pay app 3",
       "owner": "Will",
       "deadline": "Fri 5/8",
       "project": "WMG Riverstone",
@@ -11,7 +11,8 @@
       "callDate": "",
       "done": false,
       "addedAt": 1778079225047,
-      "source": "manual"
+      "source": "manual",
+      "updatedAt": 1778089591641
     },
     {
       "id": "mou0yhcvpwu5txfpobm",

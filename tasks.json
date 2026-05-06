@@ -1,6 +1,18 @@
 {
-  "_syncedAt": 1778069898079,
+  "_syncedAt": 1778069982085,
   "tasks": [
+    {
+      "id": "mou0yhcvpwu5txfpobm",
+      "action": "Look @ Chapman's front windows not opening easily",
+      "owner": "Will",
+      "deadline": "Wed 5/6",
+      "project": "Tonya",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1778069980255,
+      "source": "manual"
+    },
     {
       "id": "mosmhdnf7n3rf6srse7",
       "action": "Pickup fire extinguishers",
@@ -793,18 +805,6 @@
       "updatedAt": 1774547149466
     },
     {
-      "id": "mn7j4rxinsvwa1315p",
-      "action": "Call Tonya to discuss needed invoice for HE Whole Foods repairs",
-      "owner": "Will",
-      "deadline": "3/26/26",
-      "project": "General",
-      "contact": "",
-      "callDate": "",
-      "done": false,
-      "addedAt": 1774533002598,
-      "source": "manual"
-    },
-    {
       "id": "mn7j1az4q0er4bfszc8",
       "action": "HE Dollar Tree Low Wall",
       "owner": "Will",
@@ -874,19 +874,6 @@
         }
       ],
       "updatedAt": 1774610701063
-    },
-    {
-      "id": "mn6rverx9x9bo6htojb",
-      "action": "Kodak to send new exhaust hood specs",
-      "owner": "Kodak",
-      "deadline": "TBD",
-      "project": "Kodak",
-      "contact": "",
-      "callDate": "",
-      "done": false,
-      "addedAt": 1774487216014,
-      "source": "manual",
-      "updatedAt": 1776706769686
     },
     {
       "id": "mn6ruuntb474zcdq48u",

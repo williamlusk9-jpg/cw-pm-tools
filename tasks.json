@@ -1,5 +1,5 @@
 {
-  "_syncedAt": 1778070010990,
+  "_syncedAt": 1778070017680,
   "tasks": [
     {
       "id": "mou0yhcvpwu5txfpobm",
@@ -366,17 +366,8 @@
       "done": false,
       "addedAt": 1776706818495,
       "source": "manual",
-      "subtasks": [
-        {
-          "id": "mobhyc1xv13",
-          "text": "Schedule 5/16",
-          "done": false,
-          "addedAt": 1776949669509,
-          "due": "",
-          "subtasks": []
-        }
-      ],
-      "updatedAt": 1778069408123
+      "subtasks": [],
+      "updatedAt": 1778070016173
     },
     {
       "id": "mo7hcy2lio950tslqlf",

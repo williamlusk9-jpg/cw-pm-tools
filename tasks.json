@@ -1,1147 +1,1150 @@
-[
-  {
-    "id": "mosmhdnf7n3rf6srse7",
-    "action": "Order fire extinguishers",
-    "owner": "Will",
-    "deadline": "Tue 5/5",
-    "project": "Kodak",
-    "contact": "",
-    "callDate": "",
-    "done": false,
-    "addedAt": 1777985201499,
-    "source": "manual"
-  },
-  {
-    "id": "mosmh3fbr8ddcpupb9",
-    "action": "Parkaire EIFS Repair- Send to Caspar",
-    "owner": "Will",
-    "deadline": "Tue 5/5",
-    "project": "Tonya",
-    "contact": "",
-    "callDate": "",
-    "done": false,
-    "addedAt": 1777985188247,
-    "source": "manual"
-  },
-  {
-    "id": "moj21qzc5ow0hxds4eh",
-    "action": "Submit splash guard specs",
-    "owner": "Will",
-    "deadline": "Wed 4/29",
-    "project": "PPG Newnan",
-    "contact": "",
-    "callDate": "",
-    "done": false,
-    "addedAt": 1777406684377,
-    "source": "manual"
-  },
-  {
-    "id": "moj21hidj8xncwsh2j",
-    "action": "Submit trash can specs",
-    "owner": "Will",
-    "deadline": "Wed 4/29",
-    "project": "PPG Newnan",
-    "contact": "",
-    "callDate": "",
-    "done": false,
-    "addedAt": 1777406672101,
-    "source": "manual",
-    "updatedAt": 1777406694723
-  },
-  {
-    "id": "moj20d86ej6bkoa87zs",
-    "action": "Submit glovebox & grommets",
-    "owner": "Will",
-    "deadline": "Wed 4/29",
-    "project": "PPG Newnan",
-    "contact": "",
-    "callDate": "",
-    "done": false,
-    "addedAt": 1777406619895,
-    "source": "manual"
-  },
-  {
-    "id": "mobcjcahhetnocvmrf",
-    "action": "Send Christo burner specs",
-    "owner": "Will",
-    "deadline": "Thu 4/23",
-    "project": "Genu",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1776940571900,
-    "source": "manual",
-    "updatedAt": 1776949609012
-  },
-  {
-    "id": "moag3ie97s1r9hk2h3b",
-    "action": "Call Rob about replacing existing receps",
-    "owner": "Will",
-    "deadline": "Thu 4/23",
-    "project": "Kodak",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1776886085601,
-    "source": "manual",
-    "updatedAt": 1776962108356
-  },
-  {
-    "id": "moag31qxb5osx4nb9w",
-    "action": "Send tint guy info for storefront",
-    "owner": "Will",
-    "deadline": "Thu 4/23",
-    "project": "WMG Riverstone",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1776886064027,
-    "source": "manual",
-    "updatedAt": 1776941221952
-  },
-  {
-    "id": "moadifo3bb4t7ljujh7",
-    "action": "Submit roller shades",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "PPG Newnan",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1776881743059,
-    "source": "manual",
-    "updatedAt": 1776940912875
-  },
-  {
-    "id": "moa86yigq0jnzsg37sb",
-    "action": "Parkaire Triangle- Send bid to locate drain & electrical line",
-    "owner": "Will",
-    "deadline": "Fri 4/24",
-    "project": "Tonya",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1776872809529,
-    "source": "manual",
-    "subtasks": [
-      {
-        "id": "mobhxgg69nb",
-        "text": "Proposal ready, send to Tonya",
-        "done": false,
-        "addedAt": 1776949628550,
-        "due": "",
-        "subtasks": []
-      }
-    ],
-    "updatedAt": 1777986176076
-  },
-  {
-    "id": "moa85lantokgn5731s",
-    "action": "Parkaire Triangle- Send bid to re-asphalt 35' x 15' area. 1-2\" thick",
-    "owner": "Will",
-    "deadline": "Fri 4/24",
-    "project": "Tonya",
-    "contact": "",
-    "callDate": "",
-    "done": false,
-    "addedAt": 1776872745743,
-    "source": "manual"
-  },
-  {
-    "id": "moa84zh7vmvqzwbeha7",
-    "action": "Parkaire Triangle- Send bid to jackhammer & remove concrete pad",
-    "owner": "Will",
-    "deadline": "Fri 4/24",
-    "project": "Tonya",
-    "contact": "",
-    "callDate": "",
-    "done": false,
-    "addedAt": 1776872717467,
-    "source": "manual",
-    "subtasks": [
-      {
-        "id": "mobhxq79h0a",
-        "text": "Proposal ready, send to Tonya",
-        "done": false,
-        "addedAt": 1776949641189,
-        "due": "",
-        "subtasks": []
-      }
-    ],
-    "updatedAt": 1776949641189
-  },
-  {
-    "id": "moa1wgde6s5fijay4ek",
-    "action": "Order accessories",
-    "owner": "Will",
-    "deadline": "Wed 4/22",
-    "project": "Kodak",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1776862241762,
-    "source": "manual",
-    "updatedAt": 1776872825195
-  },
-  {
-    "id": "moa1iwucnryukrxh31",
-    "action": "Send Kodak dimensions",
-    "owner": "Will",
-    "deadline": "Wed 4/22",
-    "project": "Kodak",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1776861609924,
-    "source": "manual",
-    "updatedAt": 1776866747317
-  },
-  {
-    "id": "mo9yhufi0alqxace5m3i",
-    "action": "Get quote from Core",
-    "owner": "Will",
-    "deadline": "Wed 4/22",
-    "project": "PPG Monroe Auto Opener",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1776856521294,
-    "source": "manual",
-    "subtasks": [],
-    "updatedAt": 1777986167668
-  },
-  {
-    "id": "mo9yhmyb8u0d07prx8p",
-    "action": "Get quote from Stanley",
-    "owner": "Will",
-    "deadline": "Wed 4/22",
-    "project": "PPG Monroe Auto Opener",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1776856511603,
-    "source": "manual",
-    "subtasks": [
-      {
-        "id": "moa4l9gfmg4",
-        "text": "Emailed, waiting on response",
-        "done": false,
-        "addedAt": 1776866758431,
-        "due": "",
-        "subtasks": []
-      }
-    ],
-    "updatedAt": 1776941265079
-  },
-  {
-    "id": "mo9yhbpr3ry5g25jvp",
-    "action": "Open job #",
-    "owner": "Will",
-    "deadline": "Wed 4/22",
-    "project": "PPG Monroe Auto Opener",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1776856497039,
-    "source": "manual",
-    "updatedAt": 1776862135737
-  },
-  {
-    "id": "mo91qiyd5f64mlczzst",
-    "action": "Bodyfitz drywall repairs",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "Tonya",
-    "contact": "",
-    "callDate": "",
-    "done": false,
-    "addedAt": 1776801498997,
-    "source": "manual"
-  },
-  {
-    "id": "mo91pxdrpywkdjliaan",
-    "action": "D Building EIFS installation",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "Tonya",
-    "contact": "",
-    "callDate": "",
-    "done": false,
-    "addedAt": 1776801471039,
-    "source": "manual"
-  },
-  {
-    "id": "mo8wufq57cxxfyr1z0l",
-    "action": "Open job # for QPC Midtown electrical add",
-    "owner": "Will",
-    "deadline": "Tue 4/21",
-    "project": "General",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1776793283357,
-    "source": "manual",
-    "updatedAt": 1776860837061
-  },
-  {
-    "id": "mo8wu0rthbm8hjnmtfn",
-    "action": "Open job # for PPG Monroe opener",
-    "owner": "Will",
-    "deadline": "Tue 4/21",
-    "project": "General",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1776793263977,
-    "source": "manual",
-    "updatedAt": 1776860837755
-  },
-  {
-    "id": "mo8w8rqthydz4hsidtl",
-    "action": "Send Parhum/Hanna CO-2",
-    "owner": "Will",
-    "deadline": "Tue 4/21",
-    "project": "WMG Riverstone",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1776792272502,
-    "source": "manual",
-    "updatedAt": 1776858398965
-  },
-  {
-    "id": "mo7hf6cnunitbxp5ft7",
-    "action": "Whole Foods Bollards: Needs to verify desired locations",
-    "owner": "Tonya",
-    "deadline": "TBD",
-    "project": "Tonya",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1776706910951,
-    "source": "manual",
-    "updatedAt": 1777988951066
-  },
-  {
-    "id": "mo7heht55v1ga0vvtra",
-    "action": "Schedule bollard installation @ Whole Foods",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "Tonya",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1776706879145,
-    "source": "manual",
-    "updatedAt": 1777988953711
-  },
-  {
-    "id": "mo7hd70fptrnxa5nye",
-    "action": "Release subs & schedule",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "Kenmar Building Medex",
-    "contact": "",
-    "callDate": "",
-    "done": false,
-    "addedAt": 1776706818495,
-    "source": "manual",
-    "subtasks": [
-      {
-        "id": "mobhyc1xv13",
-        "text": "Schedule 5/16",
-        "done": false,
-        "addedAt": 1776949669509,
-        "due": "",
-        "subtasks": []
-      }
-    ],
-    "updatedAt": 1777988967494
-  },
-  {
-    "id": "mo7hcy2lio950tslqlf",
-    "action": "Sign contract & return",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "Kenmar Building Medex",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1776706806909,
-    "source": "manual",
-    "updatedAt": 1776792410166
-  },
-  {
-    "id": "mo7h6v3ckut4oo2ze5",
-    "action": "Send updated proposal",
-    "owner": "Will",
-    "deadline": "Tue 4/21",
-    "project": "Frank Yuan Plastic Surgery",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1776706523112,
-    "source": "manual",
-    "updatedAt": 1776793287205
-  },
-  {
-    "id": "mo069l4qumfucf4khz",
-    "action": "RFI's",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "ATL Plastic Surgery",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1776264911163,
-    "source": "manual",
-    "subtasks": [],
-    "updatedAt": 1776706783413
-  },
-  {
-    "id": "mo053jva70za6lp9wn",
-    "action": "Submit DFH submittals",
-    "owner": "Will",
-    "deadline": "Thu 4/15",
-    "project": "PPG Newnan",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1776262949975,
-    "source": "manual",
-    "updatedAt": 1776855558757
-  },
-  {
-    "id": "mnq5ygtak52uzysto4e",
-    "action": "Order metal roofing",
-    "owner": "Will",
-    "deadline": "Fri 4/10",
-    "project": "Kodak",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1775659730591,
-    "source": "manual",
-    "updatedAt": 1775671218600
-  },
-  {
-    "id": "mnons8u4pi3gk9m46ao",
-    "action": "Call Trey King Glass",
-    "owner": "Will",
-    "deadline": "4/7/26",
-    "project": "WMG Riverstone",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1775568741052,
-    "source": "manual",
-    "updatedAt": 1775659765781
-  },
-  {
-    "id": "mnolek1c1c546xwt0lv",
-    "action": "Call ATL Gas to locate gas line @ trench",
-    "owner": "Will",
-    "deadline": "Tue 4/7",
-    "project": "Kodak",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1775564743152,
-    "source": "manual",
-    "updatedAt": 1775565552423
-  },
-  {
-    "id": "mnnruxe982b2gj3rl12",
-    "action": "APC Plastic Surgery- Sent architect list of questions",
-    "owner": "Will",
-    "deadline": "Mon 4/6",
-    "project": "Bidding Work",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1775515118484,
-    "source": "manual",
-    "subtasks": [
-      {
-        "id": "mnnrv3pi",
-        "text": "Inline dehumidifier",
-        "done": true,
-        "addedAt": 1775515126662,
-        "due": ""
-      },
-      {
-        "id": "mnnrvhz2",
-        "text": "Plumbing specs",
-        "done": true,
-        "addedAt": 1775515145150,
-        "due": ""
-      },
-      {
-        "id": "mnnrw2rq",
-        "text": "Recommend to move water cooler to different location due to floor below. Recommend moving to closet",
-        "done": false,
-        "addedAt": 1775515172102,
-        "due": ""
-      }
-    ],
-    "updatedAt": 1775659739602
-  },
-  {
-    "id": "mnnlw8i5zqlaegcnl",
-    "action": "Review millwork shops & submit for review",
-    "owner": "Will",
-    "deadline": "Fri 4/10",
-    "project": "PPG Newnan",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1775505101838,
-    "source": "manual",
-    "updatedAt": 1775659768114
-  },
-  {
-    "id": "mnjeyl0l0r8lq18uarw",
-    "action": "Review invoice with Curtis",
-    "owner": "Will",
-    "deadline": "Tue 4/7",
-    "project": "Kodak",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1775251589350,
-    "source": "manual"
-  },
-  {
-    "id": "mnhiohbon6e5ul200lc",
-    "action": "Send Tara pictures of mounted accessories at PQC",
-    "owner": "Will",
-    "deadline": "Thu 4/2",
-    "project": "General",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1775136904116,
-    "source": "manual"
-  },
-  {
-    "id": "mnf3udqfrg2pnw1gq5",
-    "action": "Call Stanley for meeting time Thursday at PQC locations",
-    "owner": "Will",
-    "deadline": "Wed 4/1",
-    "project": "General",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774991052807,
-    "source": "manual"
-  },
-  {
-    "id": "mnexlsbw7tazz7tr9v7",
-    "action": "Update Don Hilley loading dock pricing (bollards & paint gas meter)",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "General",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774980574124,
-    "source": "manual",
-    "updatedAt": 1776855577602
-  },
-  {
-    "id": "mn8vxejmcboi837dygw",
-    "action": "Tonya",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "Work to Schedule",
-    "contact": "",
-    "callDate": "",
-    "done": false,
-    "addedAt": 1774614959842,
-    "source": "manual",
-    "subtasks": [
-      {
-        "id": "mn8w017q",
-        "text": "Bodyfitz- Repair drywall. Conductor heads complete",
-        "done": false,
-        "addedAt": 1774615082534,
-        "due": ""
-      },
-      {
-        "id": "mn8w0b6d",
-        "text": "Whole Foods- Install bollards",
-        "done": false,
-        "addedAt": 1774615095445,
-        "due": ""
-      },
-      {
-        "id": "mn8w0zw6",
-        "text": "Springs Cinema- Low wall & handrail repairs",
-        "done": false,
-        "addedAt": 1774615127478,
-        "due": "",
-        "subtasks": [
-          {
-            "id": "mobhyk9humu",
-            "text": "Scheduled for Tuesday 4/28",
-            "done": false,
-            "addedAt": 1776949680149,
-            "due": "",
-            "subtasks": []
-          }
-        ]
-      }
-    ],
-    "updatedAt": 1777994141841
-  },
-  {
-    "id": "mn8vwqmvp5gfzviwvw7",
-    "action": "Tonya",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "Bidding Work",
-    "contact": "",
-    "callDate": "",
-    "done": false,
-    "addedAt": 1774614928855,
-    "source": "manual",
-    "subtasks": [
-      {
-        "id": "mn8w1yw6",
-        "text": "Parkside D building EIFS replacement",
-        "done": false,
-        "addedAt": 1774615172838,
-        "due": "Fri 4/10",
-        "subtasks": [
-          {
-            "id": "mnqcv5wj3d1",
-            "text": "Get pricing from awning vendor to remove & reinstall. Get alt price for new fabric",
-            "done": false,
-            "addedAt": 1775671333795,
-            "due": "",
-            "subtasks": []
-          }
-        ]
-      }
-    ],
-    "updatedAt": 1777994152444
-  },
-  {
-    "id": "mn8vwfar6znlcldsxrs",
-    "action": "Tonya",
-    "owner": "Will",
-    "deadline": "Sat 3/27",
-    "project": "Bidding Work",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774614914164,
-    "source": "manual"
-  },
-  {
-    "id": "mn8vuj822140h9j85bz",
-    "action": "Tonya",
-    "owner": "Will",
-    "deadline": "Sat 3/27",
-    "project": "Bidding Work",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774614825938,
-    "source": "manual",
-    "updatedAt": 1774614835162
-  },
-  {
-    "id": "mn8vtlh4a80epn7ctrr",
-    "action": "Tonya",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "Bidding Work",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774614782200,
-    "source": "manual",
-    "subtasks": [
-      {
-        "id": "mn8vtpzk",
-        "text": "Fountain Oaks broken curb",
-        "done": true,
-        "addedAt": 1774614788048,
-        "due": ""
-      }
-    ],
-    "updatedAt": 1774614790269
-  },
-  {
-    "id": "mn8vsbs2mbmpcdp7yk",
-    "action": "Tonya",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "Bidding Work",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774614722978,
-    "source": "manual",
-    "subtasks": [
-      {
-        "id": "mn8vsmgw",
-        "text": "Fountain Oaks broken cubr",
-        "done": true,
-        "addedAt": 1774614736832,
-        "due": ""
-      }
-    ],
-    "updatedAt": 1774614738668
-  },
-  {
-    "id": "mn8vpt5ljftt1uvk5f",
-    "action": "Tonya:",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "Bidding Work",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774614605530,
-    "source": "manual",
-    "subtasks": [
-      {
-        "id": "mn8vrjyx",
-        "text": "Fountain Oaks broken curb",
-        "done": true,
-        "addedAt": 1774614686937,
-        "due": ""
-      }
-    ],
-    "updatedAt": 1774614688390
-  },
-  {
-    "id": "mn8tjoy32eyakxzjc9h",
-    "action": "Pickup items from ADI: Passage set, blank plates, sweep strip",
-    "owner": "Will",
-    "deadline": "3/27/27",
-    "project": "WMG Riverstone",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774610960907,
-    "source": "manual"
-  },
-  {
-    "id": "mn8tfjgen8mdi9zbe5o",
-    "action": "Invoice PPG Arbor Springs mini split install",
-    "owner": "Will",
-    "deadline": "3/27/26",
-    "project": "General",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774610767166,
-    "source": "manual"
-  },
-  {
-    "id": "mn8sykwrx2uwcld6qdf",
-    "action": "Get C2H to get Kodak done",
-    "owner": "Will",
-    "deadline": "3/27/26",
-    "project": "Kodak",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774609975899,
-    "source": "manual"
-  },
-  {
-    "id": "mn7rb62ysqri0fhnfr",
-    "action": "Call Robert CCM: Need to be done Monday 3/30. Deliver rest of cabinets Friday 3/27. When bringing SS tops",
-    "owner": "Will",
-    "deadline": "3/26/26",
-    "project": "WMG Riverstone",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774546737802,
-    "source": "manual",
-    "updatedAt": 1774546991613
-  },
-  {
-    "id": "mn7r8k1xb1rdf74ssjc",
-    "action": "Call King Glass- Panic bar, when glass is ready",
-    "owner": "Will",
-    "deadline": "3/26/26",
-    "project": "WMG Riverstone",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774546615941,
-    "source": "manual",
-    "updatedAt": 1774546628346
-  },
-  {
-    "id": "mn7qk9wqy1z1l8e18vq",
-    "action": "Mount glovebox holders & sharps containers in new locations. Patch walls, repaint",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "PPG Quick Care",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774545483050,
-    "source": "manual",
-    "subtasks": [
-      {
-        "id": "mn7qku81",
-        "text": "Need to know if using McKesson glovebox holders or different spec provided by Tara",
-        "done": true,
-        "addedAt": 1774545509377,
-        "due": ""
-      }
-    ],
-    "updatedAt": 1774610684863
-  },
-  {
-    "id": "mn7q228wbpytml23ys",
-    "action": "Supers for Tonya work:",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "General",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774544633312,
-    "source": "manual",
-    "subtasks": [
-      {
-        "id": "mn7q2e7c",
-        "text": "Dylan Thursday 4/2",
-        "done": false,
-        "addedAt": 1774544648808,
-        "due": ""
-      }
-    ],
-    "updatedAt": 1774547149466
-  },
-  {
-    "id": "mn7j4rxinsvwa1315p",
-    "action": "Call Tonya to discuss needed invoice for HE Whole Foods repairs",
-    "owner": "Will",
-    "deadline": "3/26/26",
-    "project": "General",
-    "contact": "",
-    "callDate": "",
-    "done": false,
-    "addedAt": 1774533002598,
-    "source": "manual"
-  },
-  {
-    "id": "mn7j1az4q0er4bfszc8",
-    "action": "HE Dollar Tree Low Wall",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "Tonya",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774532840656,
-    "source": "manual",
-    "subtasks": [
-      {
-        "id": "mnqct0ycu6b",
-        "text": "Stanley to paint weekend of 4/11",
-        "done": true,
-        "addedAt": 1775671234068,
-        "due": "",
-        "subtasks": []
-      }
-    ],
-    "updatedAt": 1776706540145
-  },
-  {
-    "id": "mn7isvz8wkw77cjlhk",
-    "action": "Send Jeff Pinska HE low wall info. Include Heath price, address, name & email",
-    "owner": "Will",
-    "deadline": "3/26/26",
-    "project": "Tonya",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774532447974,
-    "source": "manual",
-    "updatedAt": 1774532532112
-  },
-  {
-    "id": "mn6rwunuec1mb65684g",
-    "action": "Pickup passage set & other items from ADI",
-    "owner": "Will",
-    "deadline": "3/27",
-    "project": "WMG Riverstone",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774487283258,
-    "source": "manual",
-    "updatedAt": 1774487292805
-  },
-  {
-    "id": "mn6rwlir4ng4vh0844v",
-    "action": "Order city of canton signage (IT room, electrical room, FACP, exits)",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "WMG Riverstone",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774487271411,
-    "source": "manual",
-    "subtasks": [
-      {
-        "id": "mn7j57ni",
-        "text": "Get pictures from Allen",
-        "done": true,
-        "addedAt": 1774533022974,
-        "due": ""
-      }
-    ],
-    "updatedAt": 1774610701063
-  },
-  {
-    "id": "mn6rverx9x9bo6htojb",
-    "action": "Kodak to send new exhaust hood specs",
-    "owner": "Kodak",
-    "deadline": "TBD",
-    "project": "Kodak",
-    "contact": "",
-    "callDate": "",
-    "done": false,
-    "addedAt": 1774487216014,
-    "source": "manual",
-    "updatedAt": 1776706769686
-  },
-  {
-    "id": "mn6ruuntb474zcdq48u",
-    "action": "Invoice PPG Arbor Springs",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "General",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774487189945,
-    "source": "manual",
-    "subtasks": [
-      {
-        "id": "mn6sx7u2",
-        "text": "Received from Brittany, send to Raquel",
-        "done": true,
-        "addedAt": 1774488979946
-      }
-    ],
-    "updatedAt": 1774489566841
-  },
-  {
-    "id": "mn6rumxf4loih30zaju",
-    "action": "WMG Advanced Heart Failure- Pink, IT, break bids",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "General",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774487179923,
-    "source": "manual",
-    "subtasks": [],
-    "updatedAt": 1774532488696
-  },
-  {
-    "id": "mn6rrjj6kka9dfuh1mi",
-    "action": "Pickup samples",
-    "owner": "Billy @ signs & more",
-    "deadline": "TBD",
-    "project": "Frank Yuan Plastic Surgery",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774487035554,
-    "source": "manual"
-  },
-  {
-    "id": "mn6izieddquiiy0917g",
-    "action": "Reprice SV & schluter per new specs",
-    "owner": "Riley Priest",
-    "deadline": "TBD",
-    "project": "Frank Yuan Plastic Surgery",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774472290789,
-    "source": "manual"
-  },
-  {
-    "id": "mn6iyddyt8rnvpmc25p",
-    "action": "Color code(s) for logo signage",
-    "owner": "Frank Yuan",
-    "deadline": "TBD",
-    "project": "Frank Yuan Plastic Surgery",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774472237638,
-    "source": "manual",
-    "updatedAt": 1776962134634
-  },
-  {
-    "id": "mn6ig491be8sf4egl1l",
-    "action": "Order City of Canton signage (IT room, electrical room, FACP, exits)",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "WMG Riverstone",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774471385989,
-    "source": "manual",
-    "updatedAt": 1774488578283,
-    "subtasks": [
-      {
-        "id": "mn6s8xhz",
-        "text": "Get pictures from Allen",
-        "done": true,
-        "addedAt": 1774487846807
-      }
-    ]
-  },
-  {
-    "id": "mn6hzzvhkqa0vy6qad",
-    "action": "WMG Advanced Heart Failure- Pink, IT, Break bids",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "General",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774470633822,
-    "source": "manual"
-  },
-  {
-    "id": "mn6fcscv0sti6fk4oodq",
-    "action": "Pickup passage set from ADI",
-    "owner": "Will",
-    "deadline": "3/28/26",
-    "project": "WMG Riverstone",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774466191759,
-    "source": "manual",
-    "subtasks": [],
-    "updatedAt": 1774610070871
-  },
-  {
-    "id": "mn656ohob42qtf8a58g",
-    "action": "Invoice PPG Arbor Springs mini split install",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "General",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774449110652,
-    "source": "manual",
-    "subtasks": [
-      {
-        "id": "mn7ituga",
-        "text": "Received from Brittany, send to Raquel",
-        "done": true,
-        "addedAt": 1774532492650,
-        "due": ""
-      }
-    ],
-    "updatedAt": 1774610709527
-  },
-  {
-    "id": "mn655ankiwjapxg81sl",
-    "action": "Talk w/ Dylan about rescheduling Premier review date",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "General",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774449046064,
-    "source": "manual"
-  },
-  {
-    "id": "mn62frh45c8597h7i05",
-    "action": "Get schedule & CO's finalized",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "Kodak",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774444495576,
-    "source": "manual"
-  },
-  {
-    "id": "mn61ga40jqsdfshz6sk",
-    "action": "Order accessories",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "WMG Riverstone",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774442840112,
-    "source": "manual"
-  },
-  {
-    "id": "mn61g11yftg2jmqba5h",
-    "action": "Swap dumpster",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "Kodak",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774442828374,
-    "source": "manual"
-  },
-  {
-    "id": "mn61fh72pv0mi05nshq",
-    "action": "Talk w Curtis about crane for chiller delivery",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "Kodak",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774442802638,
-    "source": "manual"
-  },
-  {
-    "id": "mn61f2ytfkao9quwmow",
-    "action": "Call Dan Floyd",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "Kodak",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774442784197,
-    "source": "manual"
-  },
-  {
-    "id": "mn5yvib1qpmirdpa9b",
-    "action": "Respond to Jeff Reeves text",
-    "owner": "Will",
-    "deadline": "TBD",
-    "project": "General",
-    "contact": "",
-    "callDate": "",
-    "done": true,
-    "addedAt": 1774438511725,
-    "source": "manual"
-  }
-]
+{
+  "_syncedAt": 1778069182519,
+  "tasks": [
+    {
+      "id": "mosmhdnf7n3rf6srse7",
+      "action": "Order fire extinguishers",
+      "owner": "Will",
+      "deadline": "Tue 5/5",
+      "project": "Kodak",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1777985201499,
+      "source": "manual"
+    },
+    {
+      "id": "mosmh3fbr8ddcpupb9",
+      "action": "Parkaire EIFS Repair- Send to Caspar",
+      "owner": "Will",
+      "deadline": "Tue 5/5",
+      "project": "Tonya",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1777985188247,
+      "source": "manual"
+    },
+    {
+      "id": "moj21qzc5ow0hxds4eh",
+      "action": "Submit splash guard specs",
+      "owner": "Will",
+      "deadline": "Wed 4/29",
+      "project": "PPG Newnan",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1777406684377,
+      "source": "manual"
+    },
+    {
+      "id": "moj21hidj8xncwsh2j",
+      "action": "Submit trash can specs",
+      "owner": "Will",
+      "deadline": "Wed 4/29",
+      "project": "PPG Newnan",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1777406672101,
+      "source": "manual",
+      "updatedAt": 1777406694723
+    },
+    {
+      "id": "moj20d86ej6bkoa87zs",
+      "action": "Submit glovebox & grommets",
+      "owner": "Will",
+      "deadline": "Wed 4/29",
+      "project": "PPG Newnan",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1777406619895,
+      "source": "manual"
+    },
+    {
+      "id": "mobcjcahhetnocvmrf",
+      "action": "Send Christo burner specs",
+      "owner": "Will",
+      "deadline": "Thu 4/23",
+      "project": "Genu",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1776940571900,
+      "source": "manual",
+      "updatedAt": 1776949609012
+    },
+    {
+      "id": "moag3ie97s1r9hk2h3b",
+      "action": "Call Rob about replacing existing receps",
+      "owner": "Will",
+      "deadline": "Thu 4/23",
+      "project": "Kodak",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1776886085601,
+      "source": "manual",
+      "updatedAt": 1776962108356
+    },
+    {
+      "id": "moag31qxb5osx4nb9w",
+      "action": "Send tint guy info for storefront",
+      "owner": "Will",
+      "deadline": "Thu 4/23",
+      "project": "WMG Riverstone",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1776886064027,
+      "source": "manual",
+      "updatedAt": 1776941221952
+    },
+    {
+      "id": "moadifo3bb4t7ljujh7",
+      "action": "Submit roller shades",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "PPG Newnan",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1776881743059,
+      "source": "manual",
+      "updatedAt": 1776940912875
+    },
+    {
+      "id": "moa86yigq0jnzsg37sb",
+      "action": "Parkaire Triangle- Send bid to locate drain & electrical line",
+      "owner": "Will",
+      "deadline": "Fri 4/24",
+      "project": "Tonya",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1776872809529,
+      "source": "manual",
+      "subtasks": [
+        {
+          "id": "mobhxgg69nb",
+          "text": "Proposal ready, send to Tonya",
+          "done": false,
+          "addedAt": 1776949628550,
+          "due": "",
+          "subtasks": []
+        }
+      ],
+      "updatedAt": 1777986176076
+    },
+    {
+      "id": "moa85lantokgn5731s",
+      "action": "Parkaire Triangle- Send bid to re-asphalt 35' x 15' area. 1-2\" thick",
+      "owner": "Will",
+      "deadline": "Fri 4/24",
+      "project": "Tonya",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1776872745743,
+      "source": "manual"
+    },
+    {
+      "id": "moa84zh7vmvqzwbeha7",
+      "action": "Parkaire Triangle- Send bid to jackhammer & remove concrete pad",
+      "owner": "Will",
+      "deadline": "Fri 4/24",
+      "project": "Tonya",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1776872717467,
+      "source": "manual",
+      "subtasks": [
+        {
+          "id": "mobhxq79h0a",
+          "text": "Proposal ready, send to Tonya",
+          "done": false,
+          "addedAt": 1776949641189,
+          "due": "",
+          "subtasks": []
+        }
+      ],
+      "updatedAt": 1776949641189
+    },
+    {
+      "id": "moa1wgde6s5fijay4ek",
+      "action": "Order accessories",
+      "owner": "Will",
+      "deadline": "Wed 4/22",
+      "project": "Kodak",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1776862241762,
+      "source": "manual",
+      "updatedAt": 1776872825195
+    },
+    {
+      "id": "moa1iwucnryukrxh31",
+      "action": "Send Kodak dimensions",
+      "owner": "Will",
+      "deadline": "Wed 4/22",
+      "project": "Kodak",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1776861609924,
+      "source": "manual",
+      "updatedAt": 1776866747317
+    },
+    {
+      "id": "mo9yhufi0alqxace5m3i",
+      "action": "Get quote from Core",
+      "owner": "Will",
+      "deadline": "Wed 4/22",
+      "project": "PPG Monroe Auto Opener",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1776856521294,
+      "source": "manual",
+      "subtasks": [],
+      "updatedAt": 1777986167668
+    },
+    {
+      "id": "mo9yhmyb8u0d07prx8p",
+      "action": "Get quote from Stanley",
+      "owner": "Will",
+      "deadline": "Wed 4/22",
+      "project": "PPG Monroe Auto Opener",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1776856511603,
+      "source": "manual",
+      "subtasks": [
+        {
+          "id": "moa4l9gfmg4",
+          "text": "Emailed, waiting on response",
+          "done": false,
+          "addedAt": 1776866758431,
+          "due": "",
+          "subtasks": []
+        }
+      ],
+      "updatedAt": 1776941265079
+    },
+    {
+      "id": "mo9yhbpr3ry5g25jvp",
+      "action": "Open job #",
+      "owner": "Will",
+      "deadline": "Wed 4/22",
+      "project": "PPG Monroe Auto Opener",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1776856497039,
+      "source": "manual",
+      "updatedAt": 1776862135737
+    },
+    {
+      "id": "mo91qiyd5f64mlczzst",
+      "action": "Bodyfitz drywall repairs",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "Tonya",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1776801498997,
+      "source": "manual"
+    },
+    {
+      "id": "mo91pxdrpywkdjliaan",
+      "action": "D Building EIFS installation",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "Tonya",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1776801471039,
+      "source": "manual"
+    },
+    {
+      "id": "mo8wufq57cxxfyr1z0l",
+      "action": "Open job # for QPC Midtown electrical add",
+      "owner": "Will",
+      "deadline": "Tue 4/21",
+      "project": "General",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1776793283357,
+      "source": "manual",
+      "updatedAt": 1776860837061
+    },
+    {
+      "id": "mo8wu0rthbm8hjnmtfn",
+      "action": "Open job # for PPG Monroe opener",
+      "owner": "Will",
+      "deadline": "Tue 4/21",
+      "project": "General",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1776793263977,
+      "source": "manual",
+      "updatedAt": 1776860837755
+    },
+    {
+      "id": "mo8w8rqthydz4hsidtl",
+      "action": "Send Parhum/Hanna CO-2",
+      "owner": "Will",
+      "deadline": "Tue 4/21",
+      "project": "WMG Riverstone",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1776792272502,
+      "source": "manual",
+      "updatedAt": 1776858398965
+    },
+    {
+      "id": "mo7hf6cnunitbxp5ft7",
+      "action": "Whole Foods Bollards: Needs to verify desired locations",
+      "owner": "Tonya",
+      "deadline": "TBD",
+      "project": "Tonya",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1776706910951,
+      "source": "manual",
+      "updatedAt": 1777988951066
+    },
+    {
+      "id": "mo7heht55v1ga0vvtra",
+      "action": "Schedule bollard installation @ Whole Foods",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "Tonya",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1776706879145,
+      "source": "manual",
+      "updatedAt": 1777988953711
+    },
+    {
+      "id": "mo7hd70fptrnxa5nye",
+      "action": "Release subs & schedule",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "Kenmar Building Medex",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1776706818495,
+      "source": "manual",
+      "subtasks": [
+        {
+          "id": "mobhyc1xv13",
+          "text": "Schedule 5/16",
+          "done": false,
+          "addedAt": 1776949669509,
+          "due": "",
+          "subtasks": []
+        }
+      ],
+      "updatedAt": 1777988967494
+    },
+    {
+      "id": "mo7hcy2lio950tslqlf",
+      "action": "Sign contract & return",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "Kenmar Building Medex",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1776706806909,
+      "source": "manual",
+      "updatedAt": 1776792410166
+    },
+    {
+      "id": "mo7h6v3ckut4oo2ze5",
+      "action": "Send updated proposal",
+      "owner": "Will",
+      "deadline": "Tue 4/21",
+      "project": "Frank Yuan Plastic Surgery",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1776706523112,
+      "source": "manual",
+      "updatedAt": 1776793287205
+    },
+    {
+      "id": "mo069l4qumfucf4khz",
+      "action": "RFI's",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "ATL Plastic Surgery",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1776264911163,
+      "source": "manual",
+      "subtasks": [],
+      "updatedAt": 1776706783413
+    },
+    {
+      "id": "mo053jva70za6lp9wn",
+      "action": "Submit DFH submittals",
+      "owner": "Will",
+      "deadline": "Thu 4/15",
+      "project": "PPG Newnan",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1776262949975,
+      "source": "manual",
+      "updatedAt": 1776855558757
+    },
+    {
+      "id": "mnq5ygtak52uzysto4e",
+      "action": "Order metal roofing",
+      "owner": "Will",
+      "deadline": "Fri 4/10",
+      "project": "Kodak",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1775659730591,
+      "source": "manual",
+      "updatedAt": 1775671218600
+    },
+    {
+      "id": "mnons8u4pi3gk9m46ao",
+      "action": "Call Trey King Glass",
+      "owner": "Will",
+      "deadline": "4/7/26",
+      "project": "WMG Riverstone",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1775568741052,
+      "source": "manual",
+      "updatedAt": 1775659765781
+    },
+    {
+      "id": "mnolek1c1c546xwt0lv",
+      "action": "Call ATL Gas to locate gas line @ trench",
+      "owner": "Will",
+      "deadline": "Tue 4/7",
+      "project": "Kodak",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1775564743152,
+      "source": "manual",
+      "updatedAt": 1775565552423
+    },
+    {
+      "id": "mnnruxe982b2gj3rl12",
+      "action": "APC Plastic Surgery- Sent architect list of questions",
+      "owner": "Will",
+      "deadline": "Mon 4/6",
+      "project": "Bidding Work",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1775515118484,
+      "source": "manual",
+      "subtasks": [
+        {
+          "id": "mnnrv3pi",
+          "text": "Inline dehumidifier",
+          "done": true,
+          "addedAt": 1775515126662,
+          "due": ""
+        },
+        {
+          "id": "mnnrvhz2",
+          "text": "Plumbing specs",
+          "done": true,
+          "addedAt": 1775515145150,
+          "due": ""
+        },
+        {
+          "id": "mnnrw2rq",
+          "text": "Recommend to move water cooler to different location due to floor below. Recommend moving to closet",
+          "done": false,
+          "addedAt": 1775515172102,
+          "due": ""
+        }
+      ],
+      "updatedAt": 1775659739602
+    },
+    {
+      "id": "mnnlw8i5zqlaegcnl",
+      "action": "Review millwork shops & submit for review",
+      "owner": "Will",
+      "deadline": "Fri 4/10",
+      "project": "PPG Newnan",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1775505101838,
+      "source": "manual",
+      "updatedAt": 1775659768114
+    },
+    {
+      "id": "mnjeyl0l0r8lq18uarw",
+      "action": "Review invoice with Curtis",
+      "owner": "Will",
+      "deadline": "Tue 4/7",
+      "project": "Kodak",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1775251589350,
+      "source": "manual"
+    },
+    {
+      "id": "mnhiohbon6e5ul200lc",
+      "action": "Send Tara pictures of mounted accessories at PQC",
+      "owner": "Will",
+      "deadline": "Thu 4/2",
+      "project": "General",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1775136904116,
+      "source": "manual"
+    },
+    {
+      "id": "mnf3udqfrg2pnw1gq5",
+      "action": "Call Stanley for meeting time Thursday at PQC locations",
+      "owner": "Will",
+      "deadline": "Wed 4/1",
+      "project": "General",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774991052807,
+      "source": "manual"
+    },
+    {
+      "id": "mnexlsbw7tazz7tr9v7",
+      "action": "Update Don Hilley loading dock pricing (bollards & paint gas meter)",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "General",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774980574124,
+      "source": "manual",
+      "updatedAt": 1776855577602
+    },
+    {
+      "id": "mn8vxejmcboi837dygw",
+      "action": "Tonya",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "Work to Schedule",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1774614959842,
+      "source": "manual",
+      "subtasks": [
+        {
+          "id": "mn8w017q",
+          "text": "Bodyfitz- Repair drywall. Conductor heads complete",
+          "done": false,
+          "addedAt": 1774615082534,
+          "due": ""
+        },
+        {
+          "id": "mn8w0b6d",
+          "text": "Whole Foods- Install bollards",
+          "done": false,
+          "addedAt": 1774615095445,
+          "due": ""
+        },
+        {
+          "id": "mn8w0zw6",
+          "text": "Springs Cinema- Low wall & handrail repairs",
+          "done": false,
+          "addedAt": 1774615127478,
+          "due": "",
+          "subtasks": [
+            {
+              "id": "mobhyk9humu",
+              "text": "Scheduled for Tuesday 4/28",
+              "done": false,
+              "addedAt": 1776949680149,
+              "due": "",
+              "subtasks": []
+            }
+          ]
+        }
+      ],
+      "updatedAt": 1777994141841
+    },
+    {
+      "id": "mn8vwqmvp5gfzviwvw7",
+      "action": "Tonya",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "Bidding Work",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1774614928855,
+      "source": "manual",
+      "subtasks": [
+        {
+          "id": "mn8w1yw6",
+          "text": "Parkside D building EIFS replacement",
+          "done": false,
+          "addedAt": 1774615172838,
+          "due": "Fri 4/10",
+          "subtasks": [
+            {
+              "id": "mnqcv5wj3d1",
+              "text": "Get pricing from awning vendor to remove & reinstall. Get alt price for new fabric",
+              "done": false,
+              "addedAt": 1775671333795,
+              "due": "",
+              "subtasks": []
+            }
+          ]
+        }
+      ],
+      "updatedAt": 1777994152444
+    },
+    {
+      "id": "mn8vwfar6znlcldsxrs",
+      "action": "Tonya",
+      "owner": "Will",
+      "deadline": "Sat 3/27",
+      "project": "Bidding Work",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774614914164,
+      "source": "manual"
+    },
+    {
+      "id": "mn8vuj822140h9j85bz",
+      "action": "Tonya",
+      "owner": "Will",
+      "deadline": "Sat 3/27",
+      "project": "Bidding Work",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774614825938,
+      "source": "manual",
+      "updatedAt": 1774614835162
+    },
+    {
+      "id": "mn8vtlh4a80epn7ctrr",
+      "action": "Tonya",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "Bidding Work",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774614782200,
+      "source": "manual",
+      "subtasks": [
+        {
+          "id": "mn8vtpzk",
+          "text": "Fountain Oaks broken curb",
+          "done": true,
+          "addedAt": 1774614788048,
+          "due": ""
+        }
+      ],
+      "updatedAt": 1774614790269
+    },
+    {
+      "id": "mn8vsbs2mbmpcdp7yk",
+      "action": "Tonya",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "Bidding Work",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774614722978,
+      "source": "manual",
+      "subtasks": [
+        {
+          "id": "mn8vsmgw",
+          "text": "Fountain Oaks broken cubr",
+          "done": true,
+          "addedAt": 1774614736832,
+          "due": ""
+        }
+      ],
+      "updatedAt": 1774614738668
+    },
+    {
+      "id": "mn8vpt5ljftt1uvk5f",
+      "action": "Tonya:",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "Bidding Work",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774614605530,
+      "source": "manual",
+      "subtasks": [
+        {
+          "id": "mn8vrjyx",
+          "text": "Fountain Oaks broken curb",
+          "done": true,
+          "addedAt": 1774614686937,
+          "due": ""
+        }
+      ],
+      "updatedAt": 1774614688390
+    },
+    {
+      "id": "mn8tjoy32eyakxzjc9h",
+      "action": "Pickup items from ADI: Passage set, blank plates, sweep strip",
+      "owner": "Will",
+      "deadline": "3/27/27",
+      "project": "WMG Riverstone",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774610960907,
+      "source": "manual"
+    },
+    {
+      "id": "mn8tfjgen8mdi9zbe5o",
+      "action": "Invoice PPG Arbor Springs mini split install",
+      "owner": "Will",
+      "deadline": "3/27/26",
+      "project": "General",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774610767166,
+      "source": "manual"
+    },
+    {
+      "id": "mn8sykwrx2uwcld6qdf",
+      "action": "Get C2H to get Kodak done",
+      "owner": "Will",
+      "deadline": "3/27/26",
+      "project": "Kodak",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774609975899,
+      "source": "manual"
+    },
+    {
+      "id": "mn7rb62ysqri0fhnfr",
+      "action": "Call Robert CCM: Need to be done Monday 3/30. Deliver rest of cabinets Friday 3/27. When bringing SS tops",
+      "owner": "Will",
+      "deadline": "3/26/26",
+      "project": "WMG Riverstone",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774546737802,
+      "source": "manual",
+      "updatedAt": 1774546991613
+    },
+    {
+      "id": "mn7r8k1xb1rdf74ssjc",
+      "action": "Call King Glass- Panic bar, when glass is ready",
+      "owner": "Will",
+      "deadline": "3/26/26",
+      "project": "WMG Riverstone",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774546615941,
+      "source": "manual",
+      "updatedAt": 1774546628346
+    },
+    {
+      "id": "mn7qk9wqy1z1l8e18vq",
+      "action": "Mount glovebox holders & sharps containers in new locations. Patch walls, repaint",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "PPG Quick Care",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774545483050,
+      "source": "manual",
+      "subtasks": [
+        {
+          "id": "mn7qku81",
+          "text": "Need to know if using McKesson glovebox holders or different spec provided by Tara",
+          "done": true,
+          "addedAt": 1774545509377,
+          "due": ""
+        }
+      ],
+      "updatedAt": 1774610684863
+    },
+    {
+      "id": "mn7q228wbpytml23ys",
+      "action": "Supers for Tonya work:",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "General",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774544633312,
+      "source": "manual",
+      "subtasks": [
+        {
+          "id": "mn7q2e7c",
+          "text": "Dylan Thursday 4/2",
+          "done": false,
+          "addedAt": 1774544648808,
+          "due": ""
+        }
+      ],
+      "updatedAt": 1774547149466
+    },
+    {
+      "id": "mn7j4rxinsvwa1315p",
+      "action": "Call Tonya to discuss needed invoice for HE Whole Foods repairs",
+      "owner": "Will",
+      "deadline": "3/26/26",
+      "project": "General",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1774533002598,
+      "source": "manual"
+    },
+    {
+      "id": "mn7j1az4q0er4bfszc8",
+      "action": "HE Dollar Tree Low Wall",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "Tonya",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774532840656,
+      "source": "manual",
+      "subtasks": [
+        {
+          "id": "mnqct0ycu6b",
+          "text": "Stanley to paint weekend of 4/11",
+          "done": true,
+          "addedAt": 1775671234068,
+          "due": "",
+          "subtasks": []
+        }
+      ],
+      "updatedAt": 1776706540145
+    },
+    {
+      "id": "mn7isvz8wkw77cjlhk",
+      "action": "Send Jeff Pinska HE low wall info. Include Heath price, address, name & email",
+      "owner": "Will",
+      "deadline": "3/26/26",
+      "project": "Tonya",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774532447974,
+      "source": "manual",
+      "updatedAt": 1774532532112
+    },
+    {
+      "id": "mn6rwunuec1mb65684g",
+      "action": "Pickup passage set & other items from ADI",
+      "owner": "Will",
+      "deadline": "3/27",
+      "project": "WMG Riverstone",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774487283258,
+      "source": "manual",
+      "updatedAt": 1774487292805
+    },
+    {
+      "id": "mn6rwlir4ng4vh0844v",
+      "action": "Order city of canton signage (IT room, electrical room, FACP, exits)",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "WMG Riverstone",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774487271411,
+      "source": "manual",
+      "subtasks": [
+        {
+          "id": "mn7j57ni",
+          "text": "Get pictures from Allen",
+          "done": true,
+          "addedAt": 1774533022974,
+          "due": ""
+        }
+      ],
+      "updatedAt": 1774610701063
+    },
+    {
+      "id": "mn6rverx9x9bo6htojb",
+      "action": "Kodak to send new exhaust hood specs",
+      "owner": "Kodak",
+      "deadline": "TBD",
+      "project": "Kodak",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1774487216014,
+      "source": "manual",
+      "updatedAt": 1776706769686
+    },
+    {
+      "id": "mn6ruuntb474zcdq48u",
+      "action": "Invoice PPG Arbor Springs",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "General",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774487189945,
+      "source": "manual",
+      "subtasks": [
+        {
+          "id": "mn6sx7u2",
+          "text": "Received from Brittany, send to Raquel",
+          "done": true,
+          "addedAt": 1774488979946
+        }
+      ],
+      "updatedAt": 1774489566841
+    },
+    {
+      "id": "mn6rumxf4loih30zaju",
+      "action": "WMG Advanced Heart Failure- Pink, IT, break bids",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "General",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774487179923,
+      "source": "manual",
+      "subtasks": [],
+      "updatedAt": 1774532488696
+    },
+    {
+      "id": "mn6rrjj6kka9dfuh1mi",
+      "action": "Pickup samples",
+      "owner": "Billy @ signs & more",
+      "deadline": "TBD",
+      "project": "Frank Yuan Plastic Surgery",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774487035554,
+      "source": "manual"
+    },
+    {
+      "id": "mn6izieddquiiy0917g",
+      "action": "Reprice SV & schluter per new specs",
+      "owner": "Riley Priest",
+      "deadline": "TBD",
+      "project": "Frank Yuan Plastic Surgery",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774472290789,
+      "source": "manual"
+    },
+    {
+      "id": "mn6iyddyt8rnvpmc25p",
+      "action": "Color code(s) for logo signage",
+      "owner": "Frank Yuan",
+      "deadline": "TBD",
+      "project": "Frank Yuan Plastic Surgery",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774472237638,
+      "source": "manual",
+      "updatedAt": 1776962134634
+    },
+    {
+      "id": "mn6ig491be8sf4egl1l",
+      "action": "Order City of Canton signage (IT room, electrical room, FACP, exits)",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "WMG Riverstone",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774471385989,
+      "source": "manual",
+      "updatedAt": 1774488578283,
+      "subtasks": [
+        {
+          "id": "mn6s8xhz",
+          "text": "Get pictures from Allen",
+          "done": true,
+          "addedAt": 1774487846807
+        }
+      ]
+    },
+    {
+      "id": "mn6hzzvhkqa0vy6qad",
+      "action": "WMG Advanced Heart Failure- Pink, IT, Break bids",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "General",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774470633822,
+      "source": "manual"
+    },
+    {
+      "id": "mn6fcscv0sti6fk4oodq",
+      "action": "Pickup passage set from ADI",
+      "owner": "Will",
+      "deadline": "3/28/26",
+      "project": "WMG Riverstone",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774466191759,
+      "source": "manual",
+      "subtasks": [],
+      "updatedAt": 1774610070871
+    },
+    {
+      "id": "mn656ohob42qtf8a58g",
+      "action": "Invoice PPG Arbor Springs mini split install",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "General",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774449110652,
+      "source": "manual",
+      "subtasks": [
+        {
+          "id": "mn7ituga",
+          "text": "Received from Brittany, send to Raquel",
+          "done": true,
+          "addedAt": 1774532492650,
+          "due": ""
+        }
+      ],
+      "updatedAt": 1774610709527
+    },
+    {
+      "id": "mn655ankiwjapxg81sl",
+      "action": "Talk w/ Dylan about rescheduling Premier review date",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "General",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774449046064,
+      "source": "manual"
+    },
+    {
+      "id": "mn62frh45c8597h7i05",
+      "action": "Get schedule & CO's finalized",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "Kodak",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774444495576,
+      "source": "manual"
+    },
+    {
+      "id": "mn61ga40jqsdfshz6sk",
+      "action": "Order accessories",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "WMG Riverstone",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774442840112,
+      "source": "manual"
+    },
+    {
+      "id": "mn61g11yftg2jmqba5h",
+      "action": "Swap dumpster",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "Kodak",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774442828374,
+      "source": "manual"
+    },
+    {
+      "id": "mn61fh72pv0mi05nshq",
+      "action": "Talk w Curtis about crane for chiller delivery",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "Kodak",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774442802638,
+      "source": "manual"
+    },
+    {
+      "id": "mn61f2ytfkao9quwmow",
+      "action": "Call Dan Floyd",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "Kodak",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774442784197,
+      "source": "manual"
+    },
+    {
+      "id": "mn5yvib1qpmirdpa9b",
+      "action": "Respond to Jeff Reeves text",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "General",
+      "contact": "",
+      "callDate": "",
+      "done": true,
+      "addedAt": 1774438511725,
+      "source": "manual"
+    }
+  ]
+}

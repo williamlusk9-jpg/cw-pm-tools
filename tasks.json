@@ -1,5 +1,5 @@
 {
-  "_syncedAt": 1778069992130,
+  "_syncedAt": 1778070010990,
   "tasks": [
     {
       "id": "mou0yhcvpwu5txfpobm",
@@ -279,7 +279,7 @@
     },
     {
       "id": "mo91pxdrpywkdjliaan",
-      "action": "D Building EIFS installation",
+      "action": "D Building EIFS installation proposal. Waiting on Lanier Aluminum price",
       "owner": "Will",
       "deadline": "TBD",
       "project": "Tonya",
@@ -287,7 +287,8 @@
       "callDate": "",
       "done": false,
       "addedAt": 1776801471039,
-      "source": "manual"
+      "source": "manual",
+      "updatedAt": 1778070009480
     },
     {
       "id": "mo8wufq57cxxfyr1z0l",

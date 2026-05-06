@@ -1,5 +1,5 @@
 {
-  "_syncedAt": 1778069438681,
+  "_syncedAt": 1778069440515,
   "tasks": [
     {
       "id": "mosmhdnf7n3rf6srse7",
@@ -554,45 +554,6 @@
       "addedAt": 1774980574124,
       "source": "manual",
       "updatedAt": 1776855577602
-    },
-    {
-      "id": "mn8vxejmcboi837dygw",
-      "action": "Tonya",
-      "owner": "Will",
-      "deadline": "TBD",
-      "project": "Work to Schedule",
-      "contact": "",
-      "callDate": "",
-      "done": false,
-      "addedAt": 1774614959842,
-      "source": "manual",
-      "subtasks": [
-        {
-          "id": "mn8w0b6d",
-          "text": "Whole Foods- Install bollards",
-          "done": false,
-          "addedAt": 1774615095445,
-          "due": ""
-        },
-        {
-          "id": "mn8w0zw6",
-          "text": "Springs Cinema- Low wall & handrail repairs",
-          "done": false,
-          "addedAt": 1774615127478,
-          "due": "",
-          "subtasks": [
-            {
-              "id": "mobhyk9humu",
-              "text": "Scheduled for Tuesday 4/28",
-              "done": false,
-              "addedAt": 1776949680149,
-              "due": "",
-              "subtasks": []
-            }
-          ]
-        }
-      ],
-      "updatedAt": 1778069437178
     },
     {
       "id": "mn8vwqmvp5gfzviwvw7",

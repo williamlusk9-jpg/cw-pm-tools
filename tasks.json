@@ -1,6 +1,18 @@
 {
-  "_syncedAt": 1778165038912,
+  "_syncedAt": 1778165078666,
   "tasks": [
+    {
+      "id": "movlkqla8sff8qx7qpd",
+      "action": "Pickup sweep strips & seals. Back doors & processor hall door",
+      "owner": "Will",
+      "deadline": "Thu 5/7",
+      "project": "Kodak",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1778165077151,
+      "source": "manual"
+    },
     {
       "id": "moucnpwcf57xmr9iuf4",
       "action": "Parkaire: Send proposal to repair burned fence",

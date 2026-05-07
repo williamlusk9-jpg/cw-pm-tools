@@ -226,7 +226,8 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
     <a class="sb-item" href="cw-tasks-pwa.html"><svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="sb-lbl">Tasks</span><span class="sb-badge" id="sbBadge" style="display:none">0</span></a>
     <a class="sb-item active" href="cw-submittal-review-pwa.html"><svg class="sb-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="sb-lbl">Submittal Review</span></a>
   </div>
-  <div class="sb-foot"><div class="sb-date" id="sbDate"></div></div>
+  <div class="sb-foot"><div class="sb-date" id="sbDate">
+    <button id="apiKeyOpenBtn" type="button" title="API Key" style="margin-top:6px;display:flex;align-items:center;gap:6px;background:transparent;border:1px solid #333;border-radius:8px;color:#8a8780;font-family:monospace;font-size:10px;padding:6px 10px;cursor:pointer;width:100%"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> API Key</button></div></div>
 </nav>
 
 <div class="mob-topbar">
@@ -557,13 +558,38 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div><div class="loading-lbl" id="loadingLbl">Reviewing submittal...</div></div>
 <div class="toast" id="toast"></div>
 
+
+<!-- API KEY MODAL -->
+<div id="apiKeyModalBack" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9000;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)">
+  <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:20px 20px 0 0;padding:22px 18px 36px;width:100%;max-width:480px;display:flex;flex-direction:column;gap:14px;box-sizing:border-box">
+    <div style="font-family:var(--syne,sans-serif);font-size:18px;font-weight:700;color:#f0ede8">Anthropic API Key</div>
+    <div style="font-size:13px;color:#8a8780;line-height:1.6">Required for AI features (review, transcription, OAC notes). Get yours at <span style="color:#4a90d9">console.anthropic.com</span>. Stored only on this device.</div>
+    <div id="apiKeyStatus" style="font-family:monospace;font-size:12px;padding:10px 12px;border-radius:8px;background:#222;border:1px solid #333;color:#8a8780">Not configured</div>
+    <input id="apiKeyInput" type="password" placeholder="sk-ant-..." style="background:#222;border:1px solid #333;border-radius:10px;color:#f0ede8;font-family:monospace;font-size:13px;padding:11px 13px;outline:none;width:100%;box-sizing:border-box">
+    <div style="display:flex;gap:8px">
+      <button id="apiKeySave" type="button" style="flex:1;padding:12px;background:#E8622A;border:none;border-radius:10px;color:#fff;font-family:monospace;font-size:12px;font-weight:700;cursor:pointer">Save Key</button>
+      <button id="apiKeyClear" type="button" style="padding:12px 16px;background:transparent;border:1px solid #333;border-radius:10px;color:#8a8780;font-family:monospace;font-size:12px;cursor:pointer">Clear</button>
+      <button id="apiKeyClose" type="button" style="padding:12px 16px;background:transparent;border:1px solid #333;border-radius:10px;color:#8a8780;font-family:monospace;font-size:12px;cursor:pointer">Close</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
 'use strict';
 function q(id){return document.getElementById(id);}
+function getApiKey(){try{return localStorage.getItem('cw-api-key')||'';}catch(e){return '';}}
+function setApiKey(k){try{localStorage.setItem('cw-api-key',k);}catch(e){}}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 var isDesktop=function(){return window.innerWidth>=768;};
 var toastTimer=null;
+function showApiKeyWarning(){
+  showToast('API key required — tap the key icon to add yours','red');
+}
+function checkApiKey(){
+  if(!getApiKey()){showApiKeyWarning();return false;}
+  return true;
+}
 function showToast(msg,style){
   var t=q('toast');t.textContent=msg;
   t.className='toast show'+(style?' '+style:'');
@@ -967,7 +993,7 @@ function runConflictCheck(job,newRev){
       +'Return ONLY valid JSON: {"hasConflict":true or false,"summary":"one sentence if conflict, else null","items":["list of specific conflicts if any"]}';
     fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-calls':'true'},
+      headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},
       body:JSON.stringify({model:'claude-opus-4-6',max_tokens:400,
         messages:[{role:'user',content:[
           {type:'document',source:{type:'base64',media_type:'application/pdf',data:newRev.base64}},
@@ -1030,7 +1056,7 @@ function autoExtractFromDrawings(job){
 
   fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
-    headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-calls':'true'},
+    headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},
     body:JSON.stringify({model:'claude-opus-4-6',max_tokens:300,
       messages:[{role:'user',content:[
         {type:'document',source:{type:'base64',media_type:'application/pdf',data:job.drawingsBase64}},
@@ -1201,7 +1227,7 @@ function autoExtractFromPlans(){
   var extractPrompt='You are reviewing construction plans for '+proj+'. Extract ALL product designations (like LVT-1, PT-1, CPT-1, RB-1, DH-1, etc.) and their corresponding products/specs from the plans. Also extract the trade/category this submittal package belongs to. Return ONLY valid JSON: {"productDesignations":"comma-separated list like LVT-1, RB-1, PT-1","trade":"best matching trade name","projectName":"project name if found","jobNumber":"job number if found","confidence":"high or low"}';
   fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
-    headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-calls':'true'},
+    headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},
     body:JSON.stringify({
       model:'claude-opus-4-6',max_tokens:500,
       messages:[{role:'user',content:[
@@ -1312,8 +1338,7 @@ function runReview(){
     method:'POST',
     headers:{
       'Content-Type':'application/json',
-      'anthropic-version':'2023-06-01',
-      'anthropic-dangerous-direct-browser-calls':'true'
+      'anthropic-version':'2023-06-01','x-api-key':getApiKey()
     },
     body:JSON.stringify({
       model:'claude-opus-4-6',
@@ -1643,7 +1668,39 @@ document.addEventListener('touchend',function(e){
   var n=Date.now();if(n-lt<300)e.preventDefault();lt=n;
 },{passive:false});
 
+
+/* ── API KEY MODAL ── */
+function openApiKeyModal(){
+  var has=!!getApiKey();
+  var st=q('apiKeyStatus');
+  st.textContent=has?'Key saved (sk-ant-...'+getApiKey().slice(-4)+')':'Not configured';
+  st.style.color=has?'#34a872':'#8a8780';
+  q('apiKeyInput').value='';
+  q('apiKeyModalBack').style.display='flex';
+}
+function closeApiKeyModal(){q('apiKeyModalBack').style.display='none';}
+var _akBtn=document.getElementById('apiKeyOpenBtn');
+if(_akBtn)_akBtn.addEventListener('click',openApiKeyModal);
+q('apiKeyModalBack').addEventListener('click',function(e){if(e.target===this)closeApiKeyModal();});
+q('apiKeyClose').addEventListener('click',closeApiKeyModal);
+q('apiKeySave').addEventListener('click',function(){
+  var k=q('apiKeyInput').value.trim();
+  if(!k){showToast('Paste your API key first');return;}
+  if(!k.startsWith('sk-')){showToast('API key should start with sk-');return;}
+  setApiKey(k);
+  q('apiKeyStatus').textContent='Key saved ('+k.slice(0,8)+'...'+k.slice(-4)+')';
+  q('apiKeyStatus').style.color='#34a872';
+  showToast('API key saved','green');
+  setTimeout(closeApiKeyModal,800);
+});
+q('apiKeyClear').addEventListener('click',function(){
+  setApiKey('');q('apiKeyInput').value='';
+  q('apiKeyStatus').textContent='Not configured';q('apiKeyStatus').style.color='#8a8780';
+  showToast('API key cleared');
+});
+
 })();
 </script>
 </body>
+
 </html>

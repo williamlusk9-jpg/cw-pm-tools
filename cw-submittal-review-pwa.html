@@ -154,7 +154,8 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 .status-pending{background:var(--s3);color:var(--tx4);border:1px solid var(--b1)}
 .add-job-btn{width:100%;padding:11px;background:transparent;border:1px dashed var(--b2);border-radius:10px;color:var(--tx4);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px}
 .add-job-btn:hover{border-color:var(--accent);color:var(--accent)}
-.plans-zone-sm{background:var(--s2);border:1px dashed var(--b2);border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;position:relative;margin-bottom:2px}
+.plans-zone-sm{background:var(--s2);border:1px dashed var(--b2);border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;position:relative;margin-bottom:2px;user-select:none}
+.plans-zone-sm:not(.loaded):hover{border-color:var(--accent);background:var(--accent-dim)}
 .plans-zone-sm.loaded{border-style:solid;border-color:var(--green);background:var(--green-dim)}
 .plans-zone-sm input[type=file]{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
 .pane-actions{display:flex;gap:8px;flex-shrink:0}
@@ -177,6 +178,16 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 .upload-revision-btn{width:100%;padding:9px;background:transparent;border:1px dashed var(--b2);border-radius:8px;color:var(--tx4);font-family:var(--mono);font-size:10px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px}
 .upload-revision-btn:hover{border-color:var(--blue);color:var(--blue)}
 .sub-log-item.has-conflict{border-color:rgba(224,82,82,.4);background:rgba(224,82,82,.04)}
+.sub-num{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--accent);background:var(--accent-dim);border:1px solid rgba(232,98,42,.2);border-radius:5px;padding:2px 7px;flex-shrink:0}
+.sub-num-rev{color:var(--blue);background:var(--blue-dim);border-color:rgba(74,144,217,.2)}
+.bic-pill{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:8px;flex-shrink:0;border:1px solid var(--b1);background:var(--s3);color:var(--tx3)}
+.bic-will{background:rgba(232,98,42,.1);border-color:rgba(232,98,42,.25);color:var(--accent)}
+.bic-arch{background:var(--blue-dim);border-color:rgba(74,144,217,.25);color:var(--blue)}
+.bic-sub{background:var(--s3);border-color:var(--b2);color:var(--tx3)}
+.sub-num-edit{font-family:var(--mono);font-size:11px;background:var(--s2);border:1px solid var(--b2);border-radius:6px;color:var(--tx1);padding:4px 8px;width:90px;outline:none}
+.sub-num-edit:focus{border-color:var(--accent)}
+.resubmit-chain{font-family:var(--mono);font-size:9px;color:var(--tx4);margin-top:3px;display:flex;align-items:center;gap:4px}
+.resubmit-chain-item{color:var(--blue);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
 @media(min-width:768px){
   html,body{overflow:hidden}
   .sidebar{display:flex}
@@ -291,7 +302,13 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 
       <!-- Submittal log -->
       <div>
-        <div class="sec-lbl" style="margin-bottom:7px">Submittals</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
+          <div class="sec-lbl" style="margin-bottom:0">Submittals</div>
+          <button id="exportLogBtn" type="button" style="background:transparent;border:1px solid var(--b1);border-radius:6px;color:var(--tx4);font-family:var(--mono);font-size:9px;padding:4px 9px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .15s" title="Export submittal log to CSV">
+            <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export CSV
+          </button>
+        </div>
         <div id="submittalLog">
           <div class="empty-state">
             <div class="empty-state-icon">📋</div>
@@ -373,6 +390,32 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
         <div class="field">
           <label>Architect Firm</label>
           <input class="finput" type="text" id="archFirm" placeholder="Align Design Associates" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Submittal Number</label>
+          <input class="finput" type="text" id="submittalNum" placeholder="Auto (S-001)" autocomplete="off">
+        </div>
+        <div class="field">
+          <label>Spec Section</label>
+          <input class="finput" type="text" id="specSection" placeholder="09 65 13" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Ball in Court</label>
+          <select class="fselect" id="ballInCourt">
+            <option value="Will">Will (Reviewing)</option>
+            <option value="Architect">Architect (Reviewing)</option>
+            <option value="Subcontractor">Subcontractor (Action)</option>
+          </select>
+        </div>
+        <div class="field" id="resubmittalField" style="display:none">
+          <label>Resubmittal of</label>
+          <input class="finput" type="text" id="resubmittalOf" placeholder="S-001" autocomplete="off" readonly>
         </div>
       </div>
 
@@ -501,6 +544,10 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
         Email to Me
       </button>
 
+      <button class="btn-secondary" id="resubmitBtn" type="button" style="display:none">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4"/></svg>
+        Start Resubmittal
+      </button>
       <button class="btn-secondary" id="newReviewBtn" type="button">+ New Submittal</button>
     </div>
   </div>
@@ -564,6 +611,17 @@ function getJobs(){try{return JSON.parse(localStorage.getItem('cw-submittal-jobs
 function saveJobs(j){try{localStorage.setItem('cw-submittal-jobs',JSON.stringify(j));}catch(e){}}
 function genId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 
+function nextSubmittalNumber(job){
+  var subs=Array.isArray(job.submittals)?job.submittals:[];
+  // Find highest existing number
+  var max=0;
+  subs.forEach(function(s){
+    var m=String(s.number||'').match(/S-(\d+)/i);
+    if(m)max=Math.max(max,parseInt(m[1]));
+  });
+  return 'S-'+(String(max+1).padStart(3,'0'));
+}
+
 var activeJobId=null;
 var activeSubmittalId=null; // if re-opening an existing submittal's results
 
@@ -623,19 +681,29 @@ function renderJobDetail(){
   var ds=q('drawingsStatus');
   if(job.drawingsBase64){
     dz.classList.add('loaded');
+    var approxMB=(Math.round(job.drawingsBase64.length*0.75)/1048576).toFixed(1);
     ds.innerHTML='<svg width="14" height="14" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:5px"><polyline points="20 6 9 17 4 12"/></svg>'
       +'<span style="color:var(--green);font-weight:500">'+esc(job.drawingsName||'Drawings uploaded')+'</span>'
-      +' <button type="button" id="clearDrawingsBtn" style="margin-left:8px;background:transparent;border:1px solid var(--b1);border-radius:5px;color:var(--tx4);font-family:var(--mono);font-size:9px;padding:2px 7px;cursor:pointer">Clear</button>';
+      +'<span style="font-family:var(--mono);font-size:9px;color:var(--tx4);margin-left:5px">'+approxMB+'MB</span>'
+      +' <button type="button" id="replaceDrawingsBtn" style="margin-left:8px;background:transparent;border:1px solid var(--b2);border-radius:5px;color:var(--tx3);font-family:var(--mono);font-size:9px;padding:2px 7px;cursor:pointer">Replace</button>'
+      +' <button type="button" id="clearDrawingsBtn" style="margin-left:4px;background:transparent;border:1px solid var(--b1);border-radius:5px;color:var(--tx4);font-family:var(--mono);font-size:9px;padding:2px 7px;cursor:pointer">Clear</button>';
+    var rb=document.getElementById('replaceDrawingsBtn');
+    if(rb)rb.addEventListener('click',function(e){
+      e.stopPropagation();
+      q('drawingsFile').click();
+    });
     var cb=document.getElementById('clearDrawingsBtn');
     if(cb)cb.addEventListener('click',function(e){
       e.stopPropagation();
+      if(!confirm('Remove drawings from this job?'))return;
       var jobs2=getJobs();var j2=jobs2.find(function(x){return x.id===activeJobId;});
       if(!j2)return;j2.drawingsBase64=null;j2.drawingsName=null;saveJobs(jobs2);
       renderJobDetail();
     });
   } else {
     dz.classList.remove('loaded');
-    ds.innerHTML='<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:5px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Upload drawings PDF';
+    ds.innerHTML='<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:5px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'
+      +'<span>Click to upload drawings PDF</span>';
   }
   q('drawingsExtractStatus').style.display='none';
   renderRevisionsList(job);
@@ -654,16 +722,24 @@ function renderJobDetail(){
           +'<span><strong>Revision conflict: '+esc(sub.conflict.revisionName)+'</strong> — '+esc(sub.conflict.summary||'')+'</span></div>'
         :'';
       if(sub.conflict)item.classList.add('has-conflict');
+      var bicClass=sub.ballInCourt==='Architect'?'bic-arch':sub.ballInCourt==='Will'?'bic-will':'bic-sub';
+      var bicLabel=sub.ballInCourt||'Will';
+      var revLabel=sub.revisionNum>1?' Rev '+sub.revisionNum:'';
       item.innerHTML='<div class="sub-log-hdr">'
+        +(sub.number?'<span class="sub-num'+(sub.revisionNum>1?' sub-num-rev':'')+'">'
+          +esc(sub.number)+esc(revLabel)+'</span>':'')
         +'<span class="sub-log-trade">'+esc(sub.trade||'Submittal')+'</span>'
         +(sub.conflict?'<svg width="12" height="12" fill="var(--red)" stroke="var(--red)" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>':'')
         +'<span class="status-pill '+statusClass(sub.status)+'">'+statusLabel(sub.status)+'</span>'
+        +'<span class="bic-pill '+bicClass+'" title="Ball in court">'+esc(bicLabel)+'</span>'
         +'</div>'
         +'<div class="sub-log-meta">'
+        +(sub.specSection?'<span style="color:var(--tx3)">'+esc(sub.specSection)+'</span> · ':'')
         +(sub.product?esc(sub.product)+' · ':'')
         +(sub.submittedBy?'by '+esc(sub.submittedBy)+' · ':'')
         +new Date(sub.date||Date.now()).toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'})
         +'</div>'
+        +(sub.resubmittalOf?'<div class="resubmit-chain">↳ Resubmittal of <span class="resubmit-chain-item">'+esc(sub.resubmittalOf)+'</span></div>':'')
         +conflictHtml;
       item.addEventListener('click',function(){openExistingSubmittal(sub);});
       log.appendChild(item);
@@ -708,6 +784,11 @@ function openNewSubmittal(){
   q('pdfFile').value='';
   q('trade').selectedIndex=0;q('productCode').value='';q('submittedBy').value='';
   q('archContact').value='';q('archFirm').value='';q('reviewNotes').value='';
+  q('specSection').value='';q('ballInCourt').value='Will';
+  q('resubmittalField').style.display='none';q('resubmittalOf').value='';
+  // Auto-assign next submittal number (editable)
+  var _numJobs=getJobs();var _numJob=_numJobs.find(function(j){return j.id===activeJobId;});
+  if(_numJob)q('submittalNum').value=nextSubmittalNumber(_numJob);
   checkReady();
   // Show review panels on desktop
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('review-open');});
@@ -744,15 +825,28 @@ function saveSubmittalToJob(result){
   var job=jobs.find(function(j){return j.id===activeJobId;});
   if(!job)return;
   if(!Array.isArray(job.submittals))job.submittals=[];
+  var _subNum=q('submittalNum').value.trim()||nextSubmittalNumber(job);
   var sub={
     id:genId(),
-    trade:q('trade').value||q('trade').options[q('trade').selectedIndex]&&q('trade').options[q('trade').selectedIndex].text||'',
+    number:_subNum,
+    specSection:q('specSection').value.trim(),
+    ballInCourt:q('ballInCourt').value||'Will',
+    resubmittalOf:q('resubmittalOf').value.trim()||null,
+    revisionNum:q('resubmittalOf').value.trim()?2:1,
+    trade:q('trade').value||'',
     product:q('productCode').value.trim(),
     submittedBy:q('submittedBy').value.trim(),
+    archContact:q('archContact').value.trim(),
+    archFirm:q('archFirm').value.trim(),
     date:Date.now(),
     status:result.letterAction||result.verdict||'pending',
     result:result
   };
+  // If this is a resubmittal, find the revision number
+  if(sub.resubmittalOf){
+    var chain=job.submittals.filter(function(s){return s.number===sub.resubmittalOf||s.resubmittalOf===sub.resubmittalOf;});
+    sub.revisionNum=chain.length+2;
+  }
   job.submittals.push(sub);
   saveJobs(jobs);
   renderJobsList();
@@ -789,7 +883,15 @@ q('drawingsFile').addEventListener('change',function(e){
   reader.readAsDataURL(file);
   e.target.value='';
 });
-q('drawingsZone').addEventListener('click',function(){q('drawingsFile').click();});
+q('drawingsZone').addEventListener('click',function(){
+  var jobs=getJobs();
+  var job=jobs.find(function(j){return j.id===activeJobId;});
+  // Only trigger file picker when no drawings loaded (loaded state has Replace/Clear buttons)
+  if(!job||!job.drawingsBase64){
+    if(!activeJobId){showToast('Select a job first');return;}
+    q('drawingsFile').click();
+  }
+});
 
 /* ── REVISIONS ── */
 function getRevisions(job){return Array.isArray(job.revisions)?job.revisions:[];}
@@ -913,36 +1015,72 @@ function runConflictCheck(job,newRev){
 function autoExtractFromDrawings(job){
   if(!job||!job.drawingsBase64)return;
   var st=q('drawingsExtractStatus');
-  st.textContent='Reading drawings...';st.style.display='block';st.style.color='var(--tx3)';
+
+  // Size check — base64 of >8MB PDF will likely exceed API limits
+  var approxBytes=Math.round(job.drawingsBase64.length*0.75);
+  var approxMB=(approxBytes/1048576).toFixed(1);
+  if(approxBytes>20971520){ // >20MB PDF
+    st.textContent='Drawings saved ('+approxMB+'MB) — file too large for auto-extract. Name and job # can be set manually.';
+    st.style.display='block';st.style.color='var(--tx4)';
+    return;
+  }
+
+  st.textContent='Reading drawings ('+approxMB+'MB)...';
+  st.style.display='block';st.style.color='var(--tx3)';
+
   fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
     headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-calls':'true'},
     body:JSON.stringify({model:'claude-opus-4-6',max_tokens:300,
       messages:[{role:'user',content:[
         {type:'document',source:{type:'base64',media_type:'application/pdf',data:job.drawingsBase64}},
-        {type:'text',text:'List the project name and job number found in these drawings. Return ONLY valid JSON: {"projectName":"","jobNumber":""}'}
+        {type:'text',text:'Find the project name and job number in these drawings title block. Return ONLY valid JSON with no markdown: {"projectName":"value or empty string","jobNumber":"value or empty string"}'}
       ]}]
     })
   })
-  .then(function(r){return r.json();})
+  .then(function(r){
+    if(!r.ok){
+      return r.json().then(function(err){
+        var msg=(err&&err.error&&err.error.message)||('API error '+r.status);
+        throw new Error(msg);
+      }).catch(function(){throw new Error('API error '+r.status);});
+    }
+    return r.json();
+  })
   .then(function(d){
     var raw=(d.content||[]).map(function(b){return b.text||'';}).join('').replace(/```json|```/g,'').trim();
-    try{
-      var info=JSON.parse(raw);
-      var jobs2=getJobs();var j2=jobs2.find(function(x){return x.id===activeJobId;});
-      if(!j2)return;
-      var changed=[];
-      if(info.projectName&&info.projectName!==j2.name&&!j2.name){j2.name=info.projectName;changed.push('name');}
-      if(info.jobNumber&&!j2.number){j2.number=info.jobNumber;changed.push('job #');}
-      if(changed.length){saveJobs(jobs2);renderJobsList();renderJobDetail();}
-      st.textContent=changed.length?'Extracted from drawings: '+changed.join(', '):'Drawings indexed';
-      st.style.color='var(--green)';
-    }catch(e){st.textContent='Drawings saved';st.style.color='var(--tx3)';}
+    // Strip any leading/trailing non-JSON chars
+    var jsonStart=raw.indexOf('{');
+    var jsonEnd=raw.lastIndexOf('}');
+    if(jsonStart>-1&&jsonEnd>jsonStart)raw=raw.slice(jsonStart,jsonEnd+1);
+    var info=JSON.parse(raw);
+    var jobs2=getJobs();
+    var j2=jobs2.find(function(x){return x.id===activeJobId;});
+    if(!j2)return;
+    var changed=[];
+    if(info.projectName&&info.projectName.trim()&&!j2.name){
+      j2.name=info.projectName.trim();changed.push('project name');
+    }
+    if(info.jobNumber&&info.jobNumber.trim()&&!j2.number){
+      j2.number=info.jobNumber.trim();changed.push('job #');
+    }
+    if(changed.length){saveJobs(jobs2);renderJobsList();renderJobDetail();}
+    st.textContent=changed.length
+      ?'Auto-filled from drawings: '+changed.join(', ')
+      :'Drawings indexed — name/number not found in title block (fill in manually)';
+    st.style.color=changed.length?'var(--green)':'var(--tx3)';
   })
-  .catch(function(){st.textContent='Drawings saved — could not auto-extract';st.style.color='var(--tx3)';});
+  .catch(function(e){
+    st.textContent='Drawings saved — extract failed: '+e.message.slice(0,80);
+    st.style.color='var(--tx4)';
+    console.warn('autoExtractFromDrawings error:',e.message);
+  });
 }
 
 /* Add job */
+var _expBtn=document.getElementById('exportLogBtn');
+if(_expBtn)_expBtn.addEventListener('click',exportSubmittalLog);
+
 q('addJobBtn').addEventListener('click',function(){
   var name=prompt('Job name (e.g. WMG Riverstone):','');
   if(!name||!name.trim())return;
@@ -1219,6 +1357,12 @@ function populateReview(r){
   var info=issues.filter(function(i){return i.severity==='info';});
 
   q('reviewSummary').style.display='block';
+  // Show resubmit button only for Revise and Resubmit
+  var resubBtn=q('resubmitBtn');
+  if(resubBtn){
+    var isRevise=(r.letterAction||r.verdict||'').toLowerCase().includes('revise');
+    resubBtn.style.display=isRevise?'flex':'none';
+  }
   var sl=q('scoreLabel');
   var status=r.overallStatus||'warn';
   sl.className='rs-score '+(status==='fail'?'fail':status==='pass'?'pass':'warn');
@@ -1299,6 +1443,38 @@ function buildIssueSection(wrapId,ctId,listId,items,badgeClass){
   });
 }
 
+function exportSubmittalLog(){
+  if(!activeJobId){showToast('Select a job first');return;}
+  var jobs=getJobs();
+  var job=jobs.find(function(j){return j.id===activeJobId;});
+  if(!job||!job.submittals||!job.submittals.length){showToast('No submittals to export');return;}
+  var rows=[['Submittal No','Rev','Spec Section','Trade','Product','Submitted By','Ball in Court','Status','Date','Resubmittal Of']];
+  job.submittals.forEach(function(s){
+    rows.push([
+      s.number||'',
+      s.revisionNum>1?'Rev '+s.revisionNum:'1',
+      s.specSection||'',
+      s.trade||'',
+      s.product||'',
+      s.submittedBy||'',
+      s.ballInCourt||'Will',
+      s.status||'',
+      new Date(s.date||Date.now()).toLocaleDateString('en-US'),
+      s.resubmittalOf||''
+    ]);
+  });
+  var csv=rows.map(function(r){
+    return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');
+  }).join('\n');
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  var fname=(job.name||'Submittals').replace(/[^a-z0-9]/gi,'-')+'-Submittal-Log.csv';
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download=fname;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);},3000);
+  showToast('Submittal log exported','green');
+}
+
 function buildTransmittal(r){
   var proj=q('projectName').value.trim();
   var jobNum=q('jobNumber').value.trim();
@@ -1323,7 +1499,11 @@ function buildTransmittal(r){
   lines.push('');
   lines.push('LETTER OF TRANSMITTAL');
   lines.push('');
+  var subNum=q('submittalNum').value.trim();
+  var specSec=q('specSection').value.trim();
+  var bic=q('ballInCourt').value||'Will';
   lines.push('Date:    '+today+'        Job Number: '+(jobNum||'—'));
+  if(subNum)lines.push('Submittal No: '+subNum+(specSec?' — Spec Section: '+specSec:''));
   lines.push('ATTN:    '+archContact);
   lines.push('');
   lines.push('TO:  '+archFirm);
@@ -1408,6 +1588,27 @@ q('sendEmailBtn').addEventListener('click',function(){
   var body=q('letterContent').textContent;
   var to='wlusk'+'@'+'cwcontracting.com';
   window.location.href='mailto:'+to+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+});
+
+// Resubmit button — starts new submittal pre-linked to current one
+q('resubmitBtn').addEventListener('click',function(){
+  if(!reviewResult||!activeJobId)return;
+  var jobs=getJobs();var job=jobs.find(function(j){return j.id===activeJobId;});
+  if(!job)return;
+  var subs=Array.isArray(job.submittals)?job.submittals:[];
+  // Get the most recently saved submittal's number
+  var lastSub=subs.length?subs[subs.length-1]:null;
+  var origNum=lastSub?lastSub.number:'';
+  openNewSubmittal();
+  // Pre-fill resubmittal fields
+  setTimeout(function(){
+    q('resubmittalOf').value=origNum;
+    q('resubmittalField').style.display='';
+    if(origNum){
+      var jobs2=getJobs();var job2=jobs2.find(function(j){return j.id===activeJobId;});
+      if(job2)q('submittalNum').value=nextSubmittalNumber(job2);
+    }
+  },50);
 });
 
 q('newReviewBtn').addEventListener('click',function(){

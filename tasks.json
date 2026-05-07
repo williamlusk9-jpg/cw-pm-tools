@@ -1,6 +1,18 @@
 {
-  "_syncedAt": 1778179978722,
+  "_syncedAt": 1778180040147,
   "tasks": [
+    {
+      "id": "movugvngjbbmr6ssje",
+      "action": "Assemble submittal binder",
+      "owner": "Will",
+      "deadline": "Fri 5/8",
+      "project": "PPG Newnan",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1778180013628,
+      "source": "manual"
+    },
     {
       "id": "movlkqla8sff8qx7qpd",
       "action": "Pickup sweep strips & seals. Back doors & processor hall door",
@@ -29,14 +41,14 @@
       "id": "mou6gmonrc4d87qzzlo",
       "action": "Pay app 4",
       "owner": "Will",
-      "deadline": "Fri 5/8",
+      "deadline": "Fri 5/15",
       "project": "WMG Riverstone",
       "contact": "",
       "callDate": "",
       "done": false,
       "addedAt": 1778079225047,
       "source": "manual",
-      "updatedAt": 1778165090568
+      "updatedAt": 1778180038322
     },
     {
       "id": "mou0yhcvpwu5txfpobm",
@@ -115,19 +127,6 @@
       "addedAt": 1777406619895,
       "source": "manual",
       "updatedAt": 1778069347434
-    },
-    {
-      "id": "mobcjcahhetnocvmrf",
-      "action": "Send Christo burner specs",
-      "owner": "Will",
-      "deadline": "Thu 4/23",
-      "project": "Genu",
-      "contact": "",
-      "callDate": "",
-      "done": true,
-      "addedAt": 1776940571900,
-      "source": "manual",
-      "updatedAt": 1776949609012
     },
     {
       "id": "moag3ie97s1r9hk2h3b",
@@ -432,20 +431,6 @@
       "addedAt": 1776706523112,
       "source": "manual",
       "updatedAt": 1776793287205
-    },
-    {
-      "id": "mo069l4qumfucf4khz",
-      "action": "RFI's",
-      "owner": "Will",
-      "deadline": "TBD",
-      "project": "ATL Plastic Surgery",
-      "contact": "",
-      "callDate": "",
-      "done": true,
-      "addedAt": 1776264911163,
-      "source": "manual",
-      "subtasks": [],
-      "updatedAt": 1776706783413
     },
     {
       "id": "mo053jva70za6lp9wn",

@@ -1008,7 +1008,7 @@ function runConflictCheck(job,newRev){
       +'Return ONLY valid JSON: {"hasConflict":true or false,"summary":"one sentence if conflict, else null","items":["list of specific conflicts if any"]}';
     fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},
+      headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey(),'anthropic-dangerous-direct-browser-calls':'true'},
       body:JSON.stringify({model:'claude-opus-4-6',max_tokens:400,
         messages:[{role:'user',content:[
           {type:'document',source:{type:'base64',media_type:'application/pdf',data:newRev.base64}},
@@ -1071,7 +1071,7 @@ function autoExtractFromDrawings(job){
 
   fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
-    headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},
+    headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey(),'anthropic-dangerous-direct-browser-calls':'true'},
     body:JSON.stringify({model:'claude-opus-4-6',max_tokens:300,
       messages:[{role:'user',content:[
         {type:'document',source:{type:'base64',media_type:'application/pdf',data:job.drawingsBase64}},
@@ -1242,7 +1242,7 @@ function autoExtractFromPlans(){
   var extractPrompt='You are reviewing construction plans for '+proj+'. Extract ALL product designations (like LVT-1, PT-1, CPT-1, RB-1, DH-1, etc.) and their corresponding products/specs from the plans. Also extract the trade/category this submittal package belongs to. Return ONLY valid JSON: {"productDesignations":"comma-separated list like LVT-1, RB-1, PT-1","trade":"best matching trade name","projectName":"project name if found","jobNumber":"job number if found","confidence":"high or low"}';
   fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
-    headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},
+    headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey(),'anthropic-dangerous-direct-browser-calls':'true'},
     body:JSON.stringify({
       model:'claude-opus-4-6',max_tokens:500,
       messages:[{role:'user',content:[
@@ -1353,7 +1353,7 @@ function runReview(){
     method:'POST',
     headers:{
       'Content-Type':'application/json',
-      'anthropic-version':'2023-06-01','x-api-key':getApiKey()
+      'anthropic-version':'2023-06-01','x-api-key':getApiKey(),'anthropic-dangerous-direct-browser-calls':'true'
     },
     body:JSON.stringify({
       model:'claude-opus-4-6',

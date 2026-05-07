@@ -609,7 +609,7 @@ q('agendaFile').addEventListener('change',async e=>{
 async function parseAgenda(b64,name){
   setLoading(true,'Extracting agenda and attendees...');
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},body:JSON.stringify({
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey(),'anthropic-dangerous-direct-browser-calls':'true'},body:JSON.stringify({
       model:'claude-sonnet-4-6',max_tokens:1400,
       messages:[{role:'user',content:[
         {type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},
@@ -812,7 +812,7 @@ Return ONLY valid JSON:
   var oTid=oCtrl?setTimeout(function(){oCtrl.abort();},45000):null;
   fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
-    headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},
+    headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey(),'anthropic-dangerous-direct-browser-calls':'true'},
     body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,messages:[{role:'user',content:prompt}]}),
     signal:oCtrl?oCtrl.signal:undefined
   })

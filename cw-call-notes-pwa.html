@@ -763,7 +763,7 @@ function processCall(){
     method:'POST',
     headers:{
       'Content-Type':'application/json',
-      'anthropic-version':'2023-06-01','x-api-key':getApiKey()
+      'anthropic-version':'2023-06-01','x-api-key':getApiKey(),'anthropic-dangerous-direct-browser-calls':'true'
     },
     body:JSON.stringify({
       model:'claude-sonnet-4-6',

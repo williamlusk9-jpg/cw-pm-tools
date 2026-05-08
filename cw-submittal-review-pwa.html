@@ -1698,7 +1698,8 @@ function openApiKeyModal(){
   st.textContent=has?'Key saved (sk-ant-...'+getApiKey().slice(-4)+')':'Not configured';
   st.style.color=has?'#34a872':'#8a8780';
   q('apiKeyInput').value='';
-  q('proxyUrlInput').value=getProxyUrl();
+  var pi=document.getElementById('proxyUrlInput');
+  if(pi)pi.value=getProxyUrl();
   q('apiKeyModalBack').style.display='flex';
 }
 function closeApiKeyModal(){q('apiKeyModalBack').style.display='none';}
@@ -1724,6 +1725,23 @@ q('apiKeyClear').addEventListener('click',function(){
   q('apiKeyStatus').textContent='Not configured';q('apiKeyStatus').style.color='#8a8780';
   showToast('API key cleared');
 });
+
+/* ── PROXY URL ── */
+(function(){
+  var pi=document.getElementById('proxyUrlInput');
+  var ps=document.getElementById('proxyUrlSave');
+  if(pi)pi.value=getProxyUrl();
+  if(ps)ps.addEventListener('click',function(){
+    var u=pi?pi.value.trim().replace(/\/+$/,''):'';
+    if(!u){showToast('Paste your Cloudflare Worker URL first');return;}
+    setProxyUrl(u);
+    showToast('Proxy URL saved','green');
+    setTimeout(function(){
+      var m=document.getElementById('apiKeyModalBack');
+      if(m)m.style.display='none';
+    },800);
+  });
+})();
 
 })();
 </script>

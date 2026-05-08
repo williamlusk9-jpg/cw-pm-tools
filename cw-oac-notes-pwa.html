@@ -589,6 +589,23 @@ function checkSetupReady(){q('startBtn').disabled=!q('projectName').value.trim()
   var dd=q('meetingDate');var dt=q('meetingTime');
   if(dd&&!dd.value)dd.value=now.toISOString().slice(0,10);
   if(dt&&!dt.value)dt.value=now.toTimeString().slice(0,5);
+/* ── PROXY URL ── */
+(function(){
+  var pi=document.getElementById('proxyUrlInput');
+  var ps=document.getElementById('proxyUrlSave');
+  if(pi)pi.value=getProxyUrl();
+  if(ps)ps.addEventListener('click',function(){
+    var u=pi?pi.value.trim().replace(/\/+$/,''):'';
+    if(!u){showToast('Paste your Cloudflare Worker URL first');return;}
+    setProxyUrl(u);
+    showToast('Proxy URL saved','green');
+    setTimeout(function(){
+      var m=document.getElementById('apiKeyModalBack');
+      if(m)m.style.display='none';
+    },800);
+  });
+})();
+
 })();
 
 /* ── AGENDA UPLOAD ── */
@@ -983,7 +1000,8 @@ function openApiKeyModal(){
   st.textContent=has?'Key saved (sk-ant-...'+getApiKey().slice(-4)+')':'Not configured';
   st.style.color=has?'#34a872':'#8a8780';
   q('apiKeyInput').value='';
-  q('proxyUrlInput').value=getProxyUrl();
+  var pi=document.getElementById('proxyUrlInput');
+  if(pi)pi.value=getProxyUrl();
   q('apiKeyModalBack').style.display='flex';
 }
 function closeApiKeyModal(){q('apiKeyModalBack').style.display='none';}

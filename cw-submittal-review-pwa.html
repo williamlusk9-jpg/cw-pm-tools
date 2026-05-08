@@ -705,9 +705,8 @@ function compressPdf(base64Data, statusEl, onComplete){
           statusEl.textContent = 'Compressed to ' + pageImages.length + ' page image(s) for AI analysis';
           statusEl.style.color = 'var(--green)';
         }
-        // Return compressed first-page base64 (title block for extraction)
-        // For full review, return all pages concatenated as a multi-image prompt
-        // Use page 1 for drawings extraction (title block)
+        // Return first page JPEG — sufficient for title block extraction
+        // Flag the data with a prefix so callers know it's JPEG not PDF
         onComplete(pageImages[0]);
         return;
       }
@@ -1108,7 +1107,13 @@ function runConflictCheck(job,newRev){
       headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},
       body:JSON.stringify({model:'claude-opus-4-6',max_tokens:400,
         messages:[{role:'user',content:[
-          {type:'document',source:{type:'base64',media_type:'application/pdf',data:newRev.base64}},
+          (function(){
+          var b=newRev.base64;
+          var isJpeg=b.charAt(0)==='/'||b.charAt(0)==='i';
+          return isJpeg
+            ?{type:'image',source:{type:'base64',media_type:'image/jpeg',data:b}}
+            :{type:'document',source:{type:'base64',media_type:'application/pdf',data:b}};
+        })(),
           {type:'text',text:prompt}
         ]}]
       })
@@ -1171,7 +1176,12 @@ function autoExtractFromDrawings(job){
     headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},
     body:JSON.stringify({model:'claude-opus-4-6',max_tokens:300,
       messages:[{role:'user',content:[
-        {type:'document',source:{type:'base64',media_type:'application/pdf',data:job.drawingsBase64}},
+        (function(){
+          var isJpeg=job.drawingsBase64.slice(0,10).indexOf('/')>-1||job.drawingsBase64.charAt(0)==='/';
+          return isJpeg
+            ?{type:'image',source:{type:'base64',media_type:'image/jpeg',data:job.drawingsBase64}}
+            :{type:'document',source:{type:'base64',media_type:'application/pdf',data:job.drawingsBase64}};
+        })(),
         {type:'text',text:'Find the project name and job number in these drawings title block. Return ONLY valid JSON with no markdown: {"projectName":"value or empty string","jobNumber":"value or empty string"}'}
       ]}]
     })
@@ -1443,7 +1453,12 @@ function runReview(){
   var tid=ctrl?setTimeout(function(){ctrl.abort();},60000):null;
 
   var msgContent=[{type:'document',source:{type:'base64',media_type:'application/pdf',data:pdfBase64}}];
-  if(plansBase64)msgContent.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:plansBase64}});
+  if(plansBase64){
+    var _isJpeg=plansBase64.charAt(0)==='/'||plansBase64.charAt(0)==='i';
+    msgContent.push(_isJpeg
+      ?{type:'image',source:{type:'base64',media_type:'image/jpeg',data:plansBase64}}
+      :{type:'document',source:{type:'base64',media_type:'application/pdf',data:plansBase64}});
+  }
   msgContent.push({type:'text',text:prompt});
 
   fetch((getProxyUrl()||'https://api.anthropic.com')+'/v1/messages',{

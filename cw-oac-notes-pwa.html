@@ -459,6 +459,11 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
       <button id="apiKeyClear" type="button" style="padding:12px 16px;background:transparent;border:1px solid #333;border-radius:10px;color:#8a8780;font-family:monospace;font-size:12px;cursor:pointer">Clear</button>
       <button id="apiKeyClose" type="button" style="padding:12px 16px;background:transparent;border:1px solid #333;border-radius:10px;color:#8a8780;font-family:monospace;font-size:12px;cursor:pointer">Close</button>
     </div>
+    <div style="border-top:1px solid #2a2a2a;padding-top:14px;margin-top:2px;display:flex;flex-direction:column;gap:8px">
+    <div style="font-size:12px;color:#8a8780;line-height:1.5;margin-top:-4px">Paste your <strong style="color:#c0bdb8">Cloudflare Worker URL</strong> below (required for AI features outside claude.ai).</div>
+    <input id="proxyUrlInput" type="text" placeholder="https://cw-proxy.yourname.workers.dev" style="background:#222;border:1px solid #333;border-radius:10px;color:#f0ede8;font-family:monospace;font-size:12px;padding:10px 13px;outline:none;width:100%;box-sizing:border-box">
+    <button id="proxyUrlSave" type="button" style="padding:10px;background:#4a90d9;border:none;border-radius:10px;color:#fff;font-family:monospace;font-size:12px;font-weight:700;cursor:pointer;width:100%">Save Proxy URL</button>
+    </div>
   </div>
 </div>
 
@@ -470,6 +475,8 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 function q(id){return document.getElementById(id);}
 function getApiKey(){try{return localStorage.getItem('cw-api-key')||'';}catch(e){return '';}}
 function setApiKey(k){try{localStorage.setItem('cw-api-key',k);}catch(e){}}
+function getProxyUrl(){return localStorage.getItem('cw-proxy-url')||'';}
+function setProxyUrl(u){try{localStorage.setItem('cw-proxy-url',u);}catch(e){}}
 const isDesktop=()=>window.innerWidth>=768;
 let toastTimer=null;
 function showApiKeyWarning(){
@@ -609,7 +616,7 @@ q('agendaFile').addEventListener('change',async e=>{
 async function parseAgenda(b64,name){
   setLoading(true,'Extracting agenda and attendees...');
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey(),'anthropic-dangerous-direct-browser-calls':'true'},body:JSON.stringify({
+    const res=await fetch((getProxyUrl()||'https://api.anthropic.com')+'/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},body:JSON.stringify({
       model:'claude-sonnet-4-6',max_tokens:1400,
       messages:[{role:'user',content:[
         {type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},
@@ -810,9 +817,9 @@ Return ONLY valid JSON:
   }
   var oCtrl=typeof AbortController!=='undefined'?new AbortController():null;
   var oTid=oCtrl?setTimeout(function(){oCtrl.abort();},45000):null;
-  fetch('https://api.anthropic.com/v1/messages',{
+  fetch((getProxyUrl()||'https://api.anthropic.com')+'/v1/messages',{
     method:'POST',
-    headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey(),'anthropic-dangerous-direct-browser-calls':'true'},
+    headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},
     body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,messages:[{role:'user',content:prompt}]}),
     signal:oCtrl?oCtrl.signal:undefined
   })
@@ -976,6 +983,7 @@ function openApiKeyModal(){
   st.textContent=has?'Key saved (sk-ant-...'+getApiKey().slice(-4)+')':'Not configured';
   st.style.color=has?'#34a872':'#8a8780';
   q('apiKeyInput').value='';
+  q('proxyUrlInput').value=getProxyUrl();
   q('apiKeyModalBack').style.display='flex';
 }
 function closeApiKeyModal(){q('apiKeyModalBack').style.display='none';}

@@ -579,6 +579,11 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
       <button id="apiKeyClear" type="button" style="padding:12px 16px;background:transparent;border:1px solid #333;border-radius:10px;color:#8a8780;font-family:monospace;font-size:12px;cursor:pointer">Clear</button>
       <button id="apiKeyClose" type="button" style="padding:12px 16px;background:transparent;border:1px solid #333;border-radius:10px;color:#8a8780;font-family:monospace;font-size:12px;cursor:pointer">Close</button>
     </div>
+    <div style="border-top:1px solid #2a2a2a;padding-top:14px;margin-top:2px;display:flex;flex-direction:column;gap:8px">
+    <div style="font-size:12px;color:#8a8780;line-height:1.5;margin-top:-4px">Paste your <strong style="color:#c0bdb8">Cloudflare Worker URL</strong> below (required for AI features outside claude.ai).</div>
+    <input id="proxyUrlInput" type="text" placeholder="https://cw-proxy.yourname.workers.dev" style="background:#222;border:1px solid #333;border-radius:10px;color:#f0ede8;font-family:monospace;font-size:12px;padding:10px 13px;outline:none;width:100%;box-sizing:border-box">
+    <button id="proxyUrlSave" type="button" style="padding:10px;background:#4a90d9;border:none;border-radius:10px;color:#fff;font-family:monospace;font-size:12px;font-weight:700;cursor:pointer;width:100%">Save Proxy URL</button>
+    </div>
   </div>
 </div>
 
@@ -588,6 +593,8 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 function q(id){return document.getElementById(id);}
 function getApiKey(){try{return localStorage.getItem('cw-api-key')||'';}catch(e){return '';}}
 function setApiKey(k){try{localStorage.setItem('cw-api-key',k);}catch(e){}}
+function getProxyUrl(){return localStorage.getItem('cw-proxy-url')||'';}
+function setProxyUrl(u){try{localStorage.setItem('cw-proxy-url',u);}catch(e){}}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 var isDesktop=function(){return window.innerWidth>=768;};
 var toastTimer=null;
@@ -1006,9 +1013,9 @@ function runConflictCheck(job,newRev){
       +'Here is the previously approved submittal data: '+submittalDesc+'. '
       +'Does this revision contradict, supersede, or invalidate anything in the approved submittal? '
       +'Return ONLY valid JSON: {"hasConflict":true or false,"summary":"one sentence if conflict, else null","items":["list of specific conflicts if any"]}';
-    fetch('https://api.anthropic.com/v1/messages',{
+    fetch((getProxyUrl()||'https://api.anthropic.com')+'/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey(),'anthropic-dangerous-direct-browser-calls':'true'},
+      headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},
       body:JSON.stringify({model:'claude-opus-4-6',max_tokens:400,
         messages:[{role:'user',content:[
           {type:'document',source:{type:'base64',media_type:'application/pdf',data:newRev.base64}},
@@ -1069,9 +1076,9 @@ function autoExtractFromDrawings(job){
   st.textContent='Reading drawings ('+approxMB+'MB)...';
   st.style.display='block';st.style.color='var(--tx3)';
 
-  fetch('https://api.anthropic.com/v1/messages',{
+  fetch((getProxyUrl()||'https://api.anthropic.com')+'/v1/messages',{
     method:'POST',
-    headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey(),'anthropic-dangerous-direct-browser-calls':'true'},
+    headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},
     body:JSON.stringify({model:'claude-opus-4-6',max_tokens:300,
       messages:[{role:'user',content:[
         {type:'document',source:{type:'base64',media_type:'application/pdf',data:job.drawingsBase64}},
@@ -1240,9 +1247,9 @@ function autoExtractFromPlans(){
   st.style.color='var(--tx3)';
   var proj=q('projectName').value.trim()||'this project';
   var extractPrompt='You are reviewing construction plans for '+proj+'. Extract ALL product designations (like LVT-1, PT-1, CPT-1, RB-1, DH-1, etc.) and their corresponding products/specs from the plans. Also extract the trade/category this submittal package belongs to. Return ONLY valid JSON: {"productDesignations":"comma-separated list like LVT-1, RB-1, PT-1","trade":"best matching trade name","projectName":"project name if found","jobNumber":"job number if found","confidence":"high or low"}';
-  fetch('https://api.anthropic.com/v1/messages',{
+  fetch((getProxyUrl()||'https://api.anthropic.com')+'/v1/messages',{
     method:'POST',
-    headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey(),'anthropic-dangerous-direct-browser-calls':'true'},
+    headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},
     body:JSON.stringify({
       model:'claude-opus-4-6',max_tokens:500,
       messages:[{role:'user',content:[
@@ -1349,11 +1356,11 @@ function runReview(){
   if(plansBase64)msgContent.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:plansBase64}});
   msgContent.push({type:'text',text:prompt});
 
-  fetch('https://api.anthropic.com/v1/messages',{
+  fetch((getProxyUrl()||'https://api.anthropic.com')+'/v1/messages',{
     method:'POST',
     headers:{
       'Content-Type':'application/json',
-      'anthropic-version':'2023-06-01','x-api-key':getApiKey(),'anthropic-dangerous-direct-browser-calls':'true'
+      'anthropic-version':'2023-06-01','x-api-key':getApiKey()
     },
     body:JSON.stringify({
       model:'claude-opus-4-6',
@@ -1691,6 +1698,7 @@ function openApiKeyModal(){
   st.textContent=has?'Key saved (sk-ant-...'+getApiKey().slice(-4)+')':'Not configured';
   st.style.color=has?'#34a872':'#8a8780';
   q('apiKeyInput').value='';
+  q('proxyUrlInput').value=getProxyUrl();
   q('apiKeyModalBack').style.display='flex';
 }
 function closeApiKeyModal(){q('apiKeyModalBack').style.display='none';}

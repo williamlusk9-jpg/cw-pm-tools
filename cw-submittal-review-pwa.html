@@ -653,6 +653,15 @@ function recallDecision(key){return getMemory()[key]||null;}
 function getJobs(){try{return JSON.parse(localStorage.getItem('cw-submittal-jobs')||'[]');}catch(e){return[];}}
 function saveJobs(j){try{localStorage.setItem('cw-submittal-jobs',JSON.stringify(j));}catch(e){}}
 function genId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function isJpegB64(b64){
+  // JPEG base64 starts with /9j/ — PDF starts with JVBERi
+  return b64&&(b64.startsWith('/9j/')||b64.startsWith('iVBOR'));
+}
+function getMediaBlock(b64){
+  return isJpegB64(b64)
+    ?{type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}}
+    :{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}};
+}
 
 /* ── PDF COMPRESSION ── */
 // Renders each page via pdf.js canvas at reduced scale, re-encodes as JPEG
@@ -1108,13 +1117,7 @@ function runConflictCheck(job,newRev){
       headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},
       body:JSON.stringify({model:'claude-opus-4-6',max_tokens:400,
         messages:[{role:'user',content:[
-          (function(){
-          var b=newRev.base64;
-          var isJpeg=b.charAt(0)==='/'||b.charAt(0)==='i';
-          return isJpeg
-            ?{type:'image',source:{type:'base64',media_type:'image/jpeg',data:b}}
-            :{type:'document',source:{type:'base64',media_type:'application/pdf',data:b}};
-        })(),
+          getMediaBlock(newRev.base64),
           {type:'text',text:prompt}
         ]}]
       })
@@ -1166,13 +1169,12 @@ function autoExtractFromSubmittal(b64){
   // Compress if over 8MB before sending
   function doExtract(finalB64){
     st.textContent='Reading submittal...';st.style.display='block';st.style.color='var(--tx3)';
-    var isJpeg=finalB64.charAt(0)==='/'||finalB64.charAt(0)==='i';
     fetch((getProxyUrl()||'https://api.anthropic.com')+'/v1/messages',{
     method:'POST',
     headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},
     body:JSON.stringify({model:'claude-opus-4-6',max_tokens:400,
       messages:[{role:'user',content:[
-        (isJpeg?{type:'image',source:{type:'base64',media_type:'image/jpeg',data:finalB64}}:{type:'document',source:{type:'base64',media_type:'application/pdf',data:finalB64}}),
+        getMediaBlock(finalB64),
         {type:'text',text:'Extract the following from this construction submittal: trade/category, product designation codes (like LVT-1 RB-1 etc), architect name, architect firm name, and subcontractor/supplier name. Return ONLY valid JSON with no markdown: {"trade":"exact trade category","productDesignation":"comma separated codes or product name","architect":"name only","archFirm":"firm name only","submittedBy":"sub or supplier name"}. If any field is not found use empty string.'}
       ]}]
     })
@@ -1277,12 +1279,7 @@ function autoExtractFromDrawings(job){
     headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},
     body:JSON.stringify({model:'claude-opus-4-6',max_tokens:300,
       messages:[{role:'user',content:[
-        (function(){
-          var isJpeg=job.drawingsBase64.slice(0,10).indexOf('/')>-1||job.drawingsBase64.charAt(0)==='/';
-          return isJpeg
-            ?{type:'image',source:{type:'base64',media_type:'image/jpeg',data:job.drawingsBase64}}
-            :{type:'document',source:{type:'base64',media_type:'application/pdf',data:job.drawingsBase64}};
-        })(),
+        getMediaBlock(job.drawingsBase64),
         {type:'text',text:'Find the project name and job number in these drawings title block. Return ONLY valid JSON with no markdown: {"projectName":"value or empty string","jobNumber":"value or empty string"}'}
       ]}]
     })
@@ -1557,16 +1554,8 @@ function runReview(){
 
   // Build message content — compress submittal PDF if over 8MB
   function buildAndSend(submittalB64){
-    var submittalIsJpeg=submittalB64.charAt(0)==='/'||submittalB64.charAt(0)==='i';
-    var msgContent=[submittalIsJpeg
-      ?{type:'image',source:{type:'base64',media_type:'image/jpeg',data:submittalB64}}
-      :{type:'document',source:{type:'base64',media_type:'application/pdf',data:submittalB64}}];
-  if(plansBase64){
-    var _isJpeg=plansBase64.charAt(0)==='/'||plansBase64.charAt(0)==='i';
-    msgContent.push(_isJpeg
-      ?{type:'image',source:{type:'base64',media_type:'image/jpeg',data:plansBase64}}
-      :{type:'document',source:{type:'base64',media_type:'application/pdf',data:plansBase64}});
-  }
+    var msgContent=[getMediaBlock(submittalB64)];
+  if(plansBase64){msgContent.push(getMediaBlock(plansBase64));}
   msgContent.push({type:'text',text:prompt});
 
   fetch((getProxyUrl()||'https://api.anthropic.com')+'/v1/messages',{

@@ -446,6 +446,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
           <div class="upload-fn" id="uploadFn"></div>
         </div>
       </div>
+      <div id="plansExtractStatus" style="display:none;font-family:var(--mono);font-size:11px;padding:8px 10px;border-radius:8px;background:var(--s2);border:1px solid var(--b1);color:var(--tx3)"></div>
 
       <div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
@@ -1155,6 +1156,106 @@ function runConflictCheck(job,newRev){
   checkOne(approved[0]);
 }
 
+function autoExtractFromSubmittal(b64){
+  var st=q('plansExtractStatus');
+  if(!st)return;
+  var tradeEl=q('trade');
+  var currentTrade=tradeEl.value;
+  var approxMB=(b64.length*0.75/1048576).toFixed(1);
+
+  // Compress if over 8MB before sending
+  function doExtract(finalB64){
+    st.textContent='Reading submittal...';st.style.display='block';st.style.color='var(--tx3)';
+    var isJpeg=finalB64.charAt(0)==='/'||finalB64.charAt(0)==='i';
+    fetch((getProxyUrl()||'https://api.anthropic.com')+'/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},
+    body:JSON.stringify({model:'claude-opus-4-6',max_tokens:400,
+      messages:[{role:'user',content:[
+        (isJpeg?{type:'image',source:{type:'base64',media_type:'image/jpeg',data:finalB64}}:{type:'document',source:{type:'base64',media_type:'application/pdf',data:finalB64}}),
+        {type:'text',text:'Extract the following from this construction submittal: trade/category, product designation codes (like LVT-1 RB-1 etc), architect name, architect firm name, and subcontractor/supplier name. Return ONLY valid JSON with no markdown: {"trade":"exact trade category","productDesignation":"comma separated codes or product name","architect":"name only","archFirm":"firm name only","submittedBy":"sub or supplier name"}. If any field is not found use empty string.'}
+      ]}]
+    })
+  })
+  .then(function(r){
+    if(!r.ok)throw new Error('API '+r.status);
+    return r.json();
+  })
+  .then(function(d){
+    var raw=(d.content||[]).map(function(b){return b.text||'';}).join('').replace(/```json|```/g,'').trim();
+    var j=raw.indexOf('{');var k=raw.lastIndexOf('}');
+    if(j>-1&&k>j)raw=raw.slice(j,k+1);
+    var info=JSON.parse(raw);
+    var filled=[];
+
+    // Trade — match to dropdown
+    if(info.trade&&!currentTrade){
+      var sel=q('trade');
+      var tl=info.trade.toLowerCase();
+      for(var i=0;i<sel.options.length;i++){
+        var ol=sel.options[i].text.toLowerCase();
+        // Match on key words
+        var words=tl.split(/[\s\/\-]+/);
+        var matched=words.some(function(w){return w.length>3&&ol.includes(w);});
+        if(matched){sel.value=sel.options[i].value;filled.push('trade');break;}
+      }
+    }
+
+    // Product designation — goes into advanced section
+    if(info.productDesignation&&info.productDesignation.trim()){
+      var pd=q('productCode');
+      if(pd&&!pd.value){pd.value=info.productDesignation.trim();filled.push('product designation');}
+    }
+
+    // Architect
+    if(info.architect&&info.architect.trim()){
+      var ac=q('archContact');
+      if(ac&&!ac.value){ac.value=info.architect.trim();filled.push('architect');}
+    }
+
+    // Architect firm
+    if(info.archFirm&&info.archFirm.trim()){
+      var af=q('archFirm');
+      if(af&&!af.value){af.value=info.archFirm.trim();filled.push('architect firm');}
+    }
+
+    // Submitted by
+    if(info.submittedBy&&info.submittedBy.trim()){
+      var sb=q('submittedBy');
+      if(sb&&!sb.value){sb.value=info.submittedBy.trim();filled.push('submitted by');}
+    }
+
+    if(filled.length){
+      st.textContent='Auto-filled from submittal: '+filled.join(', ');
+      st.style.color='var(--green)';
+      // Open advanced section so user sees what was filled
+      if(filled.some(function(f){return f==='product designation'||f==='architect'||f==='architect firm';})){
+        var adv=document.getElementById('advancedDetails');
+        if(adv)adv.open=true;
+      }
+    } else {
+      st.textContent='Submittal read — fields not detected, fill manually';
+      st.style.color='var(--tx4)';
+    }
+    setTimeout(function(){st.style.display='none';},5000);
+  })
+  .catch(function(e){
+    st.textContent='Auto-extract failed: '+e.message.slice(0,60);
+    st.style.color='var(--tx4)';
+    setTimeout(function(){st.style.display='none';},4000);
+  });
+  } // end doExtract
+
+  // Kick off — compress first if needed
+  if(b64.length*0.75 > 8*1024*1024){
+    st.textContent='Compressing submittal ('+approxMB+'MB)...';
+    st.style.display='block';st.style.color='var(--tx3)';
+    compressPdf(b64, st, function(compressed){doExtract(compressed);});
+  } else {
+    doExtract(b64);
+  }
+}
+
 function autoExtractFromDrawings(job){
   if(!job||!job.drawingsBase64)return;
   var st=q('drawingsExtractStatus');
@@ -1287,6 +1388,8 @@ q('pdfFile').addEventListener('change',function(e){
     q('uploadFn').style.display='block';
     q('clearBtn').style.display='inline-block';
     checkReady();
+    // Auto-extract trade, product designation, architect from submittal
+    autoExtractFromSubmittal(pdfBase64);
   };
   reader.onerror=function(){showToast('Could not read file — try again');};
   reader.readAsDataURL(file);
@@ -1452,7 +1555,12 @@ function runReview(){
   var ctrl=typeof AbortController!=='undefined'?new AbortController():null;
   var tid=ctrl?setTimeout(function(){ctrl.abort();},60000):null;
 
-  var msgContent=[{type:'document',source:{type:'base64',media_type:'application/pdf',data:pdfBase64}}];
+  // Build message content — compress submittal PDF if over 8MB
+  function buildAndSend(submittalB64){
+    var submittalIsJpeg=submittalB64.charAt(0)==='/'||submittalB64.charAt(0)==='i';
+    var msgContent=[submittalIsJpeg
+      ?{type:'image',source:{type:'base64',media_type:'image/jpeg',data:submittalB64}}
+      :{type:'document',source:{type:'base64',media_type:'application/pdf',data:submittalB64}}];
   if(plansBase64){
     var _isJpeg=plansBase64.charAt(0)==='/'||plansBase64.charAt(0)==='i';
     msgContent.push(_isJpeg
@@ -1478,8 +1586,12 @@ function runReview(){
     if(tid)clearTimeout(tid);
     if(!res.ok){
       return res.json().then(function(errBody){
-        throw new Error(res.status+': '+(errBody.error&&errBody.error.message?errBody.error.message:JSON.stringify(errBody)));
-      }).catch(function(){throw new Error('Server returned '+res.status);});
+        var msg=errBody.error&&errBody.error.message?errBody.error.message:JSON.stringify(errBody).slice(0,120);
+        throw new Error('API '+res.status+': '+msg);
+      }).catch(function(e){
+        if(e.message&&e.message.startsWith('API '))throw e;
+        throw new Error('API error '+res.status);
+      });
     }
     return res.json();
   })
@@ -1500,6 +1612,15 @@ function runReview(){
     setTimeout(function(){setLoading(false);showToast('Failed: '+msg);},2000);
     restoreBtn();
   });
+  } // end buildAndSend
+
+  // Compress if over 8MB, then send
+  if(pdfBase64.length*0.75 > 8*1024*1024){
+    setLoading(true,'Compressing submittal...');
+    compressPdf(pdfBase64, null, function(compressed){buildAndSend(compressed);});
+  } else {
+    buildAndSend(pdfBase64);
+  }
 }
 
 function populateReview(r){

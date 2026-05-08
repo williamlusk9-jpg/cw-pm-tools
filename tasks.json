@@ -1,5 +1,5 @@
 {
-  "_syncedAt": 1778263364907,
+  "_syncedAt": 1778263371640,
   "tasks": [
     {
       "id": "movugvngjbbmr6ssje",
@@ -21,9 +21,10 @@
       "project": "Kodak",
       "contact": "",
       "callDate": "",
-      "done": false,
+      "done": true,
       "addedAt": 1778165077151,
-      "source": "manual"
+      "source": "manual",
+      "updatedAt": 1778263370126
     },
     {
       "id": "moucnpwcf57xmr9iuf4",
@@ -71,10 +72,10 @@
       "project": "Kodak",
       "contact": "",
       "callDate": "",
-      "done": false,
+      "done": true,
       "addedAt": 1777985201499,
       "source": "manual",
-      "updatedAt": 1778069358531
+      "updatedAt": 1778263368784
     },
     {
       "id": "mosmh3fbr8ddcpupb9",

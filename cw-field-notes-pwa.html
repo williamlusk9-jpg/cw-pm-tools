@@ -34,7 +34,8 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 .hm-sidebar.collapsed .hm-sb-top,.hm-sidebar.collapsed .hm-nav,.hm-sidebar.collapsed .hm-sb-foot{opacity:0;pointer-events:none}
 .sb-toggle{position:absolute;top:50%;transform:translateY(-50%);width:20px;height:48px;background:var(--sb);border:1px solid var(--b1);border-left:none;border-radius:0 8px 8px 0;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--tx3);transition:all .2s;z-index:50;right:-20px}
 .sb-toggle:hover{color:var(--tx1);background:var(--s2)}
-.hm-sidebar-wrap{position:relative;flex-shrink:0;display:flex}
+.hm-sidebar-wrap{position:relative;flex-shrink:0;display:flex;transition:width .22s cubic-bezier(.4,0,.2,1)}
+.hm-sidebar-wrap.collapsed{width:0;overflow:hidden}
 .hm-sb-top{padding:calc(var(--safe-top) + 16px) 14px 10px;border-bottom:1px solid var(--b1)}
 .hm-app-hdr{display:flex;align-items:center;gap:9px;margin-bottom:14px}
 .hm-app-icon{width:34px;height:34px;border-radius:9px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -113,6 +114,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 .canvas-wrap{position:absolute;transform-origin:0 0;will-change:transform}
 #baseCanvas{display:block}
 #annoCanvas{position:absolute;top:0;left:0;touch-action:none;-webkit-user-select:none;user-select:none}
+#edCanvasArea,#edCanvasArea *{-webkit-touch-callout:none !important;-webkit-user-select:none !important;user-select:none !important}
 
 /* Page strip */
 .ed-page-strip{height:var(--strip-h);background:rgba(28,28,30,.95);border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:8px;padding:0 12px;overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch;scrollbar-width:none}
@@ -207,6 +209,25 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 @media(min-width:768px){
   #homeScreen,#editorScreen{left:210px}
 }
+
+/* ── iPad larger tap targets (touch screen ≥768px) ──────────────────── */
+@media(min-width:768px) and (hover:none) and (pointer:coarse){
+  .btn-primary,.btn-secondary,.btn-green{padding:17px !important;font-size:15px !important;border-radius:14px !important}
+  .finput,.fselect{padding:15px 16px !important;font-size:16px !important;min-height:52px !important;border-radius:12px !important}
+  .step-tab{padding:16px 8px !important;font-size:13px !important}
+  .dp-item,.sb-item,.cw-item,.hm-nav-item{padding:13px 12px !important;font-size:14px !important}
+  .job-item{padding:14px 12px !important}
+  .sub-log-item{padding:14px 15px !important}
+  .note-card-body{padding:13px 14px 14px !important}
+  .add-job-btn,.upload-revision-btn{padding:14px !important;font-size:12px !important}
+  .pane-action-btn{padding:10px 16px !important;font-size:11px !important}
+  .tool-btn{width:46px !important;height:46px !important}
+  .size-chip{padding:7px 13px !important;font-size:12px !important}
+  .color-swatch{width:28px !important;height:28px !important}
+  .att-head>span,.att-row>span{font-size:13px !important}
+  label{font-size:13px !important}
+  .sec-lbl{font-size:12px !important}
+}
 </style>
 </head>
 <body>
@@ -264,8 +285,9 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
     </div>
     <div class="hm-sb-foot">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <div id="syncDot" style="width:8px;height:8px;border-radius:50%;background:var(--tx3);opacity:.4;flex-shrink:0;transition:all .3s"></div>
+        <div id="syncDot" style="width:9px;height:9px;border-radius:50%;background:var(--tx3);flex-shrink:0;transition:all .4s"></div>
         <span style="font-family:var(--mono);font-size:10px;color:var(--tx3)">GitHub sync</span>
+        <span id="syncLblFn" style="font-family:var(--mono);font-size:9px;color:var(--tx4);margin-left:2px"></span>
         <button id="syncNowBtn" type="button" title="Sync now" style="margin-left:auto;background:none;border:1px solid var(--b2);border-radius:6px;color:var(--tx3);font-family:var(--mono);font-size:9px;padding:3px 8px;cursor:pointer;transition:all .15s">Pull</button>
       </div>
       <a href="index.html" class="hm-back-link">
@@ -448,6 +470,7 @@ function schedulePush(){clearTimeout(_pushTimer);_pushTimer=setTimeout(pushToGit
 
 function pushToGitHub(){
   var token=getToken();if(!token)return;
+  showSyncDot('pending');
   var payload=JSON.stringify({folders:getFolders(),notes:getNotes(),_syncedAt:Date.now()});
   var b64=btoa(unescape(encodeURIComponent(payload)));
   var url='https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO+'/contents/'+GH_FILE;
@@ -507,10 +530,27 @@ if(snb)snb.addEventListener('click',function(){showToast('Syncing...');pullFromG
 
 function showSyncDot(state){
   var dot=document.getElementById('syncDot');
+  var lbl=document.getElementById('syncLblFn');
   if(!dot)return;
-  dot.style.background=state==='ok'?'var(--green)':state==='err'?'var(--red)':'var(--tx3)';
-  dot.style.opacity='1';
-  setTimeout(function(){dot.style.opacity='.4';},2000);
+  if(state==='ok'){
+    dot.style.background='var(--green)';
+    if(lbl)lbl.textContent='Synced';
+  } else if(state==='err'){
+    dot.style.background='var(--red)';
+    if(lbl)lbl.textContent='Sync error';
+  } else if(state==='pending'){
+    dot.style.background='var(--accent)';
+    if(lbl)lbl.textContent='Saving...';
+  } else {
+    dot.style.background='var(--tx3)';
+    if(lbl)lbl.textContent='Not connected';
+  }
+  setTimeout(function(){
+    if(state==='ok'||state==='err'){
+      dot.style.background='var(--tx3)';
+      if(lbl)lbl.textContent='';
+    }
+  },3000);
 }
 function genId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 
@@ -533,6 +573,7 @@ var currentColor='#ff453a';
 var currentSize=4;
 var scale=1,panX=0,panY=0;
 var isDrawing=false,lastX=0,lastY=0;
+var pencilActive=false; // true while Apple Pencil is down
 var undoStack=[],redoStack=[];
 var strokes=[]; // for stroke eraser — each stroke is {points, color, size, tool}
 var currentStroke=null;
@@ -594,6 +635,29 @@ function renderNav(){
   sc.addEventListener('click',function(){
     si.value='';searchQuery='';sc.style.display='none';renderGrid();si.focus();
   });
+// ── APP ICON ──
+try{
+  var _al=document.createElement('link');
+  _al.rel='apple-touch-icon';
+  _al.href='data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20180%20180%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%270%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%25%27%20stop-color%3D%27%2523F47832%27%2F%3E%3Cstop%20offset%3D%27100%25%27%20stop-color%3D%27%2523C85218%27%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%27180%27%20height%3D%27180%27%20rx%3D%2740%27%20fill%3D%27url%28%2523g%29%27%2F%3E%3Crect%20x%3D%2724%27%20y%3D%27100%27%20width%3D%27132%27%20height%3D%2714%27%20rx%3D%277%27%20fill%3D%27white%27%2F%3E%3Cpath%20d%3D%27M50%20100%20C50%2054%2090%2044%2090%2044%20C90%2044%20130%2054%20130%20100Z%27%20fill%3D%27white%27%2F%3E%3Crect%20x%3D%2750%27%20y%3D%2789%27%20width%3D%2780%27%20height%3D%2711%27%20fill%3D%27%2523E8622A%27%20opacity%3D%270.3%27%2F%3E%3Cpath%20d%3D%27M83%2044%20L83%20100%20M97%2044%20L97%20100%27%20stroke%3D%27%2523E8622A%27%20stroke-width%3D%272.5%27%20opacity%3D%270.35%27%2F%3E%3Ctext%20x%3D%2790%27%20y%3D%27148%27%20text-anchor%3D%27middle%27%20font-family%3D%27Arial%20Black%2CArial%2Csans-serif%27%20font-weight%3D%27900%27%20font-size%3D%2728%27%20fill%3D%27white%27%20letter-spacing%3D%272%27%3EC%26amp%3BW%3C%2Ftext%3E%3C%2Fsvg%3E';
+  document.head.appendChild(_al);
+}catch(e){}
+
+/* ── Offline indicator ─────────────────────────────────────────────────── */
+(function(){
+  var b=document.createElement('div');
+  b.id='offlineBanner';
+  b.style.cssText='position:fixed;top:0;left:0;right:0;background:#b91c1c;color:#fff;'
+    +'font-family:monospace;font-size:11px;text-align:center;padding:7px 12px;'
+    +'z-index:99999;display:none;letter-spacing:.03em;pointer-events:none;'
+    +'padding-top:max(7px,env(safe-area-inset-top))';
+  b.textContent='No internet connection — changes will sync when back online';
+  document.body.appendChild(b);
+  function upd(){b.style.display=navigator.onLine?'none':'block';}
+  window.addEventListener('online',upd);
+  window.addEventListener('offline',upd);
+  upd();
+})();
 })();
 
 // Sidebar toggle
@@ -605,6 +669,9 @@ function renderNav(){
   btn.addEventListener('click',function(e){
     e.stopPropagation();
     var collapsed=sb.classList.toggle('collapsed');
+    // Also collapse the wrap so it takes zero space
+    var wrap=document.getElementById('hmSidebarWrap');
+    if(wrap)wrap.classList.toggle('collapsed',collapsed);
     icon.innerHTML=collapsed
       ?'<polyline points="3 1 9 8 3 15"/>'
       :'<polyline points="7 1 1 8 7 15"/>';
@@ -801,6 +868,10 @@ function openEditor(noteId){
   document.getElementById('edTitle').textContent=note.name||'Untitled';
   document.getElementById('homeScreen').classList.add('hidden');
   document.getElementById('editorScreen').classList.remove('hidden');
+  // Hide CW sidebar when in editor for full canvas width
+  var cwSb=document.querySelector('.cw-sidebar');
+  if(cwSb){cwSb.style.transform='translateX(-100%)';cwSb.style.transition='transform .2s';}
+  document.getElementById('editorScreen').style.left='0';
   renderPageStrip();
   loadPage(activePage);
 }
@@ -809,6 +880,10 @@ function openEditor(noteId){
 document.getElementById('edBack').addEventListener('click',function(){
   saveCurrentPage();
   updateThumbnail();
+  // Restore CW sidebar
+  var cwSb=document.querySelector('.cw-sidebar');
+  if(cwSb){cwSb.style.transform='';}
+  document.getElementById('editorScreen').style.left='';
   document.getElementById('editorScreen').classList.add('hidden');
   document.getElementById('homeScreen').classList.remove('hidden');
   renderGrid();renderNav();
@@ -980,8 +1055,12 @@ var _lastDrawX=0,_lastDrawY=0;
 
 function startDraw(e){
   if(e.target.id!=='annoCanvas')return;
-  // Ignore multi-touch (pinch) — only draw single pointer
+  // Ignore multi-pointer pinch
   if(e.type==='pointerdown'&&e.isPrimary===false)return;
+  // Palm rejection: if a Pencil stroke is in progress, ignore all finger touches
+  if(e.pointerType==='touch'&&pencilActive)return;
+  // Track when Apple Pencil goes down so we can block palm
+  if(e.pointerType==='pen')pencilActive=true;
   if(currentTool==='text'){placeText(e);return;}
   e.preventDefault();
   isDrawing=true;
@@ -1045,6 +1124,7 @@ function processPoint(e, ac_ctx, ac){
 function moveDraw(e){
   if(!isDrawing)return;
   if(e.type==='pointermove'&&e.isPrimary===false)return;
+  if(e.pointerType==='touch'&&pencilActive)return;
   e.preventDefault();
 
   var ac=document.getElementById('annoCanvas');
@@ -1069,8 +1149,13 @@ function moveDraw(e){
 }
 
 function endDraw(e){
-  if(!isDrawing)return;
+  if(!isDrawing){
+    // Even if not drawing, release pencilActive when pencil lifts
+    if(e.pointerType==='pen')pencilActive=false;
+    return;
+  }
   isDrawing=false;
+  if(e.pointerType==='pen')pencilActive=false;
   var ac_ctx=document.getElementById('annoCanvas').getContext('2d');
 
   if(currentTool==='arrow'&&arrowStart){
@@ -1209,10 +1294,23 @@ if(window.PointerEvent){
   ac_el.addEventListener('pointerdown',startDraw,{passive:false});
   ac_el.addEventListener('pointermove',moveDraw,{passive:false});
   ac_el.addEventListener('pointerup',endDraw,{passive:false});
-  ac_el.addEventListener('pointercancel',function(e){if(isDrawing)endDraw(e);});
+  ac_el.addEventListener('pointercancel',function(e){pencilActive=false;if(isDrawing)endDraw(e);});
   ac_el.addEventListener('pointerleave',function(e){if(isDrawing)endDraw(e);});
   // Prevent browser from capturing pointer (critical for iPad)
-  ac_el.addEventListener('pointerdown',function(e){ac_el.setPointerCapture(e.pointerId);});
+  ac_el.addEventListener('pointerdown',function(e){
+    if(e.pointerType==='pen'){
+      ac_el.setPointerCapture(e.pointerId);
+      // Prevent iOS selection UI while pencil is active
+      document.body.style.webkitUserSelect='none';
+      document.body.style.userSelect='none';
+    }
+  });
+  ac_el.addEventListener('pointerup',function(e){
+    if(e.pointerType==='pen'){
+      document.body.style.webkitUserSelect='';
+      document.body.style.userSelect='';
+    }
+  });
   // Prevent long-press context menu (copy/paste/find popup on iPad)
   ac_el.addEventListener('contextmenu',function(e){e.preventDefault();return false;});
   document.getElementById('edCanvasArea').addEventListener('contextmenu',function(e){e.preventDefault();return false;});

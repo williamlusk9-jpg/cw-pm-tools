@@ -317,6 +317,34 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
   .modal-back{align-items:center}
   .modal{border-radius:16px;max-width:440px}
 }
+
+/* ── iPad larger tap targets (touch screen ≥768px) ──────────────────── */
+@media(min-width:768px) and (hover:none) and (pointer:coarse){
+  .btn-primary,.btn-secondary,.btn-green{padding:17px !important;font-size:15px !important;border-radius:14px !important}
+  .finput,.fselect{padding:15px 16px !important;font-size:16px !important;min-height:52px !important;border-radius:12px !important}
+  .step-tab{padding:16px 8px !important;font-size:13px !important}
+  .dp-item,.sb-item,.cw-item,.hm-nav-item{padding:13px 12px !important;font-size:14px !important}
+  .job-item{padding:14px 12px !important}
+  .sub-log-item{padding:14px 15px !important}
+  .note-card-body{padding:13px 14px 14px !important}
+  .add-job-btn,.upload-revision-btn{padding:14px !important;font-size:12px !important}
+  .pane-action-btn{padding:10px 16px !important;font-size:11px !important}
+  .tool-btn{width:46px !important;height:46px !important}
+  .size-chip{padding:7px 13px !important;font-size:12px !important}
+  .color-swatch{width:28px !important;height:28px !important}
+  .att-head>span,.att-row>span{font-size:13px !important}
+  label{font-size:13px !important}
+  .sec-lbl{font-size:12px !important}
+}
+
+/* ── iPhone touch target improvements ── */
+@media(max-width:767px){
+  .sort-chip{padding:9px 14px !important;font-size:12px !important}
+  .proj-label{font-size:13px !important;padding:12px 14px !important}
+  .add-sub-btn{padding:5px 10px !important;font-size:11px !important}
+  .task-text{font-size:15px !important}
+  .deadline-tag{font-size:11px !important;padding:4px 9px !important}
+}
 </style>
 </head>
 <body>
@@ -1911,6 +1939,52 @@ let lt=0;document.addEventListener('touchend',function(e){
   const n=Date.now();if(n-lt<300)e.preventDefault();lt=n;
 },{passive:false});
 
+// ── APP ICON ──
+try{
+  var _al=document.createElement('link');
+  _al.rel='apple-touch-icon';
+  _al.href='data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20180%20180%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%270%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%25%27%20stop-color%3D%27%2523F47832%27%2F%3E%3Cstop%20offset%3D%27100%25%27%20stop-color%3D%27%2523C85218%27%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%27180%27%20height%3D%27180%27%20rx%3D%2740%27%20fill%3D%27url%28%2523g%29%27%2F%3E%3Crect%20x%3D%2724%27%20y%3D%27100%27%20width%3D%27132%27%20height%3D%2714%27%20rx%3D%277%27%20fill%3D%27white%27%2F%3E%3Cpath%20d%3D%27M50%20100%20C50%2054%2090%2044%2090%2044%20C90%2044%20130%2054%20130%20100Z%27%20fill%3D%27white%27%2F%3E%3Crect%20x%3D%2750%27%20y%3D%2789%27%20width%3D%2780%27%20height%3D%2711%27%20fill%3D%27%2523E8622A%27%20opacity%3D%270.3%27%2F%3E%3Cpath%20d%3D%27M83%2044%20L83%20100%20M97%2044%20L97%20100%27%20stroke%3D%27%2523E8622A%27%20stroke-width%3D%272.5%27%20opacity%3D%270.35%27%2F%3E%3Ctext%20x%3D%2790%27%20y%3D%27148%27%20text-anchor%3D%27middle%27%20font-family%3D%27Arial%20Black%2CArial%2Csans-serif%27%20font-weight%3D%27900%27%20font-size%3D%2728%27%20fill%3D%27white%27%20letter-spacing%3D%272%27%3EC%26amp%3BW%3C%2Ftext%3E%3C%2Fsvg%3E';
+  document.head.appendChild(_al);
+}catch(e){}
+
+/* ── Offline indicator ─────────────────────────────────────────────────── */
+(function(){
+  var b=document.createElement('div');
+  b.id='offlineBanner';
+  b.style.cssText='position:fixed;top:0;left:0;right:0;background:#b91c1c;color:#fff;'
+    +'font-family:monospace;font-size:11px;text-align:center;padding:7px 12px;'
+    +'z-index:99999;display:none;letter-spacing:.03em;pointer-events:none;'
+    +'padding-top:max(7px,env(safe-area-inset-top))';
+  b.textContent='No internet connection — changes will sync when back online';
+  document.body.appendChild(b);
+  function upd(){b.style.display=navigator.onLine?'none':'block';}
+  window.addEventListener('online',upd);
+  window.addEventListener('offline',upd);
+  upd();
+/* ── Tasks: swipe left/right to toggle sort mode ── */
+(function(){
+  var _sx=0,_sy=0,_st=0;
+  var list=document.querySelector('.mob-list')||document.querySelector('.task-list')||document.getElementById('mobTaskList');
+  var target=list||document.body;
+  target.addEventListener('touchstart',function(e){
+    var tag=e.target.tagName;
+    if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT')return;
+    _sx=e.touches[0].clientX;_sy=e.touches[0].clientY;_st=Date.now();
+  },{passive:true});
+  target.addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-_sx;
+    var dy=e.changedTouches[0].clientY-_sy;
+    var dt=Date.now()-_st;
+    if(Math.abs(dx)<80||Math.abs(dy)>Math.abs(dx)*0.5||dt>280)return;
+    // Find all visible sort chips and cycle them
+    var chips=Array.from(document.querySelectorAll('#mSortBar .sort-chip'));
+    if(!chips.length)return;
+    var cur=chips.findIndex(function(c){return c.classList.contains('active');});
+    var nxt=dx<0?(cur+1)%chips.length:(cur-1+chips.length)%chips.length;
+    chips[nxt].click();
+  },{passive:true});
+})();
+})();
 })();
 </script>
 

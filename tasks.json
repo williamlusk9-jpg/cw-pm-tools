@@ -1,5 +1,5 @@
 {
-  "_syncedAt": 1778506166806,
+  "_syncedAt": 1778506234938,
   "tasks": [
     {
       "id": "movugvngjbbmr6ssje",
@@ -40,7 +40,7 @@
     },
     {
       "id": "mou6gmonrc4d87qzzlo",
-      "action": "Pay app 4",
+      "action": "Pay app 4- Sent to Brittany",
       "owner": "Will",
       "deadline": "Fri 5/15",
       "project": "WMG Riverstone",
@@ -49,7 +49,7 @@
       "done": false,
       "addedAt": 1778079225047,
       "source": "manual",
-      "updatedAt": 1778180038322
+      "updatedAt": 1778506179681
     },
     {
       "id": "mou0yhcvpwu5txfpobm",

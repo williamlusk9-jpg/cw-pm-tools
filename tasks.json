@@ -1,5 +1,5 @@
 {
-  "_syncedAt": 1778506160556,
+  "_syncedAt": 1778506166806,
   "tasks": [
     {
       "id": "movugvngjbbmr6ssje",
@@ -611,17 +611,9 @@
               "subtasks": []
             }
           ]
-        },
-        {
-          "id": "mou0kmqo87d",
-          "text": "Schedule Barista utility locating",
-          "done": false,
-          "addedAt": 1778069334048,
-          "due": "Wed 5/6",
-          "subtasks": []
         }
       ],
-      "updatedAt": 1778069334049
+      "updatedAt": 1778506165299
     },
     {
       "id": "mn8vwfar6znlcldsxrs",

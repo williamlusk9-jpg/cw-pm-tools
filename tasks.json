@@ -1,6 +1,30 @@
 {
-  "_syncedAt": 1778592029946,
+  "_syncedAt": 1778610708402,
   "tasks": [
+    {
+      "id": "mp2nsz3dgqohe9k0rcm",
+      "action": "Confirm Brittany billed Chapman's window repairs",
+      "owner": "Will",
+      "deadline": "Tue 5/12",
+      "project": "",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1778592083881,
+      "source": "manual"
+    },
+    {
+      "id": "mp2nso7r8s04srmqvao",
+      "action": "Bill Tonya for Bodyfitz repairs",
+      "owner": "Will",
+      "deadline": "Tue 5/12",
+      "project": "",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1778592069784,
+      "source": "manual"
+    },
     {
       "id": "movugvngjbbmr6ssje",
       "action": "Assemble submittal binder",
@@ -40,7 +64,7 @@
     },
     {
       "id": "mou6gmonrc4d87qzzlo",
-      "action": "Pay app 4- Sent to Brittany",
+      "action": "Bill pay app 4",
       "owner": "Will",
       "deadline": "Fri 5/15",
       "project": "WMG Riverstone",
@@ -49,7 +73,7 @@
       "done": false,
       "addedAt": 1778079225047,
       "source": "manual",
-      "updatedAt": 1778506179681
+      "updatedAt": 1778592052880
     },
     {
       "id": "mou0yhcvpwu5txfpobm",
@@ -395,7 +419,7 @@
     },
     {
       "id": "mo7hd70fptrnxa5nye",
-      "action": "Scheduled for 5/16",
+      "action": "Scheduled for 5/30",
       "owner": "Will",
       "deadline": "TBD",
       "project": "Kenmar Building Medex",
@@ -405,7 +429,7 @@
       "addedAt": 1776706818495,
       "source": "manual",
       "subtasks": [],
-      "updatedAt": 1778070016173
+      "updatedAt": 1778592040206
     },
     {
       "id": "mo7hcy2lio950tslqlf",

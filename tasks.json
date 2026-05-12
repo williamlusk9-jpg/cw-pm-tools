@@ -1,6 +1,18 @@
 {
-  "_syncedAt": 1778610708402,
+  "_syncedAt": 1778610939385,
   "tasks": [
+    {
+      "id": "mp2yx9zzx0m42avwxhj",
+      "action": "Submit & track EyeSouth Newnan permit",
+      "owner": "Will",
+      "deadline": "Fri 5/15",
+      "project": "General",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1778610760415,
+      "source": "manual"
+    },
     {
       "id": "mp2nsz3dgqohe9k0rcm",
       "action": "Confirm Brittany billed Chapman's window repairs",

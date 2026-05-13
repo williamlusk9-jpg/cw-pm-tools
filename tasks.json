@@ -1,9 +1,9 @@
 {
-  "_syncedAt": 1778703236985,
+  "_syncedAt": 1778703691972,
   "tasks": [
     {
       "id": "mp2yx9zzx0m42avwxhj",
-      "action": "Submit & track EyeSouth Newnan permit",
+      "action": "Submit & track EyeSouth Newnan permit once received from Robert Scott",
       "owner": "Will",
       "deadline": "Fri 5/15",
       "project": "General",
@@ -11,7 +11,8 @@
       "callDate": "",
       "done": false,
       "addedAt": 1778610760415,
-      "source": "manual"
+      "source": "manual",
+      "updatedAt": 1778703259241
     },
     {
       "id": "mp2nsz3dgqohe9k0rcm",
@@ -21,9 +22,10 @@
       "project": "",
       "contact": "",
       "callDate": "",
-      "done": false,
+      "done": true,
       "addedAt": 1778592083881,
-      "source": "manual"
+      "source": "manual",
+      "updatedAt": 1778703269434
     },
     {
       "id": "mp2nso7r8s04srmqvao",
@@ -33,9 +35,10 @@
       "project": "",
       "contact": "",
       "callDate": "",
-      "done": false,
+      "done": true,
       "addedAt": 1778592069784,
-      "source": "manual"
+      "source": "manual",
+      "updatedAt": 1778703270580
     },
     {
       "id": "movugvngjbbmr6ssje",
@@ -45,9 +48,10 @@
       "project": "PPG Newnan",
       "contact": "",
       "callDate": "",
-      "done": false,
+      "done": true,
       "addedAt": 1778180013628,
-      "source": "manual"
+      "source": "manual",
+      "updatedAt": 1778703263182
     },
     {
       "id": "movlkqla8sff8qx7qpd",

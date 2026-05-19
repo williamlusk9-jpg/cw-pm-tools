@@ -1,5 +1,5 @@
 {
-  "_syncedAt": 1779217046069,
+  "_syncedAt": 1779217066548,
   "tasks": [
     {
       "id": "mpczw1uaapuiuprk76a",
@@ -98,10 +98,10 @@
       "project": "WMG Riverstone",
       "contact": "",
       "callDate": "",
-      "done": false,
+      "done": true,
       "addedAt": 1778079225047,
       "source": "manual",
-      "updatedAt": 1778592052880
+      "updatedAt": 1779217065044
     },
     {
       "id": "mou0yhcvpwu5txfpobm",

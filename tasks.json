@@ -1,6 +1,18 @@
 {
-  "_syncedAt": 1779217019707,
+  "_syncedAt": 1779217046069,
   "tasks": [
+    {
+      "id": "mpczw1uaapuiuprk76a",
+      "action": "Tell Classic to supply new T'stats. Old ones broken",
+      "owner": "Will",
+      "deadline": "Tue 5/26",
+      "project": "PPG Newnan",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1779217044562,
+      "source": "manual"
+    },
     {
       "id": "mp2yx9zzx0m42avwxhj",
       "action": "Submit & track EyeSouth Newnan permit once received from Robert Scott",

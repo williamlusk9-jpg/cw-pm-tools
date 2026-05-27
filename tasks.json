@@ -1,6 +1,18 @@
 {
-  "_syncedAt": 1779892343938,
+  "_syncedAt": 1779892377164,
   "tasks": [
+    {
+      "id": "mpo5yqnel7kffudkzae",
+      "action": "Parkaire Sign- Get stone pricing",
+      "owner": "Will",
+      "deadline": "TBD",
+      "project": "Tonya",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1779892375658,
+      "source": "manual"
+    },
     {
       "id": "mpo5bts3sienq12awd",
       "action": "Call Cartersville for typical demo permit & normal permit turnaround time",

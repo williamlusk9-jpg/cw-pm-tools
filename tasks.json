@@ -1,5 +1,5 @@
 {
-  "_syncedAt": 1779891308139,
+  "_syncedAt": 1779891315782,
   "tasks": [
     {
       "id": "mpo5bts3sienq12awd",
@@ -46,10 +46,10 @@
       "project": "General",
       "contact": "",
       "callDate": "",
-      "done": false,
+      "done": true,
       "addedAt": 1778610760415,
       "source": "manual",
-      "updatedAt": 1779217086692
+      "updatedAt": 1779891314278
     },
     {
       "id": "mp2nsz3dgqohe9k0rcm",

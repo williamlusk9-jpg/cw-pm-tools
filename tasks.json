@@ -1,5 +1,5 @@
 {
-  "_syncedAt": 1779889818823,
+  "_syncedAt": 1779889836791,
   "tasks": [
     {
       "id": "mpo3ktrkkoolst7bylp",
@@ -21,9 +21,10 @@
       "project": "PPG Newnan",
       "contact": "",
       "callDate": "",
-      "done": false,
+      "done": true,
       "addedAt": 1779217044562,
-      "source": "manual"
+      "source": "manual",
+      "updatedAt": 1779889835287
     },
     {
       "id": "mp2yx9zzx0m42avwxhj",

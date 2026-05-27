@@ -1,6 +1,18 @@
 {
-  "_syncedAt": 1779891281361,
+  "_syncedAt": 1779891308139,
   "tasks": [
+    {
+      "id": "mpo5bts3sienq12awd",
+      "action": "Call Cartersville for typical demo permit & normal permit turnaround time",
+      "owner": "Will",
+      "deadline": "Wed 5/27",
+      "project": "General",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1779891306627,
+      "source": "manual"
+    },
     {
       "id": "mpo3ktrkkoolst7bylp",
       "action": "Parkaire Landing- Send electrical needs to Scotty Howell",

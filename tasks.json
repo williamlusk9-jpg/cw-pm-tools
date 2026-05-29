@@ -1,6 +1,18 @@
 {
-  "_syncedAt": 1780073257981,
+  "_syncedAt": 1780073273542,
   "tasks": [
+    {
+      "id": "mpr5nz6wiaaytd2glp",
+      "action": "Send Russell PQC plans",
+      "owner": "Will",
+      "deadline": "Fri 5/29",
+      "project": "General",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1780073272041,
+      "source": "manual"
+    },
     {
       "id": "mpqw9zi7kezsukml4v",
       "action": "PA Triangle: Exterior lighting",

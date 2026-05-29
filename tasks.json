@@ -1,6 +1,18 @@
 {
-  "_syncedAt": 1780073277880,
+  "_syncedAt": 1780073310611,
   "tasks": [
+    {
+      "id": "mpr5ors5dwb9fofr1gd",
+      "action": "Send Andrew Babcock bid walk notes",
+      "owner": "Will",
+      "deadline": "Fri 5/29",
+      "project": "General",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1780073309093,
+      "source": "manual"
+    },
     {
       "id": "mpr5nz6wiaaytd2glp",
       "action": "Send Russell PQC plans",

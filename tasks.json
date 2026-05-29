@@ -1,6 +1,18 @@
 {
-  "_syncedAt": 1780057480264,
+  "_syncedAt": 1780057504225,
   "tasks": [
+    {
+      "id": "mpqw9zi7kezsukml4v",
+      "action": "PA Triangle: Exterior lighting",
+      "owner": "Will",
+      "deadline": "Fri 5/29",
+      "project": "Bidding Work",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1780057502720,
+      "source": "manual"
+    },
     {
       "id": "mpo5yqnel7kffudkzae",
       "action": "Parkaire Sign- Get stone pricing",

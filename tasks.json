@@ -1,5 +1,5 @@
 {
-  "_syncedAt": 1780569080574,
+  "_syncedAt": 1780569082815,
   "tasks": [
     {
       "id": "mpr5ors5dwb9fofr1gd",
@@ -741,17 +741,9 @@
               "subtasks": []
             }
           ]
-        },
-        {
-          "id": "mpo5wqp0y2d",
-          "text": "Hammond- Pour concrete behind dumpster enclosure",
-          "done": true,
-          "addedAt": 1779892282404,
-          "due": "",
-          "subtasks": []
         }
       ],
-      "updatedAt": 1780569079069
+      "updatedAt": 1780569081298
     },
     {
       "id": "mn8vwfar6znlcldsxrs",

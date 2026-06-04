@@ -1,5 +1,5 @@
 {
-  "_syncedAt": 1780569082815,
+  "_syncedAt": 1780569088933,
   "tasks": [
     {
       "id": "mpr5ors5dwb9fofr1gd",
@@ -531,11 +531,11 @@
       "project": "Kenmar Building Medex",
       "contact": "",
       "callDate": "",
-      "done": false,
+      "done": true,
       "addedAt": 1776706818495,
       "source": "manual",
       "subtasks": [],
-      "updatedAt": 1778592040206
+      "updatedAt": 1780569087417
     },
     {
       "id": "mo7hcy2lio950tslqlf",

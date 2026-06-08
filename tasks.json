@@ -1,6 +1,18 @@
 {
-  "_syncedAt": 1780947041105,
+  "_syncedAt": 1780947076515,
   "tasks": [
+    {
+      "id": "mq5lwlvpmald72ijcjk",
+      "action": "Submit door HW RFI's (notebook & Brian email)",
+      "owner": "Will",
+      "deadline": "Mon 6/8",
+      "project": "PPG Cartersville MedOnc",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1780947075013,
+      "source": "manual"
+    },
     {
       "id": "mpzcvbj877iwvjtj84u",
       "action": "Invoice Medex",

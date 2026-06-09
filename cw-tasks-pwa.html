@@ -35,7 +35,16 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--tx1);font-fami
 .app{position:fixed;inset:0;display:flex;flex-direction:column}
 
 /* Top bar */
-.topbar{height:calc(46px + var(--safe-top));padding-top:var(--safe-top);background:var(--sb);border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:0;flex-shrink:0;z-index:10}
+.topbar{background:var(--sb);border-bottom:1px solid var(--b1);flex-shrink:0;z-index:10;display:flex;flex-direction:column}
+.topbar-row1{height:calc(38px + var(--safe-top));padding-top:var(--safe-top);display:flex;align-items:center;gap:0;border-bottom:1px solid var(--b1)}
+.topbar-row2{height:40px;display:flex;align-items:center;gap:2px;padding:0 10px;overflow-x:auto;scrollbar-width:none}
+.topbar-row2::-webkit-scrollbar{display:none}
+/* Ribbon buttons */
+.rib-btn{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:7px;border:1px solid transparent;background:transparent;color:var(--tx3);font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer;transition:all .12s;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.rib-btn:hover{background:var(--s2);color:var(--tx1);border-color:var(--b1)}
+.rib-btn.accent{color:var(--accent);border-color:rgba(232,98,42,.25);background:var(--accent-dim)}
+.rib-btn.accent:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.rib-sep{width:1px;height:22px;background:var(--b1);flex-shrink:0;margin:0 3px}
 .topbar-logo{display:flex;align-items:center;gap:9px;padding:0 16px;border-right:1px solid var(--b1);height:100%;flex-shrink:0}
 .topbar-pill{width:26px;height:26px;border-radius:7px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .topbar-brand{font-family:var(--disp);font-size:14px;font-weight:700;color:var(--tx1)}
@@ -122,7 +131,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--tx1);font-fami
 .b-task-cb:checked{background:var(--green);border-color:var(--green)}
 .b-task-cb:checked::after{content:'';position:absolute;left:3px;top:0;width:5px;height:8px;border:2px solid #fff;border-top:none;border-left:none;transform:rotate(45deg)}
 .b-task-body{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
-.b-task-ta{font-size:14px;color:var(--tx1);background:transparent;border:none;outline:none;width:100%;resize:none;line-height:1.5;min-height:21px}
+.b-task-ta{font-size:14px;color:var(--tx1);background:transparent;border:none;outline:none;width:100%;resize:none;line-height:1.5;min-height:28px}
 .b-task-ta.done{color:var(--tx4);text-decoration:line-through}
 .b-task-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 .status-pill{font-family:var(--mono);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:5px;cursor:pointer;border:none;transition:all .12s}
@@ -246,34 +255,75 @@ tr:hover .tr-del{opacity:1}
 
   <!-- Top bar -->
   <div class="topbar">
-    <div class="topbar-logo">
-      <div class="topbar-pill"><svg width="12" height="12" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
-      <span class="topbar-brand">C&amp;W Projects</span>
-    </div>
-    <span class="topbar-sep" id="topbarSep"></span>
-    <span class="topbar-proj-name" id="topbarProjName"></span>
-    <div class="topbar-actions">
-      <div class="sync-dot" id="syncDot" title="Sync status"></div>
-      <button class="tb-btn" id="syncBtn" title="Sync now">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.96"/></svg>
-      </button>
-      <button class="tb-btn" id="tokenBtn" title="GitHub token">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-      </button>
-      <a href="index.html" class="tb-back">
-        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-        PM Tools
-      </a>
-      <div class="tb-search" id="tbSearchWrap" style="display:none">
-        <input id="tbSearchInput" type="text" placeholder="Search all projects… (⌘K)" autocomplete="off" spellcheck="false">
-        <button id="tbSearchClear" type="button">×</button>
+    <!-- Row 1: Logo + project name + utility actions -->
+    <div class="topbar-row1">
+      <div class="topbar-logo">
+        <div class="topbar-pill"><svg width="12" height="12" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <span class="topbar-brand">C&amp;W Projects</span>
       </div>
-      <!-- Mobile panel nav -->
-      <button class="tb-btn" id="mobSectionsBtn" style="display:none" title="Projects">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <span class="topbar-sep" id="topbarSep"></span>
+      <span class="topbar-proj-name" id="topbarProjName"></span>
+      <div class="topbar-actions">
+        <div class="sync-dot" id="syncDot" title="Sync status"></div>
+        <button class="tb-btn" id="syncBtn" title="Sync now">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.96"/></svg>
+        </button>
+        <button class="tb-btn" id="tokenBtn" title="GitHub token">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777z"/></svg>
+        </button>
+        <a href="index.html" class="tb-back">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          PM Tools
+        </a>
+        <div class="tb-search" id="tbSearchWrap" style="display:none">
+          <input id="tbSearchInput" type="text" placeholder="Search… (⌘K)" autocomplete="off" spellcheck="false">
+          <button id="tbSearchClear" type="button">×</button>
+        </div>
+        <!-- Mobile panel nav -->
+        <button class="tb-btn" id="mobSectionsBtn" style="display:none" title="Projects">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <button class="tb-btn" id="mobPagesBtn" style="display:none" title="Pages">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </button>
+      </div>
+    </div>
+    <!-- Row 2: OneNote-style ribbon -->
+    <div class="topbar-row2" id="ribbonRow">
+      <button class="rib-btn accent" id="ribTask" type="button">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Task
       </button>
-      <button class="tb-btn" id="mobPagesBtn" style="display:none" title="Pages">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <div class="rib-sep"></div>
+      <button class="rib-btn" id="ribH1" type="button">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+        Heading 1
+      </button>
+      <button class="rib-btn" id="ribH2" type="button">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 8h16M4 14h10M4 20h7"/></svg>
+        Heading 2
+      </button>
+      <button class="rib-btn" id="ribH3" type="button">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 10h16M4 16h7"/></svg>
+        Heading 3
+      </button>
+      <div class="rib-sep"></div>
+      <button class="rib-btn" id="ribBullet" type="button">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor"/><circle cx="4" cy="12" r="1.5" fill="currentColor"/><circle cx="4" cy="18" r="1.5" fill="currentColor"/></svg>
+        Bullet
+      </button>
+      <button class="rib-btn" id="ribNote" type="button">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Note
+      </button>
+      <div class="rib-sep"></div>
+      <button class="rib-btn" id="ribTable" type="button">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+        Table
+      </button>
+      <button class="rib-btn" id="ribDivider" type="button">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/></svg>
+        Divider
       </button>
     </div>
   </div>
@@ -462,7 +512,7 @@ function statusLabel(s){return {open:'Open',progress:'In Progress',done:'Done',b
 function statusClass(s){return {open:'s-open',progress:'s-progress',done:'s-done',blocked:'s-blocked'}[s]||'s-open';}
 function dueClass(due){if(!due)return '';var d=new Date(due);if(isNaN(d))return '';var diff=(d-Date.now())/(864e5);if(diff<0)return ' overdue';if(diff<3)return ' soon';return '';}
 function fmtDate(ts){if(!ts)return '';return new Date(ts).toLocaleDateString('en-US',{month:'short',day:'numeric'});}
-function autoGrow(ta){ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';}
+function autoGrow(ta){ta.style.height='auto';ta.style.height=Math.max(ta.scrollHeight,28)+'px';}
 
 // ══ RENDER SECTIONS ══
 function renderSections(){
@@ -568,20 +618,13 @@ function renderContent(){
   });
 
   // Add block bar
-  var bar=document.createElement('div');bar.className='add-bar';
-  [
-    {label:'Task',type:'task',accent:true},
-    {label:'Heading',type:'h2'},
-    {label:'Bullet',type:'bullet'},
-    {label:'Note',type:'text'},
-    {label:'Table',type:'table'},
-    {label:'Divider',type:'divider'},
-  ].forEach(function(btn){
-    var b=document.createElement('button');b.className='add-btn'+(btn.accent?' accent':'');b.type='button';b.textContent=btn.label;
-    b.addEventListener('click',function(){addBlock(btn.type,pg,proj);});
-    bar.appendChild(b);
-  });
-  wrap.appendChild(bar);
+  // Subtle "click ribbon to add" prompt when page is empty
+  if(!blocks.length){
+    var hint=document.createElement('div');
+    hint.style.cssText='padding:32px 0;text-align:center;font-family:var(--mono);font-size:11px;color:var(--tx4)';
+    hint.textContent='Use the toolbar above to add tasks, headings, bullets, notes, or tables';
+    wrap.appendChild(hint);
+  }
 }
 
 // ══ BUILD BLOCK ══
@@ -623,7 +666,7 @@ function buildBlock(block,idx,pg,proj){
     ta.value=block.text||'';ta.rows=1;ta.placeholder='Task description...';
     ta.addEventListener('input',function(){block.text=ta.value;save();autoGrow(ta);});
     ta.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();addBlock('task',pg,proj);}});
-    autoGrow(ta);
+    setTimeout(function(){autoGrow(ta);},0);
     var meta=document.createElement('div');meta.className='b-task-meta';
     // Status
     var sp=document.createElement('button');sp.type='button';sp.className='status-pill '+statusClass(block.status);sp.textContent=statusLabel(block.status);
@@ -653,13 +696,13 @@ function buildBlock(block,idx,pg,proj){
     ta.placeholder={h1:'Heading',h2:'Section Heading',h3:'Sub-section'}[block.type];
     ta.addEventListener('input',function(){block.text=ta.value;save();autoGrow(ta);});
     ta.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addBlock('text',pg,proj);}});
-    autoGrow(ta);wrap.appendChild(ta);
+    setTimeout(function(){autoGrow(ta);},0);wrap.appendChild(ta);
 
   }else if(block.type==='text'){
     var ta=document.createElement('textarea');ta.className='b-text';ta.value=block.text||'';ta.rows=1;ta.placeholder='Write a note...';
     ta.addEventListener('input',function(){block.text=ta.value;save();autoGrow(ta);});
     ta.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();addBlock('text',pg,proj);}});
-    autoGrow(ta);wrap.appendChild(ta);
+    setTimeout(function(){autoGrow(ta);},0);wrap.appendChild(ta);
 
   }else if(block.type==='bullet'){
     var row=document.createElement('div');row.className='b-bullet-row';
@@ -667,7 +710,7 @@ function buildBlock(block,idx,pg,proj){
     var ta=document.createElement('textarea');ta.className='b-bullet-ta';ta.value=block.text||'';ta.rows=1;ta.placeholder='List item...';
     ta.addEventListener('input',function(){block.text=ta.value;save();autoGrow(ta);});
     ta.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();addBlock('bullet',pg,proj);}});
-    autoGrow(ta);row.appendChild(dot);row.appendChild(ta);wrap.appendChild(row);
+    setTimeout(function(){autoGrow(ta);},0);row.appendChild(dot);row.appendChild(ta);wrap.appendChild(row);
 
   }else if(block.type==='divider'){
     var hr=document.createElement('hr');hr.className='b-divider';wrap.appendChild(hr);
@@ -1115,6 +1158,24 @@ document.getElementById('blocksWrap').addEventListener('keyup',function(e){
     if(proj&&pg)showSlashPicker(ta,pg,proj);
   }
 });
+
+// ══ RIBBON WIRING ══
+(function(){
+  var ribMap={
+    ribTask:'task',ribH1:'h1',ribH2:'h2',ribH3:'h3',
+    ribBullet:'bullet',ribNote:'text',ribTable:'table',ribDivider:'divider'
+  };
+  Object.keys(ribMap).forEach(function(id){
+    var btn=document.getElementById(id);
+    if(!btn)return;
+    btn.addEventListener('click',function(){
+      var proj=projects.find(function(p){return p.id===activeProjId;});
+      var pg=proj&&proj.pages&&proj.pages.find(function(p){return p.id===activePageId;});
+      if(!pg){showToast('Select a page first');return;}
+      addBlock(ribMap[id],pg,proj);
+    });
+  });
+})();
 
 // Offline
 (function(){var b=document.getElementById('offlineBanner');function u(){b.style.display=navigator.onLine?'none':'block';}window.addEventListener('online',u);window.addEventListener('offline',u);u();})();

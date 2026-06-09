@@ -1,6 +1,18 @@
 {
-  "_syncedAt": 1780998119297,
+  "_syncedAt": 1780998148155,
   "tasks": [
+    {
+      "id": "mq6gb8hllrg8hb5lu08",
+      "action": "East Cobb Library proposal",
+      "owner": "Will",
+      "deadline": "Tue 6/9",
+      "project": "Tonya",
+      "contact": "",
+      "callDate": "",
+      "done": false,
+      "addedAt": 1780998145978,
+      "source": "manual"
+    },
     {
       "id": "mq5lwlvpmald72ijcjk",
       "action": "Submit door HW RFI's (notebook & Brian email)",

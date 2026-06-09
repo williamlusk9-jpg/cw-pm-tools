@@ -132,6 +132,8 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--tx1);font-fami
 }
 
 /* ── Task extraction ── */
+.transcript-full{background:var(--s1);border:1px solid var(--b1);border-radius:10px;padding:12px 14px;margin-top:8px;font-size:13px;color:var(--tx2);line-height:1.65;white-space:pre-wrap;max-height:220px;overflow-y:auto;font-family:var(--body)}
+.transcript-label{font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--tx4);margin-bottom:5px}
 .extract-btn{width:100%;padding:11px;border-radius:10px;border:1px solid rgba(74,144,217,.3);background:rgba(74,144,217,.08);color:var(--blue);font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:7px;margin-top:4px}
 .extract-btn:hover{background:rgba(74,144,217,.15)}
 .extract-btn:disabled{opacity:.4;cursor:default}
@@ -146,6 +148,17 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--tx1);font-fami
 .push-tasks-btn:disabled{opacity:.35;cursor:default}
 .transcript-preview{font-size:11px;color:var(--tx4);font-family:var(--mono);line-height:1.5;background:var(--bg);border:1px solid var(--b1);border-radius:8px;padding:8px 10px;margin-top:4px;max-height:80px;overflow-y:auto;display:none}
 .transcript-preview.show{display:block}
+/* ── Project picker modal ── */
+.proj-picker-modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9500;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(5px)}
+.proj-picker-modal.show{display:flex}
+.proj-picker-box{background:var(--s1);border-radius:20px 20px 0 0;padding:20px 16px calc(20px + var(--safe-bot));width:100%;max-width:480px;display:flex;flex-direction:column;gap:12px}
+.proj-picker-title{font-family:var(--disp);font-size:17px;font-weight:700}
+.proj-picker-sub{font-size:13px;color:var(--tx3);line-height:1.4}
+.proj-picker-list{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto}
+.proj-picker-item{padding:13px 15px;border-radius:12px;border:1.5px solid var(--b1);background:var(--s2);cursor:pointer;font-size:14px;font-weight:500;color:var(--tx1);transition:all .12s;display:flex;align-items:center;gap:10px;-webkit-tap-highlight-color:transparent}
+.proj-picker-item:hover,.proj-picker-item:active{border-color:var(--accent);background:var(--accent-dim);color:var(--accent)}
+.proj-picker-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.proj-picker-cancel{padding:13px;border-radius:12px;border:none;background:var(--s3);color:var(--tx3);font-size:14px;font-weight:600;cursor:pointer;width:100%;transition:opacity .15s}
 /* ── Offline banner ── */
 #offlineBanner{position:fixed;top:0;left:0;right:0;background:#b91c1c;color:#fff;font-family:var(--mono);font-size:11px;text-align:center;padding:7px;z-index:99999;display:none}
 </style>
@@ -244,7 +257,8 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--tx1);font-fami
 
     <!-- Note + save (shown after recording stops) -->
     <div class="rec-note-row" id="saveSection" style="display:none">
-      <input class="rec-note-input" id="recTitle" type="text" placeholder="Title (e.g. Hanna Booth — flooring approval)" autocomplete="off">
+      <div id="recTitleDisplay" style="display:none;font-family:var(--mono);font-size:11px;color:var(--tx3);padding:4px 6px;text-align:center;min-height:18px"></div>
+      <input class="rec-note-input" id="recTitle" type="text" placeholder="Generating title..." autocomplete="off" style="display:none">
       <textarea class="rec-note-input" id="recNote" rows="3" placeholder="Who was on the call, project, key context..."></textarea>
       <button class="rec-save-btn" id="saveBtn" type="button">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -256,6 +270,16 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--tx1);font-fami
 </div>
 
 <div class="toast" id="toast"></div>
+<!-- Project picker -->
+<div class="proj-picker-modal" id="projPickerModal">
+  <div class="proj-picker-box">
+    <div class="proj-picker-title">Which project?</div>
+    <div class="proj-picker-sub" id="projPickerSub">No project name found in this recording. Select where these tasks should go:</div>
+    <div class="proj-picker-list" id="projPickerList"></div>
+    <button class="proj-picker-cancel" id="projPickerCancel" type="button">Cancel — save without project</button>
+  </div>
+</div>
+
 <div id="offlineBanner">No internet connection — changes save locally</div>
 
 <script>
@@ -385,7 +409,18 @@ function setRecUI(state){
     btn.className='rec-main-btn idle';
     btn.innerHTML='<svg width="26" height="26" fill="white" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg>';
     pauseBtn.disabled=true;discardBtn.disabled=false;
-    status.textContent='Recording complete — add your call notes below';
+    status.textContent='Recording complete — generating title...';
+  // Auto-generate title from transcript using Claude
+  if(liveTranscript&&liveTranscript.trim().length>20&&(getApiKey()||getProxyUrl())){
+    autoGenerateTitle(liveTranscript.trim());
+  } else {
+    // Fall back to date-based title
+    var fallbackTitle='Call — '+new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+    q('recTitle').value=fallbackTitle;
+    q('recTitleDisplay').textContent=fallbackTitle;
+    q('recTitleDisplay').style.display='block';
+    status.textContent='Recording complete — add any extra notes below';
+  }
     saveSection.style.display='flex';saveSection.style.flexDirection='column';saveSection.style.gap='8px';
     stopWaveform();
   }
@@ -580,6 +615,7 @@ function renderCard(rec,container){
     +'</div>'
     +'<div class="rec-card-body">'
     +(rec.note?'<div class="rec-card-note">'+esc(rec.note)+'</div>':'')
+    +(rec.transcript?'<div class="transcript-label">Transcript</div><div class="transcript-full">'+esc(rec.transcript)+'</div>':'<div style="font-family:var(--mono);font-size:10px;color:var(--tx4);margin-bottom:8px">No transcript — speech recognition was unavailable</div>')
     +'<div class="rec-player" id="player-'+rec.id+'">'
     +'<button class="play-btn" id="playbtn-'+rec.id+'" type="button">'
     +'<svg width="14" height="14" fill="white" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>'
@@ -656,6 +692,36 @@ function renderCard(rec,container){
   container.appendChild(card);
 }
 
+// ── AUTO-GENERATE TITLE ──
+function autoGenerateTitle(transcript){
+  var disp=q('recTitleDisplay');
+  if(disp){disp.textContent='Generating title…';disp.style.display='block';}
+  var prompt='You are analyzing a construction PM voice memo. Generate a short, descriptive title (max 8 words) that captures who was involved and the main topic. Examples: "Hanna Booth - flooring approval", "OAC site meeting - WMG Riverstone", "John - door hardware schedule". Return ONLY the title, nothing else. Transcript: '+transcript;
+
+  fetch((getProxyUrl()||'https://api.anthropic.com')+'/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:40,
+      messages:[{role:'user',content:prompt}]
+    })
+  })
+  .then(function(r){return r.ok?r.json():null;})
+  .then(function(d){
+    var title=d&&d.content&&d.content[0]&&d.content[0].text?d.content[0].text.trim():'';
+    title=title.replace(/^["']|["']$/g,'').trim(); // strip quotes
+    if(!title){title='Call — '+new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+    q('recTitle').value=title;
+    if(disp){disp.textContent=title;}
+    q('recStatus').textContent='Ready to save';
+  })
+  .catch(function(){
+    var fallback='Call — '+new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+    q('recTitle').value=fallback;
+    if(disp){disp.textContent=fallback;}
+    q('recStatus').textContent='Ready to save';
+  });
+}
+
 // ── PLAY ──
 function playRecording(rec){
   // Stop any current playback
@@ -694,6 +760,77 @@ function resetPlayBtn(id){
   var btn=document.getElementById('playbtn-'+id);
   if(btn)btn.innerHTML='<svg width="14" height="14" fill="white" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
 }
+
+// ── PROJECT PICKER ──
+var _pickerRec=null,_pickerTasks=null,_pickerOutputEl=null;
+
+function showProjectPicker(rec,tasks,outputEl){
+  _pickerRec=rec;_pickerTasks=tasks;_pickerOutputEl=outputEl;
+  var projects=[];
+  try{projects=JSON.parse(localStorage.getItem('cw-projects')||'[]');}catch(e){}
+
+  var list=document.getElementById('projPickerList');
+  var sub=document.getElementById('projPickerSub');
+  list.innerHTML='';
+
+  if(!projects.length){
+    sub.textContent='No projects found. Create a project in the Projects app first.';
+  } else {
+    sub.textContent='No project name found in this recording. Tap the project where these tasks should go:';
+  }
+
+  var COLORS=['#E8622A','#4a90d9','#34a872','#bf5af2','#f5c842','#e05252'];
+  projects.forEach(function(proj,pi){
+    var item=document.createElement('button');
+    item.className='proj-picker-item';item.type='button';
+    var dot=document.createElement('div');dot.className='proj-picker-dot';dot.style.background=COLORS[pi%COLORS.length];
+    item.appendChild(dot);
+    item.appendChild(document.createTextNode(proj.name));
+    item.addEventListener('click',function(){
+      document.getElementById('projPickerModal').classList.remove('show');
+      pushTasksToProject(proj,_pickerRec,_pickerTasks,_pickerOutputEl);
+    });
+    list.appendChild(item);
+  });
+
+  document.getElementById('projPickerModal').classList.add('show');
+}
+
+function pushTasksToProject(proj,rec,tasks,outputEl){
+  if(!proj||!tasks||!tasks.length)return;
+  var projects=[];
+  try{projects=JSON.parse(localStorage.getItem('cw-projects')||'[]');}catch(e){}
+  var liveProj=projects.find(function(p){return p.id===proj.id;});
+  if(!liveProj)return;
+
+  var now=Date.now();
+  var gid=function(){return now.toString(36)+Math.random().toString(36).slice(2,6);};
+
+  if(!liveProj.pages)liveProj.pages=[];
+  var targetPage=liveProj.pages.find(function(pg){return (pg.name||'').toLowerCase().includes('open');})||liveProj.pages[0];
+  if(!targetPage){targetPage={id:gid(),name:'Open Items',blocks:[],createdAt:now,updatedAt:now};liveProj.pages.push(targetPage);}
+  if(!targetPage.blocks)targetPage.blocks=[];
+
+  targetPage.blocks.push({id:gid(),type:'h3',text:'From call: '+(rec.title||'')});
+  tasks.forEach(function(text){
+    targetPage.blocks.push({id:gid(),type:'task',text:text,status:'open',priority:'',due:'',assignee:'',source:'call-notes'});
+  });
+  targetPage.updatedAt=now;
+  try{localStorage.setItem('cw-projects',JSON.stringify(projects));}catch(e){}
+
+  var pushBtn=outputEl&&outputEl.querySelector('.push-tasks-btn');
+  if(pushBtn){pushBtn.disabled=true;pushBtn.innerHTML='✓ Added to '+esc(liveProj.name);pushBtn.style.background='var(--green)';}
+  showToast(tasks.length+' item'+(tasks.length!==1?'s':'')+' → '+liveProj.name,'green');
+}
+
+// Wire picker cancel + backdrop
+(function(){
+  var modal=document.getElementById('projPickerModal');
+  var cancel=document.getElementById('projPickerCancel');
+  if(!cancel)return;
+  cancel.addEventListener('click',function(){modal.classList.remove('show');});
+  modal.addEventListener('click',function(e){if(e.target===modal)modal.classList.remove('show');});
+})();
 
 // ── DOWNLOAD ──
 function downloadRecording(rec){
@@ -765,7 +902,7 @@ function extractTasksFromRecording(rec,card){
     // Push to tasks button
     var pushBtn=document.createElement('button');
     pushBtn.className='push-tasks-btn';pushBtn.type='button';
-    pushBtn.innerHTML='<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Checked Items to Tasks';
+    pushBtn.innerHTML='<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add to Projects';
     pushBtn.addEventListener('click',function(){pushTasksToApp(rec,tasks,output);});
     output.appendChild(pushBtn);
     output.classList.add('show');
@@ -789,35 +926,68 @@ function pushTasksToApp(rec,tasks,outputEl){
   });
   if(!checked.length){showToast('Check at least one item first');return;}
 
-  // Load existing tasks from localStorage
-  var existingTasks=[];
-  try{existingTasks=JSON.parse(localStorage.getItem('cw-tasks')||'[]');}catch(e){}
+  // Try to push to cw-projects (new Projects app)
+  var projects=[];
+  try{projects=JSON.parse(localStorage.getItem('cw-projects')||'[]');}catch(e){}
 
   var now=Date.now();
-  var newTasks=checked.map(function(text){
-    return{
-      id:now+'-'+Math.random().toString(36).slice(2,6),
-      text:text,
-      done:false,
-      project:rec.title||'',
-      addedAt:now,
-      updatedAt:now,
-      source:'call-notes'
-    };
-  });
+  var genId=function(){return now.toString(36)+Math.random().toString(36).slice(2,6);};
 
-  existingTasks=newTasks.concat(existingTasks);
-  try{localStorage.setItem('cw-tasks',JSON.stringify(existingTasks));}
-  catch(e){showToast('Could not save to Tasks — storage full');return;}
-
-  // Visual confirmation
-  var pushBtn=outputEl.querySelector('.push-tasks-btn');
-  if(pushBtn){
-    pushBtn.disabled=true;
-    pushBtn.innerHTML='<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> '+checked.length+' task'+(checked.length!==1?'s':'')+' added to Tasks';
-    pushBtn.style.background='var(--green)';
+  // Fuzzy match recording title to a project name
+  var recTitle=(rec.title||'').toLowerCase();
+  var matchedProj=null;
+  if(projects.length){
+    // Exact or partial match
+    matchedProj=projects.find(function(p){
+      var pn=p.name.toLowerCase();
+      return recTitle.includes(pn)||pn.includes(recTitle.split('—')[0].trim());
+    });
+    // If no match, show project picker instead of defaulting
+    if(!matchedProj){
+      showProjectPicker(rec,checked,outputEl);
+      return;
+    }
   }
-  showToast(checked.length+' item'+(checked.length!==1?'s':'')+' added to Tasks','green');
+
+  if(matchedProj){
+    // Find or create "Open Items" page
+    if(!matchedProj.pages)matchedProj.pages=[];
+    var targetPage=matchedProj.pages.find(function(pg){
+      return (pg.name||'').toLowerCase().includes('open');
+    })||matchedProj.pages[0];
+    if(!targetPage){
+      targetPage={id:genId(),name:'Open Items',blocks:[],createdAt:now,updatedAt:now};
+      matchedProj.pages.push(targetPage);
+    }
+    if(!targetPage.blocks)targetPage.blocks=[];
+    // Add a heading for the call if not already present
+    var callHeading='From call: '+(rec.title||fmtDate(rec.createdAt));
+    targetPage.blocks.push({id:genId(),type:'h3',text:callHeading});
+    // Add each task
+    checked.forEach(function(text){
+      targetPage.blocks.push({id:genId(),type:'task',text:text,status:'open',priority:'',due:'',assignee:'',source:'call-notes'});
+    });
+    targetPage.updatedAt=now;
+    try{localStorage.setItem('cw-projects',JSON.stringify(projects));}catch(e){}
+    var projName=matchedProj.name;
+    var pushBtn=outputEl.querySelector('.push-tasks-btn');
+    if(pushBtn){
+      pushBtn.disabled=true;
+      pushBtn.innerHTML='<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Added to '+esc(projName);
+      pushBtn.style.background='var(--green)';
+    }
+    showToast(checked.length+' item'+(checked.length!==1?'s':'')+' → '+projName,'green');
+  } else {
+    // No projects yet — fall back to old cw-tasks
+    var existingTasks=[];
+    try{existingTasks=JSON.parse(localStorage.getItem('cw-tasks')||'[]');}catch(e){}
+    var newTasks=checked.map(function(text){return{id:genId(),text:text,done:false,project:rec.title||'',addedAt:now,source:'call-notes'};});
+    existingTasks=newTasks.concat(existingTasks);
+    try{localStorage.setItem('cw-tasks',JSON.stringify(existingTasks));}catch(e){showToast('Storage full');return;}
+    var pushBtn=outputEl.querySelector('.push-tasks-btn');
+    if(pushBtn){pushBtn.disabled=true;pushBtn.innerHTML='✓ Added to Projects';pushBtn.style.background='var(--green)';}
+    showToast(checked.length+' item'+(checked.length!==1?'s':'')+' added to Projects','green');
+  }
 }
 
 // ── DELETE ──

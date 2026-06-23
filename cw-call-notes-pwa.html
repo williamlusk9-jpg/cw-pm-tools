@@ -159,6 +159,23 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--tx1);font-fami
 .proj-picker-item:hover,.proj-picker-item:active{border-color:var(--accent);background:var(--accent-dim);color:var(--accent)}
 .proj-picker-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 .proj-picker-cancel{padding:13px;border-radius:12px;border:none;background:var(--s3);color:var(--tx3);font-size:14px;font-weight:600;cursor:pointer;width:100%;transition:opacity .15s}
+/* ── Plaud-style structured summary ── */
+.summary-block{margin-bottom:10px}
+.summary-overview{font-size:14px;color:var(--tx1);line-height:1.6;background:var(--s1);border:1px solid var(--b1);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:11px 14px;margin-bottom:10px}
+.summary-section-lbl{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--tx4);margin-bottom:6px;margin-top:12px}
+.summary-keypoint{display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:13px;color:var(--tx2);line-height:1.5}
+.summary-keypoint-dot{width:5px;height:5px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:6px}
+.summary-participants{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.summary-participant-chip{font-family:var(--mono);font-size:11px;background:var(--s2);color:var(--tx2);border-radius:14px;padding:4px 11px;display:flex;align-items:center;gap:5px}
+.summary-loading{display:flex;align-items:center;gap:8px;padding:14px;color:var(--tx4);font-family:var(--mono);font-size:11px}
+.summary-spinner{width:13px;height:13px;border:2px solid var(--b2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.transcript-toggle{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--tx4);cursor:pointer;padding:8px 2px;margin-top:6px;transition:color .12s;user-select:none}
+.transcript-toggle:hover{color:var(--tx2)}
+.transcript-toggle svg{transition:transform .15s}
+.transcript-toggle.open svg{transform:rotate(90deg)}
+.transcript-collapsed{display:none}
+.transcript-collapsed.show{display:block}
 /* ── Offline banner ── */
 #offlineBanner{position:fixed;top:0;left:0;right:0;background:#b91c1c;color:#fff;font-family:var(--mono);font-size:11px;text-align:center;padding:7px;z-index:99999;display:none}
 </style>
@@ -566,12 +583,13 @@ q('saveBtn').addEventListener('click',function(){
     discard();
     // Auto-extract tasks if transcript exists and API is configured
     if(rec.transcript&&rec.transcript.length>20&&(getApiKey()||getProxyUrl())){
-      showToast('Saved — extracting tasks...','green');
-      // Find the card that was just rendered and trigger extraction
+      showToast('Saved — generating summary...','green');
+      // Find the card that was just rendered and trigger summary + extraction
       setTimeout(function(){
         var card=document.getElementById('card-'+rec.id);
         if(card){
-          card.classList.add('expanded'); // expand so tasks are visible
+          card.classList.add('expanded'); // expand so summary/tasks are visible
+          generateStructuredSummary(rec,card);
           extractTasksFromRecording(rec,card);
         }
       },400);
@@ -615,7 +633,10 @@ function renderCard(rec,container){
     +'</div>'
     +'<div class="rec-card-body">'
     +(rec.note?'<div class="rec-card-note">'+esc(rec.note)+'</div>':'')
-    +(rec.transcript?'<div class="transcript-label">Transcript</div><div class="transcript-full">'+esc(rec.transcript)+'</div>':'<div style="font-family:var(--mono);font-size:10px;color:var(--tx4);margin-bottom:8px">No transcript — speech recognition was unavailable</div>')
+    +'<div class="summary-block" id="summary-'+rec.id+'"></div>'
+    +(rec.transcript
+      ?'<div class="transcript-toggle" id="txtoggle-'+rec.id+'"><svg width="9" height="9" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg> Full Transcript</div><div class="transcript-collapsed" id="txbody-'+rec.id+'"><div class="transcript-full">'+esc(rec.transcript)+'</div></div>'
+      :'<div style="font-family:var(--mono);font-size:10px;color:var(--tx4);margin-bottom:8px">No transcript — speech recognition was unavailable</div>')
     +'<div class="rec-player" id="player-'+rec.id+'">'
     +'<button class="play-btn" id="playbtn-'+rec.id+'" type="button">'
     +'<svg width="14" height="14" fill="white" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>'
@@ -675,6 +696,20 @@ function renderCard(rec,container){
     e.stopPropagation();
     deleteRecording(rec.id);
   });
+
+  // Wire transcript toggle
+  var txToggle=card.querySelector('#txtoggle-'+rec.id);
+  var txBody=card.querySelector('#txbody-'+rec.id);
+  if(txToggle&&txBody){
+    txToggle.addEventListener('click',function(e){
+      e.stopPropagation();
+      var open=txBody.classList.toggle('show');
+      txToggle.classList.toggle('open',open);
+    });
+  }
+
+  // Render existing summary if already generated, else show generate prompt
+  renderSummaryBlock(rec,card);
 
   // Wire extract tasks button
   var extractBtn=card.querySelector('#extractbtn-'+rec.id);
@@ -839,6 +874,97 @@ function downloadRecording(rec){
   var a=document.createElement('a');a.href=rec.audioData;a.download=fname;
   document.body.appendChild(a);a.click();document.body.removeChild(a);
   showToast('Downloading...','green');
+}
+
+// ── RENDER SUMMARY BLOCK ──
+function renderSummaryBlock(rec,card){
+  var el=card.querySelector('#summary-'+rec.id);
+  if(!el)return;
+
+  if(rec.summary){
+    // Already generated — render it
+    el.innerHTML=buildSummaryHtml(rec.summary);
+    return;
+  }
+
+  if(!rec.transcript||rec.transcript.length<20){
+    el.innerHTML='';
+    return;
+  }
+
+  if(!getApiKey()&&!getProxyUrl()){
+    el.innerHTML='<div style="font-family:var(--mono);font-size:10px;color:var(--tx4);padding:4px 0 8px">Set API key to generate AI summary</div>';
+    return;
+  }
+
+  // Generate it
+  el.innerHTML='<div class="summary-loading"><div class="summary-spinner"></div>Generating summary…</div>';
+  generateStructuredSummary(rec,card);
+}
+
+// ── BUILD SUMMARY HTML (Plaud-style structured card) ──
+function buildSummaryHtml(summary){
+  var html='';
+  if(summary.overview){
+    html+='<div class="summary-overview">'+esc(summary.overview)+'</div>';
+  }
+  if(summary.keyPoints&&summary.keyPoints.length){
+    html+='<div class="summary-section-lbl">🔑 Key Points</div>';
+    summary.keyPoints.forEach(function(kp){
+      html+='<div class="summary-keypoint"><div class="summary-keypoint-dot"></div>'+esc(kp)+'</div>';
+    });
+  }
+  if(summary.participants&&summary.participants.length){
+    html+='<div class="summary-section-lbl">👤 Participants</div>';
+    html+='<div class="summary-participants">';
+    summary.participants.forEach(function(p){
+      html+='<span class="summary-participant-chip">'+esc(p)+'</span>';
+    });
+    html+='</div>';
+  }
+  return html;
+}
+
+// ── GENERATE STRUCTURED SUMMARY (Plaud-style) ──
+function generateStructuredSummary(rec,card){
+  var prompt='You are summarizing a construction PM phone call transcript, Plaud-style. '
+    +'Return ONLY valid JSON, no markdown fences, in this exact shape: '
+    +'{"overview":"2-3 sentence plain-English summary of what the call was about and outcome","keyPoints":["short bullet point","short bullet point"],"participants":["Name or role mentioned, e.g. Hanna Booth","Architect"]}. '
+    +'Keep overview concise and factual. Keep keyPoints to 3-6 short, specific bullets (not full sentences if possible). '
+    +'Only include participants whose name or clear role is actually mentioned in the transcript — do not guess. '
+    +'If nothing fits a section, use an empty array or empty string for that field. '
+    +'Transcript: '+rec.transcript;
+
+  fetch((getProxyUrl()||'https://api.anthropic.com')+'/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':getApiKey()},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:500,
+      messages:[{role:'user',content:prompt}]
+    })
+  })
+  .then(function(r){
+    if(!r.ok)return r.json().then(function(e){throw new Error((e.error&&e.error.message)||'API '+r.status);});
+    return r.json();
+  })
+  .then(function(data){
+    var raw=(data.content||[]).map(function(b){return b.text||'';}).join('').trim();
+    raw=raw.replace(/```json|```/g,'').trim();
+    var j=raw.indexOf('{'),k=raw.lastIndexOf('}');
+    if(j>-1&&k>j)raw=raw.slice(j,k+1);
+    var summary=JSON.parse(raw);
+
+    // Save to recording
+    var recs=getRecordings();
+    var r2=recs.find(function(x){return x.id===rec.id;});
+    if(r2){r2.summary=summary;saveRecordings(recs);}
+
+    var el=card.querySelector('#summary-'+rec.id);
+    if(el)el.innerHTML=buildSummaryHtml(summary);
+  })
+  .catch(function(e){
+    var el=card.querySelector('#summary-'+rec.id);
+    if(el)el.innerHTML='<div style="font-family:var(--mono);font-size:10px;color:var(--tx4);padding:4px 0 8px">Summary unavailable — '+esc(e.message.slice(0,50))+'</div>';
+  });
 }
 
 // ── EXTRACT TASKS FROM RECORDING ──
